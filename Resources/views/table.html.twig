@@ -1,0 +1,32 @@
+<table id="{{ table.name }}" {% if options.class is defined %}class="{{ options.class }}"{% endif %}>
+    <thead>
+        {% if table.hasColumnFilter %}
+        <tr>
+            {% for column in table.columns %}
+            <th>
+                {% if column.options.filter == 'text' %}
+                    <input type="text" id="{{ table.name }}_{{ column.name }}_filter" placeholder="{{ column.label }}">
+                {% elseif column.options.filter == 'select' %}
+                    <select id="{{ table.name }}_{{ column.name }}_filter"{% if column.options.multiple %} multiple="multiple"{% endif %}>
+
+                        {% if not column.options.multiple %}
+                            <option value="">-- {{ column.label }} --</option>
+                        {% endif %}
+
+                        {% for key, label in column.options.filter_choices %}
+                            <option value="{{ key }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                {% endif %}
+            </th>
+            {% endfor %}
+        </tr>
+        {% endif %}
+        <tr>
+            {% for column in table.columns %}
+                <th>{{ column.label }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>

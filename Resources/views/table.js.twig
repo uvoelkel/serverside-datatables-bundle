@@ -1,0 +1,46 @@
+var {{ table.name }}_table = $('#{{ table.name }}').DataTable({
+    'ajax': '{{ path }}',
+    'serverSide': true,
+    'columns': [{% for column in table.columns %}
+
+        {
+            'data': '{{ column.name }}',
+            'name': '{{ column.name }}',
+            'orderable': {% if column.options.sortable %}true{% else %}false{% endif %},
+            'searchable': {% if column.options.searchable %}true{% else %}false{% endif %}
+
+        }
+        {%- if not loop.last %},
+        {% endif %}
+        {% endfor %}
+
+    ]
+});
+
+{% for column in table.columns %}
+    {% if column.options.filter == 'text' %}
+    var throttle = null;
+    $('#{{ table.name }}_{{ column.name }}_filter').on('keyup change', function() {
+        if (throttle != null) {
+            console.log('throttle');
+            window.clearTimeout(throttle);
+            throttle = null;
+        }
+
+        var value = $(this).val();
+        if ({{ table.name }}_table.column({{ loop.index0 }}).search() !== value) {
+            throttle = window.setTimeout(function() {
+                {{ table.name }}_table.column({{ loop.index0 }})
+                    .search(value)
+                    .draw();
+            }, 200);
+        }
+    });
+    {% elseif column.options.filter == 'select' %}
+    $('#{{ table.name }}_{{ column.name }}_filter').on('change', function() {
+        {{ table.name }}_table.column({{ loop.index0 }})
+            .search($(this).val())
+            .draw();
+    });
+    {% endif %}
+{% endfor %}
