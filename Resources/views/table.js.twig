@@ -1,6 +1,15 @@
 var {{ table.name }}_table = $('#{{ table.name }}').DataTable({
     'ajax': '{{ path }}',
     'serverSide': true,
+    'order': [
+        {% set first = true %}
+        {%- for column in table.columns %}
+        {% if column.options.order is not null %}
+            {% if not first %} ,{% endif %}[{{ loop.index0 }}, '{{ column.options.order }}']
+            {% set first = false %}
+        {% endif %}
+        {% endfor -%}
+    ],
     'columns': [{% for column in table.columns %}
 
         {

@@ -19,8 +19,9 @@ class Column
         'filter_query' => '%f%',
         'multiple' => false,
         'expanded' => false,
-        'format_data_callback' => null,
+        'format_data_callback' => null, // function ($data, $column) {}
         'unbound' => false,
+        'order' => null, // null|'asc'|'desc'
     ];
 
     /**

@@ -146,6 +146,9 @@ And in your index template
         'filter_choices' => [],
         'multiple' => false,
         'expanded' => false,
+        'format_data_callback' => null, // function ($data, $column) {}
+        'unbound' => false,
+        'order' => null, // null|'asc'|'desc'
     ];
 
 - 'filter' != false implies 'searchable' = true
