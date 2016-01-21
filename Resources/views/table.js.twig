@@ -23,7 +23,22 @@ var {{ table.name }}_table = $('#{{ table.name }}').DataTable({
         {% endif %}
         {% endfor %}
 
-    ]
+    ],
+
+    'stateSave': true,
+    'stateLoaded': function (settings, data) {
+        $(data.columns).each(function(index, item) {
+            var value = item.search.search;
+            if (0 === value.length) {
+                return true;
+            }
+
+            var $input = $('#{{ table.name }}_' + settings.aoColumns[index].name + '_filter');
+            if (1 === $input.length) {
+                $input.val(value);
+            }
+        });
+    }
 });
 
 {% for column in table.columns %}
@@ -31,7 +46,6 @@ var {{ table.name }}_table = $('#{{ table.name }}').DataTable({
     var throttle = null;
     $('#{{ table.name }}_{{ column.name }}_filter').on('keyup change', function() {
         if (throttle != null) {
-            console.log('throttle');
             window.clearTimeout(throttle);
             throttle = null;
         }

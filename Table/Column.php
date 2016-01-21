@@ -19,7 +19,7 @@ class Column
         'filter_query' => '%f%',
         'multiple' => false,
         'expanded' => false,
-        'format_data_callback' => null, // function ($data, $column) {}
+        'format_data_callback' => null, // function ($data, $column, $object) {}
         'unbound' => false,
         'order' => null, // null|'asc'|'desc'
     ];

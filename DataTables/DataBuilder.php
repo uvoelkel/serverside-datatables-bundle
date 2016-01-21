@@ -55,8 +55,10 @@ class DataBuilder
         $data = null;
 
         if ($column instanceof EntityColumn) {
-            $association = self::callGetterByColumName($object, $column->getField());
-            $data = self::callGetterByColumName($association, $column->getEntityField());
+            $object = self::callGetterByColumName($object, $column->getField());
+            if (null !== $object) {
+                $data = self::callGetterByColumName($object, $column->getEntityField());
+            }
         } else {
             if (true === $column->getOptions()['unbound']) {
                 $data = $object;
@@ -69,7 +71,7 @@ class DataBuilder
             $callback = $column->getOptions()['format_data_callback'];
 
             if ($callback instanceof \Closure) {
-                return call_user_func($callback, $data, $column);
+                return call_user_func($callback, $data, $column, $object);
                 //return $callback($data, $column);
             }
 

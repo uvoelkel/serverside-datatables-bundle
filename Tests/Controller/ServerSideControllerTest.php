@@ -1,4 +1,5 @@
 <?php
+/*
 
 namespace Voelkel\DataTablesBundle\Tests\Controller;
 
@@ -14,23 +15,6 @@ class ServerSideControllerTest extends KernelTestCase
 
         $controller = new ServerSideController();
         $controller->setContainer(self::$kernel->getContainer());
-
-        /*
-        $table = 'Voelkel\DataTablesBundle\Tests\Controller\TestTableDefinition';
-        $request = Request::create('/datatables/list/' . urlencode($table), Request::METHOD_GET, [
-            'draw' => 1,
-            'columns' => [],
-            'start' => 0,
-            'length' => 25,
-            'search' => [
-                'value' => '',
-                'regex' => 'false',
-            ],
-            '_' => time(),
-        ]);
-
-        $response = $controller->listAction($table, $request);
-        */
 
 
         $table = 'Non\Existing\Class';
@@ -49,3 +33,4 @@ class ServerSideControllerTest extends KernelTestCase
         self::ensureKernelShutdown();
     }
 }
+*/
