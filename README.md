@@ -1,5 +1,6 @@
 DataTablesBundle
 ================
+[![Build Status](https://travis-ci.org/uvoelkel/datatables-bundle.svg?branch=master)](https://travis-ci.org/uvoelkel/datatables-bundle)
 
 ## License
 
