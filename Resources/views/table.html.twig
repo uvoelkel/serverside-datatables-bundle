@@ -18,6 +18,10 @@
                         {% endfor %}
                     </select>
                 {% endif %}
+
+                {% if column.options.filter_empty %}
+                    <input type="checkbox" id="{{ table.name }}_{{ column.name }}_filter_empty">
+                {% endif %}
             </th>
             {% endfor %}
         </tr>

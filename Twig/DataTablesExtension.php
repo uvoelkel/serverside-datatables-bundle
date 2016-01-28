@@ -5,6 +5,9 @@ namespace Voelkel\DataTablesBundle\Twig;
 use Symfony\Component\Routing\RouterInterface;
 use Voelkel\DataTablesBundle\Table\AbstractTableDefinition;
 
+/**
+ * @codeCoverageIgnore
+ */
 class DataTablesExtension extends \Twig_Extension
 {
     private $router;

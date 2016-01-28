@@ -14,12 +14,13 @@ class Column
     private $options = [
         'sortable' => true,
         'searchable' => true,
-        'filter' => false, // false|'text'|'select'
-        'filter_choices' => [],
+        'filter' => false, // false|'text'|'select' todo: |'date'|'datetime'|'date_range'|'datetime_range'
+        'filter_choices' => [], // 'filter' => 'select' only
         'filter_query' => '%f%',
+        'filter_empty' => false, // add a checkbox to filter empty resp null values
         'multiple' => false,
         'expanded' => false,
-        'format_data_callback' => null, // function ($data, $column, $object) {}
+        'format_data_callback' => null, // function ($data, $object, Column $column) {}
         'unbound' => false,
         'order' => null, // null|'asc'|'desc'
     ];

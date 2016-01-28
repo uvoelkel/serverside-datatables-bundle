@@ -138,7 +138,7 @@ class ServerSide
 
             $field = $this->getPrefixedField($column);
 
-            if (false !== $column->getOptions()['filter']) {
+            if (false !== $column->getOptions()['filter'] || true === $column->getOptions()['filter_empty']) {
                 $value = $this->request->getSearchValue($column->getName());
                 if (null !== $value) {
                     $this->applyColumnFilter($column, $value, $qb, $field);
@@ -167,6 +167,19 @@ class ServerSide
      */
     private function applyColumnFilter(Column $column, $value, QueryBuilder $qb, $field)
     {
+        $empty = null;
+        if (true === $column->getOptions()['filter_empty']) {
+            if ('|empty=true' === substr($value, -11)) {
+                $value = substr($value, 0, -11);
+                $empty = true;
+            } elseif ('|empty=false' === substr($value, -12)) {
+                $value = substr($value, 0, -12);
+                $empty = false;
+            } else {
+                throw new \Exception(sprintf('invalid filter value "%s"', $value));
+            }
+        }
+
         $parameter = ':' . $column->getName() . '_filter';
 
         if ('select' === $column->getOptions()['filter']) {
@@ -180,7 +193,7 @@ class ServerSide
         } elseif ('text' === $column->getOptions()['filter']) {
             $qb->andWhere($field . ' like ' . $parameter);
             $qb->setParameter($parameter, '%' . $value . '%');
-        } else {
+        } elseif (false !== $column->getOptions()['filter']) {
             throw new \Exception(sprintf('invalid filter type "%s"', $column->getOptions()['filter']));
         }
     }

@@ -55,15 +55,15 @@ class DataBuilder
         $data = null;
 
         if ($column instanceof EntityColumn) {
-            $object = self::callGetterByColumName($object, $column->getField());
+            $object = self::callGetterByColumName($object, $column->getField(), $column);
             if (null !== $object) {
-                $data = self::callGetterByColumName($object, $column->getEntityField());
+                $data = self::callGetterByColumName($object, $column->getEntityField(), $column);
             }
         } else {
             if (true === $column->getOptions()['unbound']) {
                 $data = $object;
             } else {
-                $data = self::callGetterByColumName($object, $column->getField());
+                $data = self::callGetterByColumName($object, $column->getField(), $column);
             }
         }
 
@@ -71,7 +71,7 @@ class DataBuilder
             $callback = $column->getOptions()['format_data_callback'];
 
             if ($callback instanceof \Closure) {
-                return call_user_func($callback, $data, $column, $object);
+                return call_user_func($callback, $data, $object, $column);
                 //return $callback($data, $column);
             }
 
@@ -84,17 +84,32 @@ class DataBuilder
     /**
      * @param mixed $object
      * @param string $name
+     * @param Column $column
      * @return mixed
      * @throws \Exception
      */
-    static private function callGetterByColumName($object, $name)
+    static private function callGetterByColumName($object, $name, Column $column)
     {
         $methods = [];
         $methods[] = 'get' . ucfirst($name);
 
         foreach ($methods as $method) {
-            if (method_exists($object, $method)) {
-                return $object->$method();
+
+            if (is_array($object) || $object instanceof \ArrayAccess) {
+
+                //if (Column::)
+
+                $result = [];
+                foreach ($object as $entity) {
+                    if (method_exists($entity, $method)) {
+                        $result[] = $entity->$method();
+                    }
+                }
+                return join(', ', $result);
+            } else {
+                if (method_exists($object, $method)) {
+                    return $object->$method();
+                }
             }
         }
 

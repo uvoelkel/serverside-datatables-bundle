@@ -103,6 +103,11 @@ abstract class AbstractTableDefinition
         throw new \Exception(sprintf('unknown column "%s"', $name));
     }
 
+    /**
+     * @param callable $callback
+     *
+     * function(\Doctrine\ORM\QueryBuilder $qb) {}
+     */
     public function setConditionCallback(callable $callback)
     {
         $this->conditionCallback = $callback;

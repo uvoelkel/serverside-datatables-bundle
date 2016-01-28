@@ -34,6 +34,17 @@ var {{ table.name }}_table = $('#{{ table.name }}').DataTable({
             }
 
             var $input = $('#{{ table.name }}_' + settings.aoColumns[index].name + '_filter');
+            var $inputEmpty = $('#{{ table.name }}_' + settings.aoColumns[index].name + '_filter_empty');
+            if (0 < $inputEmpty.length) {
+                if ('|empty=true' == value.substring(value.length - 11)) {
+                    $inputEmpty.prop('checked', true);
+                    value = value.substring(0, value.length - 11);
+                } else if ('|empty=false' == value.substring(value.length - 12)) {
+                    $inputEmpty.prop('checked', false);
+                    value = value.substring(0, value.length - 12);
+                }
+            }
+
             if (1 === $input.length) {
                 $input.val(value);
             }
@@ -42,6 +53,22 @@ var {{ table.name }}_table = $('#{{ table.name }}').DataTable({
 });
 
 {% for column in table.columns %}
+
+    {% if column.options.filter_empty %}
+    var {{ table.name }}_{{ column.name }}_filter_empty = $('#{{ table.name }}_{{ column.name }}_filter_empty').is(':checked')
+
+    $('#{{ table.name }}_{{ column.name }}_filter_empty').on('change', function() {
+        {{ table.name }}_{{ column.name }}_filter_empty = $(this).is(':checked');
+
+        {% if column.options.filter == false %}
+
+        {% else %}
+        $('#{{ table.name }}_{{ column.name }}_filter').trigger('change');
+        {% endif %}
+    });
+    {% endif %}
+
+
     {% if column.options.filter == 'text' %}
     var throttle = null;
     $('#{{ table.name }}_{{ column.name }}_filter').on('keyup change', function() {
@@ -51,6 +78,9 @@ var {{ table.name }}_table = $('#{{ table.name }}').DataTable({
         }
 
         var value = $(this).val();
+        {% if column.options.filter_empty %}
+        value += '|empty=' + {{ table.name }}_{{ column.name }}_filter_empty.toString();
+        {% endif %}
         if ({{ table.name }}_table.column({{ loop.index0 }}).search() !== value) {
             throttle = window.setTimeout(function() {
                 {{ table.name }}_table.column({{ loop.index0 }})
@@ -61,9 +91,15 @@ var {{ table.name }}_table = $('#{{ table.name }}').DataTable({
     });
     {% elseif column.options.filter == 'select' %}
     $('#{{ table.name }}_{{ column.name }}_filter').on('change', function() {
+        var value = $(this).val();
+        {% if column.options.filter_empty %}
+        value += '||empty=' + {{ table.name }}_{{ column.name }}_filter_empty.toString();
+        {% endif %}
         {{ table.name }}_table.column({{ loop.index0 }})
-            .search($(this).val())
+            .search(value)
             .draw();
     });
     {% endif %}
+
+
 {% endfor %}
