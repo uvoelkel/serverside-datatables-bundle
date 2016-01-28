@@ -7,7 +7,6 @@ use Doctrine\ORM\QueryBuilder;
 use Voelkel\DataTablesBundle\Table\AbstractTableDefinition;
 use Voelkel\DataTablesBundle\DataTables\Request as DataTablesRequest;
 use Voelkel\DataTablesBundle\Table\Column;
-use Voelkel\DataTablesBundle\Table\CountColumn;
 use Voelkel\DataTablesBundle\Table\EntitiesColumn;
 use Voelkel\DataTablesBundle\Table\EntityColumn;
 use Voelkel\DataTablesBundle\Table\EntityCountColumn;
@@ -47,14 +46,23 @@ class ServerSide
         $prefixes = array_merge([$this->table->getPrefix()], $this->table->getJoinPrefixes());
         call_user_func_array([$qb, 'select'], $prefixes);
 
+        $joins = [];
         foreach ($this->table->getColumns() as $column) {
             if ($column instanceof EntitiesColumn) {
-                $qb->leftJoin($this->table->getPrefix() . '.' . $column->getField(), $column->getEntityPrefix());
+                $join = $this->table->getPrefix() . '.' . $column->getField() . '.' . $column->getEntityPrefix();
+                if (!in_array($join, $joins)) {
+                    $qb->leftJoin($this->table->getPrefix() . '.' . $column->getField(), $column->getEntityPrefix());
+                    $joins[] = $join;
+                }
             }
 
             // add count
             if ($this->table->getHasCountColumns() && $column instanceof EntityCountColumn) {
-                $qb->leftJoin($this->table->getPrefix() . '.' . $column->getField(), $column->getEntityPrefix());
+                $join = $this->table->getPrefix() . '.' . $column->getField() . '.' . $column->getEntityPrefix();
+                if (!in_array($join, $joins)) {
+                    $qb->leftJoin($this->table->getPrefix() . '.' . $column->getField(), $column->getEntityPrefix());
+                    $joins[] = $join;
+                }
                 $qb->addSelect('count(' . $column->getEntityPrefix() . ') as ' . $column->getField() . '_count'); // '.' .  $column->getField() .
             }
         }
@@ -132,7 +140,7 @@ class ServerSide
 
         $filter = [];
         foreach ($this->table->getColumns() as $column) {
-            if ($column instanceof EntityCountColumn) {
+            if ($column instanceof EntityCountColumn || true === $column->getOptions()['unbound']) {
                 continue;
             }
 
