@@ -22,11 +22,22 @@ class ServerSide
     /** @var \Voelkel\DataTablesBundle\DataTables\Request */
     private $request;
 
+    private $joins = [];
+
+    /**
+     * @param EntityManagerInterface $em
+     */
     public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
     }
 
+    /**
+     * @param AbstractTableDefinition $table
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
+     */
     public function processRequest(AbstractTableDefinition $table, \Symfony\Component\HttpFoundation\Request $request)
     {
         $this->table = $table;
@@ -46,23 +57,14 @@ class ServerSide
         $prefixes = array_merge([$this->table->getPrefix()], $this->table->getJoinPrefixes());
         call_user_func_array([$qb, 'select'], $prefixes);
 
-        $joins = [];
         foreach ($this->table->getColumns() as $column) {
             if ($column instanceof EntitiesColumn) {
-                $join = $this->table->getPrefix() . '.' . $column->getField() . '.' . $column->getEntityPrefix();
-                if (!in_array($join, $joins)) {
-                    $qb->leftJoin($this->table->getPrefix() . '.' . $column->getField(), $column->getEntityPrefix());
-                    $joins[] = $join;
-                }
+                $this->joinColumn($qb, $column);
             }
 
             // add count
             if ($this->table->getHasCountColumns() && $column instanceof EntitiesCountColumn) {
-                $join = $this->table->getPrefix() . '.' . $column->getField() . '.' . $column->getEntityPrefix();
-                if (!in_array($join, $joins)) {
-                    $qb->leftJoin($this->table->getPrefix() . '.' . $column->getField(), $column->getEntityPrefix());
-                    $joins[] = $join;
-                }
+                $this->joinColumn($qb, $column);
                 $qb->addSelect('count(' . $column->getEntityPrefix() . ') as ' . $column->getField() . '_count'); // '.' .  $column->getField() .
             }
         }
@@ -101,8 +103,9 @@ class ServerSide
         $qb = $repository->createQueryBuilder($this->table->getPrefix());
 
         foreach ($this->table->getColumns() as $column) {
-            if (get_class($column) === 'Voelkel\DataTablesBundle\Table\EntityColumn') {
-                $qb->leftJoin($this->table->getPrefix() . '.' . $column->getField(), $column->getEntityPrefix());
+            /** @var EntityColumn $column */
+            if (get_class($column) === 'Voelkel\DataTablesBundle\Table\Column\EntityColumn') {
+                $this->joinColumn($qb, $column);
             }
         }
 
@@ -114,6 +117,11 @@ class ServerSide
         return $qb;
     }
 
+    /**
+     * @param QueryBuilder $qb
+     * @return integer
+     * @throws \Exception
+     */
     private function countTotals(QueryBuilder $qb)
     {
         $countColumn = null;
@@ -132,6 +140,11 @@ class ServerSide
         return $qb->getQuery()->getSingleScalarResult();
     }
 
+    /**
+     * @param QueryBuilder $qb
+     * @return integer|null
+     * @throws \Exception
+     */
     private function applyFilterAndCount(QueryBuilder $qb)
     {
         if (null === $this->request->getSearchValue() && !$this->table->getHasColumnFilter()) {
@@ -212,6 +225,9 @@ class ServerSide
         }
     }
 
+    /**
+     * @param QueryBuilder $qb
+     */
     private function applyOrder(QueryBuilder $qb)
     {
         $columns = $this->request->getColumns();
@@ -227,6 +243,10 @@ class ServerSide
         }
     }
 
+    /**
+     * @param Column $column
+     * @return string
+     */
     private function getPrefixedField(Column $column)
     {
         if ($column instanceof EntitiesCountColumn) {
@@ -238,6 +258,24 @@ class ServerSide
         return $this->table->getPrefix() . '.' . $column->getField();
     }
 
+    /**
+     * @param QueryBuilder $qb
+     * @param EntityColumn $column
+     */
+    private function joinColumn(QueryBuilder $qb, EntityColumn $column)
+    {
+        $join = $this->table->getPrefix() . '.' . $column->getField() . '.' . $column->getEntityPrefix();
+        if (!in_array($join, $this->joins)) {
+            $qb->leftJoin($this->table->getPrefix() . '.' . $column->getField(), $column->getEntityPrefix());
+            $this->joins[] = $join;
+        }
+    }
+
+    /**
+     * @param null|string $value
+     * @return bool|null
+     * @throws \Exception
+     */
     private function extractEmptyFilterFromValue(&$value)
     {
         if (null === $value) {
