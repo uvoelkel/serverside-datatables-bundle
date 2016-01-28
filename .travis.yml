@@ -32,4 +32,4 @@ install:
   - composer update --prefer-source $COMPOSER_FLAGS
 
 script:
-  - phpunit -v
+  - phpunit -v --coverage-text
