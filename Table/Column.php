@@ -23,11 +23,12 @@ class Column
         'format_data_callback' => null, // function ($data, $object, Column $column) {}
         'unbound' => false,
         'order' => null, // null|'asc'|'desc'
+        'label' => null, // null|string|false
     ];
 
     /**
-     * @param $name
-     * @param $field
+     * @param string $name
+     * @param string $field
      * @param array $options
      */
     public function __construct($name, $field, array $options = [])
@@ -68,13 +69,18 @@ class Column
 
     /**
      * @return string
+     * @throws \Exception
      */
     public function getLabel()
     {
-        if (isset($this->options['label'])) {
+        if (false === $this->options['label']) {
+            return '';
+        } elseif (is_string($this->options['label'])) {
             return $this->options['label'];
+        } elseif (null === $this->options['label']) {
+            return $this->name;
+        } else {
+            throw new \Exception('invalid label option: ' . $this->options['label']);
         }
-
-        return $this->name;
     }
 }

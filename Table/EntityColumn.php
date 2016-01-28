@@ -10,6 +10,13 @@ class EntityColumn extends Column
     /** @var string */
     private $entityPrefix;
 
+    /**
+     * @param string $name
+     * @param string $field
+     * @param string $entityField
+     * @param string $entityPrefix
+     * @param array $options
+     */
     public function __construct($name, $field, $entityField, $entityPrefix, array $options = [])
     {
         $this->entityField = $entityField;

@@ -11,7 +11,11 @@ class EntitiesColumn extends EntityColumn
     public function __construct($name, $field, $entityField, $entityPrefix, array $options = [])
     {
         if (isset($options['filter_empty']) && true === $options['filter_empty']) {
-            throw new \Exception('filtering for empty values is not allowed on EntitiesColumn');
+            throw new \Exception('filtering for empty values is not allowed for EntitiesColumn');
+        }
+
+        if (isset($options['sortable']) && true === $options['sortable']) {
+            throw new \Exception('sortable = true is not allowed for EntitiesColumn');
         }
 
         // default
