@@ -61,7 +61,10 @@ var {{ table.name }}_table = $('#{{ table.name }}').DataTable({
         {{ table.name }}_{{ column.name }}_filter_empty = $(this).is(':checked');
 
         {% if column.options.filter == false %}
-
+        var value = '|empty=' + {{ table.name }}_{{ column.name }}_filter_empty.toString();
+        {{ table.name }}_table.column({{ loop.index0 }})
+                .search(value)
+                .draw();
         {% else %}
         $('#{{ table.name }}_{{ column.name }}_filter').trigger('change');
         {% endif %}
@@ -93,7 +96,7 @@ var {{ table.name }}_table = $('#{{ table.name }}').DataTable({
     $('#{{ table.name }}_{{ column.name }}_filter').on('change', function() {
         var value = $(this).val();
         {% if column.options.filter_empty %}
-        value += '||empty=' + {{ table.name }}_{{ column.name }}_filter_empty.toString();
+        value += '|empty=' + {{ table.name }}_{{ column.name }}_filter_empty.toString();
         {% endif %}
         {{ table.name }}_table.column({{ loop.index0 }})
             .search(value)

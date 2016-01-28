@@ -4,6 +4,7 @@ namespace Voelkel\DataTablesBundle\DataTables;
 
 use Voelkel\DataTablesBundle\Table\AbstractTableDefinition;
 use Voelkel\DataTablesBundle\Table\Column;
+use Voelkel\DataTablesBundle\Table\EntitiesColumn;
 use Voelkel\DataTablesBundle\Table\EntityColumn;
 use Voelkel\DataTablesBundle\Table\EntityCountColumn;
 
@@ -96,8 +97,13 @@ class DataBuilder
         foreach ($methods as $method) {
 
             if (is_array($object) || $object instanceof \ArrayAccess) {
+                if (!($column) instanceof EntitiesColumn) {
+                    throw new \Exception(sprintf('unexpected array data for column "%s"', $column->getName()));
+                }
 
-                //if (Column::)
+                if (sizeof($object) > $column->getOptions()['display_join_max_entries']) {
+                    return '... ' . sizeof($object);
+                }
 
                 $result = [];
                 foreach ($object as $entity) {
@@ -105,7 +111,8 @@ class DataBuilder
                         $result[] = $entity->$method();
                     }
                 }
-                return join(', ', $result);
+                return join($column->getOptions()['display_join_glue'], $result);
+
             } else {
                 if (method_exists($object, $method)) {
                     return $object->$method();

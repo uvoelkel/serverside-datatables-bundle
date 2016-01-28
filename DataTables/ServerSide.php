@@ -140,8 +140,14 @@ class ServerSide
 
             if (false !== $column->getOptions()['filter'] || true === $column->getOptions()['filter_empty']) {
                 $value = $this->request->getSearchValue($column->getName());
-                if (null !== $value) {
-                    $this->applyColumnFilter($column, $value, $qb, $field);
+
+                $empty = null;
+                if (true === $column->getOptions()['filter_empty']) {
+                    $empty = $this->extractEmptyFilterFromValue($value);
+                }
+
+                if (null !== $value || null !== $empty) {
+                    $this->applyColumnFilter($column, $value, $qb, $field, $empty);
                     continue;
                 }
             }
@@ -160,41 +166,41 @@ class ServerSide
 
     /**
      * @param Column $column
-     * @param string $value
+     * @param null|string $value
      * @param QueryBuilder $qb
      * @param string $field
+     * @param null|bool $empty
      * @throws \Exception
      */
-    private function applyColumnFilter(Column $column, $value, QueryBuilder $qb, $field)
+    private function applyColumnFilter(Column $column, $value, QueryBuilder $qb, $field, $empty)
     {
-        $empty = null;
-        if (true === $column->getOptions()['filter_empty']) {
-            if ('|empty=true' === substr($value, -11)) {
-                $value = substr($value, 0, -11);
-                $empty = true;
-            } elseif ('|empty=false' === substr($value, -12)) {
-                $value = substr($value, 0, -12);
-                $empty = false;
-            } else {
-                throw new \Exception(sprintf('invalid filter value "%s"', $value));
-            }
+        if (null === $value && false === $column->getOptions()['filter_empty']) {
+            throw new \Exception('this is just wrong');
         }
 
         $parameter = ':' . $column->getName() . '_filter';
 
         if ('select' === $column->getOptions()['filter']) {
-            if (true === $column->getOptions()['multiple']) {
-                $qb->andWhere($field . ' in (' . $parameter . ')');
-                $qb->setParameter($parameter, explode(',', $value));
-            } else {
-                $qb->andWhere($field . ' = ' . $parameter);
-                $qb->setParameter($parameter, $value);
+            if (null !== $value) {
+                if (true === $column->getOptions()['multiple']) {
+                    $qb->andWhere($field . ' in (' . $parameter . ')');
+                    $qb->setParameter($parameter, explode(',', $value));
+                } else {
+                    $qb->andWhere($field . ' = ' . $parameter);
+                    $qb->setParameter($parameter, $value);
+                }
             }
         } elseif ('text' === $column->getOptions()['filter']) {
-            $qb->andWhere($field . ' like ' . $parameter);
-            $qb->setParameter($parameter, '%' . $value . '%');
+            if (null !== $value) {
+                $qb->andWhere($field . ' like ' . $parameter);
+                $qb->setParameter($parameter, '%' . $value . '%');
+            }
         } elseif (false !== $column->getOptions()['filter']) {
             throw new \Exception(sprintf('invalid filter type "%s"', $column->getOptions()['filter']));
+        }
+
+        if (null !== $empty && is_bool($empty) && true === $empty && true === $column->getOptions()['filter_empty']) {
+            $qb->andWhere($field . ' is ' . ($empty ? '': 'not ') . 'null');
         }
     }
 
@@ -222,5 +228,28 @@ class ServerSide
         }
 
         return $this->table->getPrefix() . '.' . $column->getField();
+    }
+
+    private function extractEmptyFilterFromValue(&$value)
+    {
+        if (null === $value) {
+            return null;
+        }
+
+        if ('|empty=true' === substr($value, -11)) {
+            $value = substr($value, 0, -11);
+            $empty = true;
+        } elseif ('|empty=false' === substr($value, -12)) {
+            $value = substr($value, 0, -12);
+            $empty = false;
+        } else {
+            throw new \Exception(sprintf('invalid filter value "%s"', $value));
+        }
+
+        if (empty($value)) {
+            $value = null;
+        }
+
+        return $empty;
     }
 }
