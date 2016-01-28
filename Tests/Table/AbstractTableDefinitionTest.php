@@ -3,9 +3,9 @@
 namespace Voelkel\DataTablesBundle\Tests\Table;
 
 use Voelkel\DataTablesBundle\Table\AbstractTableDefinition;
-use Voelkel\DataTablesBundle\Table\Column;
-use Voelkel\DataTablesBundle\Table\EntityColumn;
 use Voelkel\DataTablesBundle\Table\TableDefinition;
+use Voelkel\DataTablesBundle\Table\Column\Column;
+use Voelkel\DataTablesBundle\Table\Column\EntityColumn;
 
 class TestDefinition extends AbstractTableDefinition
 {

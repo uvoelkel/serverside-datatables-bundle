@@ -1,6 +1,6 @@
 <?php
 
-namespace Voelkel\DataTablesBundle\Table;
+namespace Voelkel\DataTablesBundle\Table\Column;
 
 class EntityColumn extends Column
 {

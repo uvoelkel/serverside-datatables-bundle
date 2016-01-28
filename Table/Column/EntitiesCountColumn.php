@@ -1,9 +1,12 @@
 <?php
 
-namespace Voelkel\DataTablesBundle\Table;
+namespace Voelkel\DataTablesBundle\Table\Column;
 
-// todo rename to EntitiesCountColumn !?
-class EntityCountColumn extends EntityColumn
+/**
+ * If the table entity is the inverse side (OneToMany) of an association
+ * the EntitiesCountColumn can be used to count the associated entities
+ */
+class EntitiesCountColumn extends EntityColumn
 {
     /**
      * @param string $name

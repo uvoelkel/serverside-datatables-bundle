@@ -51,7 +51,7 @@ Create a Table definition
     namespace AppBundle\DataTable;
 
     use Voelkel\DataTablesBundle\Table\AbstractTableDefinition;
-    use Voelkel\DataTablesBundle\Table\Column;
+    use Voelkel\DataTablesBundle\Table\Column\Column;
 
     class CustomerTable extends AbstractTableDefinition
     {
@@ -150,6 +150,7 @@ And in your index template
         'format_data_callback' => null, // function ($data, $column) {}
         'unbound' => false,
         'order' => null, // null|'asc'|'desc'
+        'label' => null, // null|string|false
     ];
 
 - 'filter' != false implies 'searchable' = true

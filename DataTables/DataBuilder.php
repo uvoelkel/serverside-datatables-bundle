@@ -3,10 +3,10 @@
 namespace Voelkel\DataTablesBundle\DataTables;
 
 use Voelkel\DataTablesBundle\Table\AbstractTableDefinition;
-use Voelkel\DataTablesBundle\Table\Column;
-use Voelkel\DataTablesBundle\Table\EntitiesColumn;
-use Voelkel\DataTablesBundle\Table\EntityColumn;
-use Voelkel\DataTablesBundle\Table\EntityCountColumn;
+use Voelkel\DataTablesBundle\Table\Column\Column;
+use Voelkel\DataTablesBundle\Table\Column\EntityColumn;
+use Voelkel\DataTablesBundle\Table\Column\EntitiesColumn;
+use Voelkel\DataTablesBundle\Table\Column\EntitiesCountColumn;
 
 class DataBuilder
 {
@@ -34,7 +34,7 @@ class DataBuilder
             }
 
             foreach ($table->getColumns() as $column) {
-                if (!($column instanceof EntityCountColumn)) {
+                if (!($column instanceof EntitiesCountColumn)) {
                     $tmp[$column->getName()] = self::getColumnProperty($entity, $column);
                 } else {
                     $tmp[$column->getName()] = $result[$column->getField() . '_count'];

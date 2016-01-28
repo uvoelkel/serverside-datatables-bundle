@@ -1,6 +1,6 @@
 <?php
 
-namespace Voelkel\DataTablesBundle\Table;
+namespace Voelkel\DataTablesBundle\Table\Column;
 
 class Column
 {
@@ -14,7 +14,7 @@ class Column
     private $options = [
         'sortable' => true,
         'searchable' => true,
-        'filter' => false, // false|'text'|'select' todo: |'date'|'datetime'|'date_range'|'datetime_range'
+        'filter' => false, // false|'text'|'select' todo: |'bool'|'date'|'datetime'|'date_range'|'datetime_range'|\Voelkel\DataTablesBundle\Table\Filter\FilterInterface
         'filter_choices' => [], // 'filter' => 'select' only
         'filter_query' => '%f%',
         'filter_empty' => false, // add a checkbox to filter empty resp null values
@@ -73,12 +73,12 @@ class Column
      */
     public function getLabel()
     {
-        if (false === $this->options['label']) {
-            return '';
+        if (null === $this->options['label']) {
+            return $this->name;
         } elseif (is_string($this->options['label'])) {
             return $this->options['label'];
-        } elseif (null === $this->options['label']) {
-            return $this->name;
+        } elseif (false === $this->options['label']) {
+            return '';
         } else {
             throw new \Exception('invalid label option: ' . $this->options['label']);
         }

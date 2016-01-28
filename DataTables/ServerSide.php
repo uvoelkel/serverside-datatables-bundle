@@ -6,10 +6,10 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Voelkel\DataTablesBundle\Table\AbstractTableDefinition;
 use Voelkel\DataTablesBundle\DataTables\Request as DataTablesRequest;
-use Voelkel\DataTablesBundle\Table\Column;
-use Voelkel\DataTablesBundle\Table\EntitiesColumn;
-use Voelkel\DataTablesBundle\Table\EntityColumn;
-use Voelkel\DataTablesBundle\Table\EntityCountColumn;
+use Voelkel\DataTablesBundle\Table\Column\Column;
+use Voelkel\DataTablesBundle\Table\Column\EntitiesColumn;
+use Voelkel\DataTablesBundle\Table\Column\EntityColumn;
+use Voelkel\DataTablesBundle\Table\Column\EntitiesCountColumn;
 
 class ServerSide
 {
@@ -57,7 +57,7 @@ class ServerSide
             }
 
             // add count
-            if ($this->table->getHasCountColumns() && $column instanceof EntityCountColumn) {
+            if ($this->table->getHasCountColumns() && $column instanceof EntitiesCountColumn) {
                 $join = $this->table->getPrefix() . '.' . $column->getField() . '.' . $column->getEntityPrefix();
                 if (!in_array($join, $joins)) {
                     $qb->leftJoin($this->table->getPrefix() . '.' . $column->getField(), $column->getEntityPrefix());
@@ -118,7 +118,7 @@ class ServerSide
     {
         $countColumn = null;
         foreach ($this->table->getColumns() as $column) {
-            if (get_class($column) === 'Voelkel\DataTablesBundle\Table\Column') {
+            if (get_class($column) === 'Voelkel\DataTablesBundle\Table\Column\Column') {
                 $countColumn = $this->table->getPrefix() . '.' . $column->getField();
                 break;
             }
@@ -140,7 +140,7 @@ class ServerSide
 
         $filter = [];
         foreach ($this->table->getColumns() as $column) {
-            if ($column instanceof EntityCountColumn || true === $column->getOptions()['unbound']) {
+            if ($column instanceof EntitiesCountColumn || true === $column->getOptions()['unbound']) {
                 continue;
             }
 
@@ -229,7 +229,7 @@ class ServerSide
 
     private function getPrefixedField(Column $column)
     {
-        if ($column instanceof EntityCountColumn) {
+        if ($column instanceof EntitiesCountColumn) {
             return $column->getField() . '_count';
         } elseif ($column instanceof EntityColumn) {
             return $column->getEntityPrefix() . '.' . $column->getEntityField();

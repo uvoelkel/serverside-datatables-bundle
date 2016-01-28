@@ -3,12 +3,12 @@
 namespace Voelkel\DataTablesBundle\Tests\DataTables;
 
 use Voelkel\DataTablesBundle\Table\AbstractTableDefinition;
-use Voelkel\DataTablesBundle\Table\CallbackColumn;
-use Voelkel\DataTablesBundle\Table\Column;
-use Voelkel\DataTablesBundle\Table\EntitiesColumn;
-use Voelkel\DataTablesBundle\Table\EntityCountColumn;
-use Voelkel\DataTablesBundle\Table\EntityColumn;
-use Voelkel\DataTablesBundle\Table\UnboundColumn;
+use Voelkel\DataTablesBundle\Table\Column\CallbackColumn;
+use Voelkel\DataTablesBundle\Table\Column\Column;
+use Voelkel\DataTablesBundle\Table\Column\EntityColumn;
+use Voelkel\DataTablesBundle\Table\Column\EntitiesColumn;
+use Voelkel\DataTablesBundle\Table\Column\EntitiesCountColumn;
+use Voelkel\DataTablesBundle\Table\Column\UnboundColumn;
 
 class TestTable extends AbstractTableDefinition
 {

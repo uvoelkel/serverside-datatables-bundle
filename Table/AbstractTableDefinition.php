@@ -2,6 +2,10 @@
 
 namespace Voelkel\DataTablesBundle\Table;
 
+use Voelkel\DataTablesBundle\Table\Column\Column;
+use Voelkel\DataTablesBundle\Table\Column\EntityColumn;
+use Voelkel\DataTablesBundle\Table\Column\EntitiesCountColumn;
+
 abstract class AbstractTableDefinition
 {
     /** @var Column[] */
@@ -73,7 +77,7 @@ abstract class AbstractTableDefinition
 
         $this->columns[$column->getName()] = $column;
 
-        if ($column instanceof EntityCountColumn) {
+        if ($column instanceof EntitiesCountColumn) {
             $this->hasCountColumns = true;
         }
 
