@@ -50,7 +50,7 @@ class DataTablesExtension extends \Twig_Extension
     {
         if (null === $path) {
             $path = $this->router->generate('voelkel_datatables_list', [
-                'table' => get_class($table),
+                'table' => null !== $table->getServiceId() ? $table->getServiceId() : get_class($table),
             ]);
         }
 

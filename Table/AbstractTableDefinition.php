@@ -20,22 +20,28 @@ abstract class AbstractTableDefinition
     /** @var string */
     protected $prefix;
 
+    /** @var null|string */
+    protected $serviceId;
+
     /** @var null|callable */
     protected $conditionCallback;
 
     /** @var null|callable */
     protected $resultCallback;
 
+    /** @var bool */
     protected $hasCountColumns = false;
 
+    /** @var bool */
     protected $hasColumnFilter = false;
 
     /**
      * @param string $entity
      * @param string $name
      * @param string|null $prefix
+     * @param string|null $serviceId
      */
-    protected function __construct($entity, $name, $prefix = null)
+    protected function __construct($entity, $name, $prefix = null, $serviceId = null)
     {
         $this->entity = $entity;
         $this->name = $name;
@@ -45,26 +51,50 @@ abstract class AbstractTableDefinition
             $this->prefix = substr($this->name, 0, 1);
         }
 
+        $this->serviceId = $serviceId;
+
         $this->build();
     }
 
     protected function build() { }
 
+    /**
+     * @return string
+     */
     public function getEntity()
     {
         return $this->entity;
     }
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return $this->name;
     }
 
+    /**
+     * @return string
+     */
     public function getPrefix()
     {
         return $this->prefix;
     }
 
+    /**
+     * @return null|string
+     */
+    public function getServiceId()
+    {
+        return $this->serviceId;
+    }
+
+    /**
+     * @param Column $column
+     * @return $this
+     * @throws \Exception
+     */
     public function addColumn(Column $column)
     {
         if ($column instanceof EntityColumn && $column->getEntityPrefix() === $this->prefix) {
@@ -88,6 +118,9 @@ abstract class AbstractTableDefinition
         return $this;
     }
 
+    /**
+     * @return Column[]
+     */
     public function getColumns()
     {
         return $this->columns;
@@ -117,31 +150,49 @@ abstract class AbstractTableDefinition
         $this->conditionCallback = $callback;
     }
 
+    /**
+     * @return callable|null
+     */
     public function getConditionCallback()
     {
         return $this->conditionCallback;
     }
 
+    /**
+     * @param callable $callback
+     */
     public function setResultCallback(callable $callback)
     {
         $this->resultCallback = $callback;
     }
 
+    /**
+     * @return callable|null
+     */
     public function getResultCallback()
     {
         return $this->resultCallback;
     }
 
+    /**
+     * @return bool
+     */
     public function getHasCountColumns()
     {
         return $this->hasCountColumns;
     }
 
+    /**
+     * @return bool
+     */
     public function getHasColumnFilter()
     {
         return $this->hasColumnFilter;
     }
 
+    /**
+     * @return string[]
+     */
     public function getJoinPrefixes()
     {
         $result = [];

@@ -18,24 +18,33 @@ class TestServerSide
 
 class TestContainer implements ContainerInterface
 {
-    private $em;
+    private $services = [];
 
     public function __construct(\Doctrine\ORM\EntityManagerInterface $em = null)
     {
-        $this->em = $em;
+        if (null === $em) {
+            $this->services['voelkel.datatables'] = new TestServerSide();
+        } else {
+            $this->services['voelkel.datatables'] = new \Voelkel\DataTablesBundle\DataTables\ServerSide($em);
+        }
+
     }
 
     public function get($id, $invalidBehavior = self::EXCEPTION_ON_INVALID_REFERENCE)
     {
-        if (null === $this->em) {
-            return new TestServerSide();
-        }
-
-        return new \Voelkel\DataTablesBundle\DataTables\ServerSide($this->em);
+        return $this->services[$id];
     }
 
-    public function set($id, $service, $scope = self::SCOPE_CONTAINER) {}
-    public function has($id) {}
+    public function set($id, $service, $scope = self::SCOPE_CONTAINER)
+    {
+        $this->services[$id] = $service;
+    }
+
+    public function has($id)
+    {
+        return isset($this->services[$id]);
+    }
+
     public function getParameter($name) {}
     public function hasParameter($name) {}
     public function setParameter($name, $value) {}
@@ -48,7 +57,7 @@ class TestContainer implements ContainerInterface
 
 class ServerSideControllerTest extends \PHPUnit_Framework_TestCase //KernelTestCase
 {
-    public function testListAction()
+    public function testListActionByClassName()
     {
         $controller = new ServerSideController();
         $controller->setContainer(new TestContainer());
@@ -58,6 +67,21 @@ class ServerSideControllerTest extends \PHPUnit_Framework_TestCase //KernelTestC
 
         // ?draw=2&columns%5B0%5D%5Bdata%5D=manufacturer&columns%5B0%5D%5Bname%5D=manufacturer&columns%5B0%5D%5Bsearchable%5D=true&columns%5B0%5D%5Borderable%5D=true&columns%5B0%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B0%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B1%5D%5Bdata%5D=name&columns%5B1%5D%5Bname%5D=name&columns%5B1%5D%5Bsearchable%5D=true&columns%5B1%5D%5Borderable%5D=true&columns%5B1%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B1%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B2%5D%5Bdata%5D=manufacturer_categories&columns%5B2%5D%5Bname%5D=manufacturer_categories&columns%5B2%5D%5Bsearchable%5D=true&columns%5B2%5D%5Borderable%5D=true&columns%5B2%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B2%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B3%5D%5Bdata%5D=categories&columns%5B3%5D%5Bname%5D=categories&columns%5B3%5D%5Bsearchable%5D=true&columns%5B3%5D%5Borderable%5D=true&columns%5B3%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B3%5D%5Bsearch%5D%5Bregex%5D=false&order%5B0%5D%5Bcolumn%5D=1&order%5B0%5D%5Bdir%5D=asc&start=0&length=25&search%5Bvalue%5D=&search%5Bregex%5D=false&_=1446965381607
 
+
+        $result = $controller->listAction($table, $request);
+        $this->assertTrue($result);
+    }
+
+    public function testListActionByServiceId()
+    {
+        $container = new TestContainer();
+        $container->set('datatables.table.test', new \Voelkel\DataTablesBundle\Tests\DataTables\TestTable());
+
+        $controller = new ServerSideController();
+        $controller->setContainer($container);
+
+        $table = 'datatables.table.test';
+        $request = Request::create('/datatables/list/' . urlencode($table));
 
         $result = $controller->listAction($table, $request);
         $this->assertTrue($result);
@@ -78,7 +102,7 @@ class ServerSideControllerTest extends \PHPUnit_Framework_TestCase //KernelTestC
         $table = 'Non\Existing\TableDefinition';
         $request = Request::create('/datatables/list/' . urlencode($table));
 
-        $this->setExpectedException('\Exception', 'table definition class "' . $table . '" not found.');
+        $this->setExpectedException('\Exception', 'table definition class or service "' . $table . '" not found.');
         $controller->listAction($table, $request);
         //self::ensureKernelShutdown();
     }

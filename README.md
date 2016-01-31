@@ -109,6 +109,38 @@ And in your index template
     {% endblock %}
 
 
+### Table definition as a service
+
+Define the service
+
+    # AppBundle/Resources/config/services.xml
+
+    <service id="app.table.customer" class="AppBundle\DataTable\CustomerTable">
+        <argument type="service" id="..." />
+    </service>
+
+Set the service id in the table constructor
+
+    # AppBundle/DataTable/CustomerTable.php
+
+    public function __construct()
+    {
+        parent::__construct('AppBundle\Entity\Customer', 'customer', null, 'app.table.customer');
+    }
+
+In your controller
+
+    # AppBundle/Controller/CustomerController.php
+
+    public function indexAction()
+    {
+        return $this->render('AppBundle:Customer:index.html.twig', [
+            'table' => $this->get('app.table.customer'),
+        ]);
+    }
+
+
+
 ### Column filter
 
     # AppBundle/DataTable/CustomerTable.php
@@ -145,9 +177,10 @@ And in your index template
         'searchable' => true,
         'filter' => false, // false|'text'|'select'
         'filter_choices' => [],
+        'filter_empty' => false, // add a checkbox to filter empty resp. null values
         'multiple' => false,
         'expanded' => false,
-        'format_data_callback' => null, // function ($data, $column) {}
+        'format_data_callback' => null, // function ($data, $object, Column $column) {}
         'unbound' => false,
         'order' => null, // null|'asc'|'desc'
         'label' => null, // null|string|false

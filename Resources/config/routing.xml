@@ -7,6 +7,6 @@
 
     <route id="voelkel_datatables_list" path="/datatables/list/{table}" methods="GET">
         <default key="_controller">VoelkelDataTablesBundle:ServerSide:list</default>
-        <requirement key="table">[A-z0-9_\-]*</requirement>
+        <requirement key="table">[A-z0-9_\-.]*</requirement>
     </route>
 </routes>
