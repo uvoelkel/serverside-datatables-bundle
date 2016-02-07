@@ -28,7 +28,7 @@ class TestTable extends AbstractTableDefinition
                 }
                 return $data;
             }))
-            ->addColumn(new EntitiesColumn('groups', 'groups', 'id', 'g'))
+            ->addColumn(new EntitiesColumn('groups', 'groups', 'id'))
             ->addColumn(new UnboundColumn('name_unbound', function(\Voelkel\DataTablesBundle\Tests\DataTables\Entity\TestUser $data) {
                 return '*' . $data->getName() . '*';
             }))

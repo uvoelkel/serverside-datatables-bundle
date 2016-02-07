@@ -40,16 +40,7 @@ class AbstractTableDefinitionTest extends \PHPUnit_Framework_TestCase
         $column = new Column('test_field', 'testField');
         $table->addColumn($column);
 
-        $this->setExpectedException('\Exception', 'a column with the same name already exists.');
-        $table->addColumn($column);
-    }
-
-    public function testAddEntityColumn()
-    {
-        $table = new TestDefinition('AppBundle\Entity\Test', 'test');
-
-        $this->setExpectedException('\Exception', 'the entity prefix is already used.');
-        $column = new EntityColumn('test_field', 'testField', 'testAssiciation', 't');
+        $this->setExpectedException('\Exception', 'a column with the name "test_field" already exists.');
         $table->addColumn($column);
     }
 

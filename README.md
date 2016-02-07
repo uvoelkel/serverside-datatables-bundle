@@ -2,6 +2,11 @@ DataTablesBundle
 ================
 [![Build Status](https://travis-ci.org/uvoelkel/datatables-bundle.svg?branch=master)](https://travis-ci.org/uvoelkel/datatables-bundle)
 
+## What it does
+
+The DataTablesBundle let's you easily create (sortable and filterable) [serverSide](http://datatables.net/reference/option/serverSide) 
+[DataTables](http://datatables.net/) from Doctrine entities.
+
 ## License
 
 This bundle is under the MIT license. See the complete license in the bundle:
@@ -52,6 +57,10 @@ Create a Table definition
 
     use Voelkel\DataTablesBundle\Table\AbstractTableDefinition;
     use Voelkel\DataTablesBundle\Table\Column\Column;
+    use Voelkel\DataTablesBundle\Table\Column\UnboundColumn;
+    use Voelkel\DataTablesBundle\Table\Column\CallbackColumn;
+    use Voelkel\DataTablesBundle\Table\Column\EntityColumn;
+    use Voelkel\DataTablesBundle\Table\Column\EntitiesColumn;    
 
     class CustomerTable extends AbstractTableDefinition
     {
@@ -67,6 +76,35 @@ Create a Table definition
                 ->addColumn(new Column('gender', 'gender'))
                 ->addColumn(new Column('firstname', 'firstname'))
                 ->addColumn(new Column('lastname', 'lastname'))
+                ->addColumn(new UnboundColumn('opening', function(Customer $customer) {
+                    return 'Dear ' . ('f' === $customer->getGender() ? 'Madam' : 'Sir');
+                }))
+                ->addColumn(new CallbackColumn('status', 'status', function($status) {
+                    switch ($status) {
+                        case 1:
+                            return 'something';
+                            break;
+                        case 2:
+                            return 'something else';
+                            break;
+                        default:
+                            return 'invalid';
+                            break;
+                    }
+                }))
+                ->addColumn(new EntityColumn('group', 'group', 'name'))                 // customer has one group
+                ->addColumn(new EntitiesColumn('orders', 'orders', 'number'))           // customer has many orders
+                ->addColumn(new EntitiesCountColumn('addresses_count', 'addresses'))    // customer has many addresses
+                ->addColumn(new ActionsColumn('actions', [
+                    'edit' => [
+                        'title' => 'edit customer',
+                        'label' => '<i class="fa fa-edit"></i>',
+                        'callback' => function(Customer $customer) {
+                            // to inject symfony's router define the table definition as a service (see below)
+                            return '/customer/' . $customer->getId() . '/edit/';
+                        },
+                    ],
+                ])
             ;
         }
     }
@@ -125,7 +163,7 @@ Set the service id in the table constructor
 
     public function __construct()
     {
-        parent::__construct('AppBundle\Entity\Customer', 'customer', null, 'app.table.customer');
+        parent::__construct('AppBundle\Entity\Customer', 'customer', 'app.table.customer');
     }
 
 In your controller

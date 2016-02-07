@@ -26,7 +26,11 @@ abstract class AbstractTableDefinition
     /** @var null|callable */
     protected $conditionCallback;
 
-    /** @var null|callable */
+    /**
+     * @var null|callable
+     *
+     * function(\Voelkel\DataTablesBundle\Table\AbstractTableDefinition $table, \Doctrine\ORM\QueryBuilder $qb, \Voelkel\DataTablesBundle\DataTables\Response $response)
+     */
     protected $resultCallback;
 
     /** @var bool */
@@ -38,19 +42,13 @@ abstract class AbstractTableDefinition
     /**
      * @param string $entity
      * @param string $name
-     * @param string|null $prefix
      * @param string|null $serviceId
      */
-    protected function __construct($entity, $name, $prefix = null, $serviceId = null)
+    protected function __construct($entity, $name, $serviceId = null)
     {
         $this->entity = $entity;
         $this->name = $name;
-        $this->prefix = $prefix;
-
-        if (null === $this->prefix) {
-            $this->prefix = substr($this->name, 0, 1);
-        }
-
+        $this->prefix = $this->name[0];
         $this->serviceId = $serviceId;
 
         $this->build();
@@ -97,12 +95,8 @@ abstract class AbstractTableDefinition
      */
     public function addColumn(Column $column)
     {
-        if ($column instanceof EntityColumn && $column->getEntityPrefix() === $this->prefix) {
-            throw new \Exception('the entity prefix is already used.');
-        }
-
         if (isset($this->columns[$column->getName()])) {
-            throw new \Exception('a column with the same name already exists.');
+            throw new \Exception(sprintf('a column with the name "%s" already exists.', $column->getName()));
         }
 
         $this->columns[$column->getName()] = $column;

@@ -58,13 +58,9 @@ class ServerSide
         call_user_func_array([$qb, 'select'], $prefixes);
 
         foreach ($this->table->getColumns() as $column) {
-            if ($column instanceof EntitiesColumn) {
-                $this->joinColumn($qb, $column);
-            }
-
             // add count
             if ($this->table->getHasCountColumns() && $column instanceof EntitiesCountColumn) {
-                $this->joinColumn($qb, $column);
+                //$this->joinColumn($qb, $column);
                 $qb->addSelect('count(' . $column->getEntityPrefix() . ') as ' . $column->getField() . '_count'); // '.' .  $column->getField() .
             }
         }
@@ -84,7 +80,7 @@ class ServerSide
         // get result
         $resultCallback = $this->table->getResultCallback();
         if (null !== $resultCallback) {
-            call_user_func($resultCallback, $qb, $response, $this->table);
+            call_user_func($resultCallback, $this->table, $qb, $response);
         } else {
             call_user_func(['Voelkel\DataTablesBundle\DataTables\DataBuilder', 'build'], $this->table, $qb, $response);
         }
@@ -105,6 +101,10 @@ class ServerSide
         foreach ($this->table->getColumns() as $column) {
             /** @var EntityColumn $column */
             if (get_class($column) === 'Voelkel\DataTablesBundle\Table\Column\EntityColumn') {
+                $this->joinColumn($qb, $column);
+            }
+
+            if ($column instanceof EntitiesColumn) {
                 $this->joinColumn($qb, $column);
             }
         }

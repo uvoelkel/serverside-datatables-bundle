@@ -20,7 +20,7 @@ class Column
         'filter_empty' => false, // add a checkbox to filter empty resp null values
         'multiple' => false,
         'expanded' => false,
-        'format_data_callback' => null, // function ($data, $object, Column $column) {}
+        'format_data_callback' => null, // function ($data, $entity, Column $column) {}
         'unbound' => false,
         'order' => null, // null|'asc'|'desc'
         'label' => null, // null|string|false

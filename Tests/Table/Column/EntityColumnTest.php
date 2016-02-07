@@ -6,11 +6,24 @@ use Voelkel\DataTablesBundle\Table\Column\EntityColumn;
 
 class EntityColumnTest extends \PHPUnit_Framework_TestCase
 {
-    public function testGetters()
+    public function testGetEntityField()
     {
-        $column = new EntityColumn('test_name', 'testField', 'testAssociation', 'ta');
+        $column = new EntityColumn('test_name', 'testAssociation', 'testField');
+        $this->assertEquals('testField', $column->getEntityField());
+    }
 
-        $this->assertEquals('testAssociation', $column->getEntityField());
-        $this->assertEquals('ta', $column->getEntityPrefix());
+    public function testGetEntityPrefix()
+    {
+        $column = new EntityColumn('test_name', 'testAssociationCamelCase', 'testField');
+        $this->assertEquals('tacc', $column->getEntityPrefix());
+
+        $column = new EntityColumn('test_name', 'testAaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz', 'testField');
+        $this->assertEquals('tabcdefghijklmnopqrstuvwxyz', $column->getEntityPrefix());
+
+        $column = new EntityColumn('test_name', 'test_association_snake_case', 'testField');
+        $this->assertEquals('tasc', $column->getEntityPrefix());
+
+        $column = new EntityColumn('test_name', 'test_aa_bb_cc_dd_ee_ff_gg_hh_ii_jj_kk_ll_mm_nn_oo_pp_qq_rr_ss_tt_uu_vv_ww_xx_yy_zz', 'testField');
+        $this->assertEquals('tabcdefghijklmnopqrstuvwxyz', $column->getEntityPrefix());
     }
 }

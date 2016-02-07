@@ -11,11 +11,10 @@ class EntitiesCountColumn extends EntityColumn
     /**
      * @param string $name
      * @param string $field
-     * @param string $entityPrefix
      * @param array $options
      */
-    public function __construct($name, $field, $entityPrefix, array $options = [])
+    public function __construct($name, $field, array $options = [])
     {
-        parent::__construct($name, $field, '', $entityPrefix, $options);
+        parent::__construct($name, $field, '', $options);
     }
 }

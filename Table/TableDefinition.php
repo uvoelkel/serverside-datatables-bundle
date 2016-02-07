@@ -7,10 +7,9 @@ class TableDefinition extends AbstractTableDefinition
     /**
      * @param string $entity
      * @param string $name
-     * @param string|null $prefix
      */
-    public function __construct($entity, $name, $prefix = null)
+    public function __construct($entity, $name)
     {
-        parent::__construct($entity, $name, $prefix);
+        parent::__construct($entity, $name);
     }
 }

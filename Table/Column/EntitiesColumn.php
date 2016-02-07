@@ -8,7 +8,7 @@ namespace Voelkel\DataTablesBundle\Table\Column;
  */
 class EntitiesColumn extends EntityColumn
 {
-    public function __construct($name, $field, $entityField, $entityPrefix, array $options = [])
+    public function __construct($name, $field, $entityField, array $options = [])
     {
         if (isset($options['filter_empty']) && true === $options['filter_empty']) {
             throw new \Exception('filtering for empty values is not allowed for EntitiesColumn');
@@ -28,6 +28,6 @@ class EntitiesColumn extends EntityColumn
             $options['display_join_glue'] = ', ';
         }
 
-        parent::__construct($name, $field, $entityField, $entityPrefix, $options);
+        parent::__construct($name, $field, $entityField, $options);
     }
 }
