@@ -154,15 +154,18 @@ Define the service
     # AppBundle/Resources/config/services.xml
 
     <service id="app.table.customer" class="AppBundle\DataTable\CustomerTable">
-        <argument type="service" id="..." />
+        <argument type="service" id="my.awesome.service" />
     </service>
 
 Set the service id in the table constructor
 
     # AppBundle/DataTable/CustomerTable.php
 
-    public function __construct()
+    private $myAwesomeService;
+
+    public function __construct($myAwesomeService)
     {
+        $this->myAwesomeService = $myAwesomeService;
         parent::__construct('AppBundle\Entity\Customer', 'customer', 'app.table.customer');
     }
 
