@@ -22,6 +22,7 @@ class ServerSide
     /** @var \Voelkel\DataTablesBundle\DataTables\Request */
     private $request;
 
+    /** @var array */
     private $joins = [];
 
     /**
@@ -57,16 +58,13 @@ class ServerSide
         $prefixes = array_merge([$this->table->getPrefix()], $this->table->getJoinPrefixes());
         call_user_func_array([$qb, 'select'], $prefixes);
 
-        foreach ($this->table->getColumns() as $column) {
-            // add count
-            if ($this->table->getHasCountColumns() && $column instanceof EntitiesCountColumn) {
-                //$this->joinColumn($qb, $column);
-                $qb->addSelect('count(' . $column->getEntityPrefix() . ') as ' . $column->getField() . '_count'); // '.' .  $column->getField() .
-            }
-        }
-
+        // add count
         if ($this->table->getHasCountColumns()) {
-            $qb->groupBy($this->table->getPrefix() . '.id');
+            foreach ($this->table->getColumns() as $column) {
+                if ($column instanceof EntitiesCountColumn) {
+                    $qb->addSelect('count(' . $column->getEntityPrefix() . ') as ' . $column->getField() . '_count'); // '.' .  $column->getField() .
+                }
+            }
         }
 
 
@@ -74,8 +72,13 @@ class ServerSide
         $this->applyOrder($qb);
 
         // paginate
-        $qb->setFirstResult($this->request->getStart())
-            ->setMaxResults($this->request->getLength());
+        $paginate = clone $qb;
+        $paginate->select('distinct(' . $this->table->getPrefix() . '.id)');
+        $paginate->setFirstResult($this->request->getStart())->setMaxResults($this->request->getLength());
+        $ids = $paginate->getQuery()->getResult();
+
+        $qb->andWhere($this->table->getPrefix() . '.id in (:ids)')
+            ->setParameter('ids', $ids);
 
         // get result
         $resultCallback = $this->table->getResultCallback();
@@ -136,7 +139,7 @@ class ServerSide
             throw new \Exception('no countable column found.');
         }
 
-        $qb->select('count(' . $countColumn . ')');
+        $qb->select('count(distinct(' . $countColumn . '))');
         return $qb->getQuery()->getSingleScalarResult();
     }
 

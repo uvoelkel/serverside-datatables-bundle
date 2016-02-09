@@ -15,6 +15,13 @@ class ServerSideTest extends \PHPUnit_Framework_TestCase
             ->method('getSingleScalarResult')
             ->will($this->returnValue(1));
 
+        $paginateQuery = $this->getMockBuilder('Doctrine\ORM\AbstractQuery')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $paginateQuery->expects($this->exactly(1))
+            ->method('getResult')
+            ->will($this->returnValue([1]));
+        
 
         $user1 = new \Voelkel\DataTablesBundle\Tests\DataTables\Entity\TestUser();
         $user1->setId(4711)
@@ -39,6 +46,7 @@ class ServerSideTest extends \PHPUnit_Framework_TestCase
 
         $queryBuilder = $this->getMockBuilder('Doctrine\ORM\QueryBuilder')
             ->disableOriginalConstructor()
+            ->disableOriginalClone()
             ->getMock();
 
         $queryBuilder->expects($this->exactly(1))
@@ -46,20 +54,23 @@ class ServerSideTest extends \PHPUnit_Framework_TestCase
             ->with('u.groups', 'g')
             ->will($this->returnValue($queryBuilder));
 
-        $queryBuilder->expects($this->exactly(2))
+        $queryBuilder->expects($this->exactly(3))
             ->method('select')
             ->withConsecutive(
-                ['count(u.id)'],
-                ['u']
+                ['count(distinct(u.id))'],
+                ['u'],
+                ['distinct(u.id)']
             )
             ->will($this->onConsecutiveCalls(
                 null,
+                null,
                 null
             ));
-        $queryBuilder->expects($this->exactly(2))
+        $queryBuilder->expects($this->exactly(3))
             ->method('getQuery')
             ->will($this->onConsecutiveCalls(
                 $countQuery,
+                $paginateQuery,
                 $entityQuery
             ));
         $queryBuilder->expects($this->exactly(1))
@@ -71,7 +82,10 @@ class ServerSideTest extends \PHPUnit_Framework_TestCase
             ->with(50)
             ->will($this->returnValue($queryBuilder));
 
-
+        $queryBuilder->expects($this->exactly(1))
+            ->method('andWhere')
+            ->with('u.id in (:ids)')
+            ->will($this->returnValue($queryBuilder));
 
         $repository = $this->getMockBuilder('Doctrine\ORM\EntityRepository')
             ->disableOriginalConstructor()
