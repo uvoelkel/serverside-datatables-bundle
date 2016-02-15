@@ -130,7 +130,7 @@ class DataBuilder
     static private function convertDataToString($data)
     {
         if (is_object($data)) {
-            if ($data instanceof \DateTime) {
+            if ($data instanceof \DateTimeInterface) {
                 return $data->format('d.m.Y H:i:s');
             }
 
