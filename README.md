@@ -1,6 +1,6 @@
 DataTablesBundle
 ================
-[![Build Status](https://travis-ci.org/uvoelkel/datatables-bundle.svg?branch=master)](https://travis-ci.org/uvoelkel/datatables-bundle)
+[![Build Status](https://travis-ci.org/uvoelkel/serverside-datatables-bundle.svg?branch=master)](https://travis-ci.org/uvoelkel/serverside-datatables-bundle)
 
 ## What it does
 
