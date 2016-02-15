@@ -1,5 +1,5 @@
 {
-    "name": "uvoelkel/datatables-bundle",
+    "name": "uvoelkel/serverside-datatables-bundle",
     "type": "library",
     "description": "DataTables integration for Symfony",
     "keywords": [
