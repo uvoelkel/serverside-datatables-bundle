@@ -21,7 +21,7 @@ class ServerSideTest extends \PHPUnit_Framework_TestCase
         $paginateQuery->expects($this->exactly(1))
             ->method('getResult')
             ->will($this->returnValue([1]));
-        
+
 
         $user1 = new \Voelkel\DataTablesBundle\Tests\DataTables\Entity\TestUser();
         $user1->setId(4711)

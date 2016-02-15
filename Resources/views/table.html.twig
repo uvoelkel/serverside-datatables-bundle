@@ -1,4 +1,4 @@
-<table id="{{ table.name }}" {% if options.class is defined %}class="{{ options.class }}"{% endif %}>
+<table id="{{ table.name }}"{% if options.class is defined %} class="{{ options.class }}"{% endif %}>
     <thead>
         {% if table.hasColumnFilter %}
         <tr>
