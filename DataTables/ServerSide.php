@@ -22,6 +22,9 @@ class ServerSide
     /** @var \Voelkel\DataTablesBundle\DataTables\Request */
     private $request;
 
+    /** @var null|string */
+    private $identifierField = null;
+
     /** @var array */
     private $joins = [];
 
@@ -73,11 +76,11 @@ class ServerSide
 
         // paginate
         $paginate = clone $qb;
-        $paginate->select('distinct(' . $this->table->getPrefix() . '.id)');
+        $paginate->select('distinct(' . $this->table->getPrefix() . '.' . $this->getIdentifierField() . ')');
         $paginate->setFirstResult($this->request->getStart())->setMaxResults($this->request->getLength());
         $ids = $paginate->getQuery()->getResult();
 
-        $qb->andWhere($this->table->getPrefix() . '.id in (:ids)')
+        $qb->andWhere($this->table->getPrefix() . '.' . $this->getIdentifierField() . ' in (:ids)')
             ->setParameter('ids', $ids);
 
         // get result
@@ -118,6 +121,26 @@ class ServerSide
         }
 
         return $qb;
+    }
+
+    private function getIdentifierField()
+    {
+        if (null !== $this->identifierField) {
+            return $this->identifierField;
+        }
+
+        $metadata = $this->em->getClassMetadata($this->table->getEntity());
+        if ($metadata->isIdentifierComposite) {
+            throw new \Exception('composite identifiers are currently not supported.');
+        }
+
+        $identifier = $metadata->getIdentifier();
+        if (1 !== sizeof($identifier)) {
+            throw new \Exception('exactly one identifier expected.');
+        }
+
+        $this->identifierField = $identifier[0];
+        return $this->identifierField;
     }
 
     /**

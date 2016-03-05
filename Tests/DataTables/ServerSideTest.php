@@ -95,7 +95,7 @@ class ServerSideTest extends \PHPUnit_Framework_TestCase
             ->with('u')
             ->will($this->returnValue($queryBuilder));
 
-
+        /** @var \Doctrine\ORM\EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject $em */
         $em = $this->getMockBuilder('Doctrine\ORM\EntityManagerInterface')
             ->disableOriginalConstructor()
             ->getMock();
@@ -103,6 +103,14 @@ class ServerSideTest extends \PHPUnit_Framework_TestCase
             ->method('getRepository')
             ->with('Voelkel\DataTablesBundle\Tests\DataTables\Entity\TestUser')
             ->will($this->returnValue($repository));
+
+        $metadata = new \Doctrine\ORM\Mapping\ClassMetadataInfo('Voelkel\DataTablesBundle\Tests\DataTables\Entity\TestUser');
+        $metadata->setIdentifier(['id']);
+
+        $em->expects($this->exactly(1))
+            ->method('getClassMetadata')
+            ->with('Voelkel\DataTablesBundle\Tests\DataTables\Entity\TestUser')
+            ->will($this->returnValue($metadata));
 
 
         $table = new TestTable();
