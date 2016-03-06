@@ -193,7 +193,11 @@ abstract class AbstractTableDefinition
 
         foreach ($this->columns as $column) {
             if ($column instanceof EntityColumn) {
-                $result[] = $column->getEntityPrefix();
+                $joined = '';
+                foreach ($column->getEntityPrefixes() as $prefix) {
+                    $joined .= (empty($joined) ? '' : '_') . $prefix;
+                    $result[] = $joined;
+                }
             }
         }
 

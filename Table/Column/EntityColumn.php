@@ -7,8 +7,8 @@ class EntityColumn extends Column
     /** @var string */
     private $entityField;
 
-    /** @var string */
-    private $entityPrefix;
+    /** @var string[] */
+    private $prefixes = [];
 
     /**
      * @param string $name
@@ -19,7 +19,26 @@ class EntityColumn extends Column
     public function __construct($name, $field, $entityField, array $options = [])
     {
         $this->entityField = $entityField;
-        $this->entityPrefix = self::createEntityPrefix($field);
+
+        $pos = strpos($field, '.');
+        if (false !== $pos) {
+            $fields = $field;
+
+            while (false !== $pos) {
+                $sub = substr($fields, 0, $pos);
+                $this->prefixes[] = EntityColumn::createEntityPrefix($sub);
+
+                $fields = substr($fields, $pos + 1);
+                $pos = strpos($fields, '.');
+
+                if (false === $pos && 0 < strlen($fields)) {
+                    $pos = strlen($fields);
+                }
+            }
+
+        } else {
+            $this->prefixes[] = self::createEntityPrefix($field);
+        }
 
         parent::__construct($name, $field, $options);
     }
@@ -37,7 +56,15 @@ class EntityColumn extends Column
      */
     public function getEntityPrefix()
     {
-        return $this->entityPrefix;
+        return join('_', $this->prefixes);
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getEntityPrefixes()
+    {
+        return $this->prefixes;
     }
 
     /**
