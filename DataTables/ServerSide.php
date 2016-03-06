@@ -292,7 +292,7 @@ class ServerSide
                 $prefix .= (empty($prefix) ? '' : '_') . EntityColumn::createEntityPrefix($field);
 
                 array_push($join, $field, $prefix);
-                $joins[] = $join;
+                $joins[join('.', $join)] = $join;
 
                 $fields = substr($fields, $pos + 1);
                 $pos = strpos($fields, '.');
@@ -302,11 +302,12 @@ class ServerSide
                 }
             }
         } else {
-            $joins[] = [
+            $join = [
                 $this->table->getPrefix(),
                 $column->getField(),
                 $column->getEntityPrefix()
             ];
+            $joins[join('.', $join)] = $join;
         }
 
         foreach ($joins as $key => $join) {
