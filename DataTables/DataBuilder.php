@@ -125,7 +125,7 @@ class DataBuilder
                 if (method_exists($object, $method)) {
                     $result = $object->$method();
 
-                    if (null !== $sub) {
+                    if (null !== $sub && null !== $result) {
                         $result = self::callGetterByColumName($result, $sub, $column);
                     }
 
