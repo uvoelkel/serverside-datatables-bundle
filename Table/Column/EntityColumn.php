@@ -19,7 +19,7 @@ class EntityColumn extends Column
     public function __construct($name, $field, $entityField, array $options = [])
     {
         $this->entityField = $entityField;
-        $this->entityPrefix = $this->createEntityPrefix($field);
+        $this->entityPrefix = self::createEntityPrefix($field);
 
         parent::__construct($name, $field, $options);
     }
@@ -44,7 +44,7 @@ class EntityColumn extends Column
      * @param string $field
      * @return string
      */
-    private function createEntityPrefix($field)
+    static public function createEntityPrefix($field)
     {
         $result = $field[0];
 

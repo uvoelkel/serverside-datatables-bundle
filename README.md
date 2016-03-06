@@ -93,6 +93,7 @@ Create a Table definition
                     }
                 }))
                 ->addColumn(new EntityColumn('group', 'group', 'name'))                 // customer has one group
+                ->addColumn(new EntityColumn('state', 'city.state', 'name'))            // customer has one city. city has one state
                 ->addColumn(new EntitiesColumn('orders', 'orders', 'number'))           // customer has many orders
                 ->addColumn(new EntitiesCountColumn('addresses_count', 'addresses'))    // customer has many addresses
                 ->addColumn(new ActionsColumn('actions', [

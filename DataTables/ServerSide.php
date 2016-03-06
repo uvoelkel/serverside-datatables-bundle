@@ -278,10 +278,42 @@ class ServerSide
      */
     private function joinColumn(QueryBuilder $qb, EntityColumn $column)
     {
-        $join = $this->table->getPrefix() . '.' . $column->getField() . '.' . $column->getEntityPrefix();
-        if (!in_array($join, $this->joins)) {
-            $qb->leftJoin($this->table->getPrefix() . '.' . $column->getField(), $column->getEntityPrefix());
-            $this->joins[] = $join;
+        $joins = [];
+
+        $pos = strpos($column->getField(), '.');
+        if (false !== $pos) {
+            $fields = $column->getField();
+            $prefix = '';
+
+            while (false !== $pos) {
+                $join = [empty($prefix) ? $this->table->getPrefix() : $prefix];
+
+                $field = substr($fields, 0, $pos);
+                $prefix .= (empty($prefix) ? '' : '_') . EntityColumn::createEntityPrefix($field);
+
+                array_push($join, $field, $prefix);
+                $joins[] = $join;
+
+                $fields = substr($fields, $pos + 1);
+                $pos = strpos($fields, '.');
+
+                if (false === $pos && 0 < strlen($fields)) {
+                    $pos = strlen($fields);
+                }
+            }
+        } else {
+            $joins[] = [
+                $this->table->getPrefix(),
+                $column->getField(),
+                $column->getEntityPrefix()
+            ];
+        }
+
+        foreach ($joins as $key => $join) {
+            if (!isset($this->joins[$key])) {
+                $qb->leftJoin($join[0] . '.' . $join[1], $join[2]);
+                $this->joins[$key] = $join;
+            }
         }
     }
 

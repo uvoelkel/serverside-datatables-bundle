@@ -114,8 +114,22 @@ class DataBuilder
                 return join($column->getOptions()['display_join_glue'], $result);
 
             } else {
+
+                $sub = null;
+                $pos = strpos($method, '.');
+                if (false !== $pos) {
+                    $sub = substr($method, $pos + 1);
+                    $method = substr($method, 0, $pos);
+                }
+
                 if (method_exists($object, $method)) {
-                    return $object->$method();
+                    $result = $object->$method();
+
+                    if (null !== $sub) {
+                        $result = self::callGetterByColumName($result, $sub, $column);
+                    }
+
+                    return $result;
                 }
             }
         }
