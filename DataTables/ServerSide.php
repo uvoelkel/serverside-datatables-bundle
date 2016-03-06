@@ -146,23 +146,11 @@ class ServerSide
     /**
      * @param QueryBuilder $qb
      * @return integer
-     * @throws \Exception
      */
     private function countTotals(QueryBuilder $qb)
     {
-        $countColumn = null;
-        foreach ($this->table->getColumns() as $column) {
-            if (get_class($column) === 'Voelkel\DataTablesBundle\Table\Column\Column') {
-                $countColumn = $this->table->getPrefix() . '.' . $column->getField();
-                break;
-            }
-        }
+        $qb->select('count(distinct(' . $this->table->getPrefix() . '.' . $this->getIdentifierField() . '))');
 
-        if (null === $countColumn) {
-            throw new \Exception('no countable column found.');
-        }
-
-        $qb->select('count(distinct(' . $countColumn . '))');
         return $qb->getQuery()->getSingleScalarResult();
     }
 
