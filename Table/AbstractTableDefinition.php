@@ -39,23 +39,43 @@ abstract class AbstractTableDefinition
     /** @var bool */
     protected $hasColumnFilter = false;
 
-    /** @var \Symfony\Component\DependencyInjection\ContainerInterface|null */
-    public $container = null;
-
     /**
      * @param string $entity
      * @param string $name
      * @param string|null $serviceId
      */
-    protected function __construct($entity, $name, $serviceId = null)
+    public function __construct($entity = null, $name = null, $serviceId = null)
     {
         $this->entity = $entity;
         $this->name = $name;
         $this->prefix = $this->name[0];
         $this->serviceId = $serviceId;
 
+        $settings = [
+            'entity'  => null,
+            'name'    => null,
+            'service' => null,
+        ];
+
+        $this->getSettings($settings);
+
+        if (null !== $settings['entity']) {
+            $this->entity = $settings['entity'];
+        }
+
+        if (null !== $settings['name']) {
+            $this->name = $settings['name'];
+            $this->prefix = $this->name[0];
+        }
+
+        if (null !== $settings['service']) {
+            $this->serviceId = $settings['service'];
+        }
+
         $this->build();
     }
+
+    protected function getSettings(array &$settings) { }
 
     protected function build() { }
 

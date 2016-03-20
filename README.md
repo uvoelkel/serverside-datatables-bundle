@@ -18,23 +18,25 @@ This bundle is under the MIT license. See the complete license in the bundle:
 Enable the bundle by adding the following line in the ``app/AppKernel.php``
 file of your project:
 
-    // app/AppKernel.php
+```php
+# app/AppKernel.php
 
-    class AppKernel extends Kernel
+class AppKernel extends Kernel
+{
+    public function registerBundles()
     {
-        public function registerBundles()
-        {
-            $bundles = array(
-                // ...
-
-                new Voelkel\DataTablesBundle\VoelkelDataTablesBundle(),
-            );
-
+        $bundles = array(
             // ...
-        }
+
+            new Voelkel\DataTablesBundle\VoelkelDataTablesBundle(),
+        );
 
         // ...
     }
+
+    // ...
+}
+```
 
 ## Configuration
 
@@ -49,82 +51,110 @@ After installing the bundle, make sure you add this route to your routing:
 
 Create a Table definition
 
-    # AppBundle/DataTable/CustomerTable.php
+```php
+# AppBundle/DataTable/CustomerTable.php
 
-    <?php
+<?php
 
-    namespace AppBundle\DataTable;
+namespace AppBundle\DataTable;
 
-    use Voelkel\DataTablesBundle\Table\AbstractTableDefinition;
-    use Voelkel\DataTablesBundle\Table\Column\Column;
-    use Voelkel\DataTablesBundle\Table\Column\UnboundColumn;
-    use Voelkel\DataTablesBundle\Table\Column\CallbackColumn;
-    use Voelkel\DataTablesBundle\Table\Column\EntityColumn;
-    use Voelkel\DataTablesBundle\Table\Column\EntitiesColumn;    
+use Voelkel\DataTablesBundle\Table\AbstractTableDefinition;
+use Voelkel\DataTablesBundle\Table\Column\Column;
+use Voelkel\DataTablesBundle\Table\Column\UnboundColumn;
+use Voelkel\DataTablesBundle\Table\Column\CallbackColumn;
+use Voelkel\DataTablesBundle\Table\Column\EntityColumn;
+use Voelkel\DataTablesBundle\Table\Column\EntitiesColumn;    
 
-    class CustomerTable extends AbstractTableDefinition
+class CustomerTable extends AbstractTableDefinition
+{
+    protected function getSettings(array &$settings)
     {
-        public function __construct()
-        {
-            parent::__construct('AppBundle\Entity\Customer', 'customer');
-        }
-
-        protected function build()
-        {
-            $this
-                ->addColumn(new Column('id', 'id'))
-                ->addColumn(new Column('gender', 'gender'))
-                ->addColumn(new Column('firstname', 'firstname'))
-                ->addColumn(new Column('lastname', 'lastname'))
-                ->addColumn(new UnboundColumn('opening', function(Customer $customer) {
-                    return 'Dear ' . ('f' === $customer->getGender() ? 'Madam' : 'Sir');
-                }))
-                ->addColumn(new CallbackColumn('status', 'status', function($status) {
-                    switch ($status) {
-                        case 1:
-                            return 'something';
-                            break;
-                        case 2:
-                            return 'something else';
-                            break;
-                        default:
-                            return 'invalid';
-                            break;
-                    }
-                }))
-                ->addColumn(new EntityColumn('group', 'group', 'name'))                 // customer has one group
-                ->addColumn(new EntityColumn('state', 'city.state', 'name'))            // customer has one city. city has one state
-                ->addColumn(new EntitiesColumn('orders', 'orders', 'number'))           // customer has many orders
-                ->addColumn(new EntitiesCountColumn('addresses_count', 'addresses'))    // customer has many addresses
-                ->addColumn(new ActionsColumn('actions', [
-                    'edit' => [
-                        'title' => 'edit customer',
-                        'label' => '<i class="fa fa-edit"></i>',
-                        'callback' => function(Customer $customer) {
-                            // to inject symfony's router define the table definition as a service (see below)
-                            return '/customer/' . $customer->getId() . '/edit/';
-                        },
-                    ],
-                ])
-            ;
-        }
+        $settings['name'] = 'customer';
+        $settings['entity'] = 'AppBundle\Entity\Customer';
     }
+
+    protected function build()
+    {
+        $this
+            ->addColumn(new Column('id', 'id'))
+            ->addColumn(new Column('gender', 'gender'))
+            ->addColumn(new Column('firstname', 'firstname'))
+            ->addColumn(new Column('lastname', 'lastname'))
+            ->addColumn(new UnboundColumn('opening', function(Customer $customer) {
+                return 'Dear ' . ('f' === $customer->getGender() ? 'Madam' : 'Sir');
+            }))
+            ->addColumn(new CallbackColumn('status', 'status', function($status) {
+                switch ($status) {
+                    case 1:
+                        return 'something';
+                        break;
+                    case 2:
+                        return 'something else';
+                        break;
+                    default:
+                        return 'invalid';
+                        break;
+                }
+            }))
+            ->addColumn(new EntityColumn('group', 'group', 'name'))                 // customer has one group
+            ->addColumn(new EntityColumn('state', 'city.state', 'name'))            // customer has one city. city has one state
+            ->addColumn(new EntitiesColumn('orders', 'orders', 'number'))           // customer has many orders
+            ->addColumn(new EntitiesCountColumn('addresses_count', 'addresses'))    // customer has many addresses
+            ->addColumn(new ActionsColumn('actions', [
+                'edit' => [
+                    'title' => 'edit customer',
+                    'label' => '<i class="fa fa-edit"></i>',
+                    'callback' => function(Customer $customer) {
+                        // to inject symfony's router define the table definition as a service (see below)
+                        return '/customer/' . $customer->getId() . '/edit/';
+                    },
+                ],
+            ])
+        ;
+    }
+}
+```
+
+Container aware table definition
+
+```php
+use Voelkel\DataTablesBundle\Table\AbstractContainerAwareTableDefinition;
+
+class CustomerTable extends AbstractContainerAwareTableDefinition
+{
+    protected function build()
+    {
+        // you can't access the container here
+
+        // ...        
+        ->addColumn(new Column('id', 'id', [
+            'format_data_callback' => function ($data, $object, Column $column) {
+                // but you can here
+                $router = $column->container->get('router');
+            },
+        ]))
+        // ...
+    }
+}
+```
 
 In your CustomerController
 
-    # AppBundle/Controller/CustomerController.php
+```php
+# AppBundle/Controller/CustomerController.php
 
-    use AppBundle\DataTable\CustomerTable;
+use AppBundle\DataTable\CustomerTable;
 
-    class CustomerController extends Controller 
+class CustomerController extends Controller 
+{
+    public function indexAction()
     {
-        public function indexAction()
-        {
-            return $this->render('AppBundle:Customer:index.html.twig', [
-                'table' => new CustomerTable(),
-            ]);
-        }
-    } 
+        return $this->render('AppBundle:Customer:index.html.twig', [
+            'table' => new CustomerTable(),
+        ]);
+    }
+}
+```
 
 And in your index template
 
@@ -160,74 +190,88 @@ Define the service
 
 Set the service id in the table constructor
 
-    # AppBundle/DataTable/CustomerTable.php
+```php
+# AppBundle/DataTable/CustomerTable.php
 
-    private $myAwesomeService;
+private $myAwesomeService;
 
-    public function __construct($myAwesomeService)
-    {
-        $this->myAwesomeService = $myAwesomeService;
-        parent::__construct('AppBundle\Entity\Customer', 'customer', 'app.table.customer');
-    }
+public function __construct($myAwesomeService)
+{
+    $this->myAwesomeService = $myAwesomeService;
+
+    parent::__construct();
+}
+
+protected function getSettings(array &$settings)
+{
+    $settings['name'] = 'customer';
+    $settings['entity'] = 'AppBundle\Entity\Customer';
+    $settings['service'] = 'app.table.customer';
+}
+```
 
 In your controller
 
-    # AppBundle/Controller/CustomerController.php
+```php
+# AppBundle/Controller/CustomerController.php
 
-    public function indexAction()
-    {
-        return $this->render('AppBundle:Customer:index.html.twig', [
-            'table' => $this->get('app.table.customer'),
-        ]);
-    }
-
-
+public function indexAction()
+{
+    return $this->render('AppBundle:Customer:index.html.twig', [
+        'table' => $this->get('app.table.customer'),
+    ]);
+}
+```
 
 ### Column filter
 
-    # AppBundle/DataTable/CustomerTable.php
+```php
+# AppBundle/DataTable/CustomerTable.php
 
+// ...
+
+class CustomerTable extends AbstractTableDefinition
+{
     // ...
 
-    class CustomerTable extends AbstractTableDefinition
+    protected function build()
     {
-        // ...
-
-        protected function build()
-        {
-            $this
-                // ...
-                ->addColumn(new Column('gender', 'gender', [
-                    'filter' => 'select',
-                    'filter_choices' => [
-                        'm' => 'male',
-                        'f' => 'female',
-                    ],
-                ]))
-                ->addColumn(new Column('lastname', 'lastname', [
-                    'filter' => 'text',
-                ]))
-            ;
-        }
+        $this
+            // ...
+            ->addColumn(new Column('gender', 'gender', [
+                'filter' => 'select',
+                'filter_choices' => [
+                    'm' => 'male',
+                    'f' => 'female',
+                ],
+            ]))
+            ->addColumn(new Column('lastname', 'lastname', [
+                'filter' => 'text',
+            ]))
+        ;
     }
+}
+```
 
 
 ### Column options
 
-    $default = [
-        'sortable' => true,
-        'searchable' => true,
-        'filter' => false, // false|'text'|'select'
-        'filter_choices' => [],
-        'filter_empty' => false, // add a checkbox to filter empty resp. null values
-        'multiple' => false,
-        'expanded' => false,
-        'format_data_callback' => null, // function ($data, $object, Column $column) {}
-        'unbound' => false,
-        'order' => null, // null|'asc'|'desc'
-        'label' => null, // null|string|false
-        'abbr' => null, // null|string
-    ];
+```php
+$default = [
+    'sortable' => true,
+    'searchable' => true,
+    'filter' => false, // false|'text'|'select'
+    'filter_choices' => [],
+    'filter_empty' => false, // add a checkbox to filter empty resp. null values
+    'multiple' => false,
+    'expanded' => false,
+    'format_data_callback' => null, // function ($data, $object, Column $column) {}
+    'unbound' => false,
+    'order' => null, // null|'asc'|'desc'
+    'label' => null, // null|string|false
+    'abbr' => null, // null|string
+];
+```
 
 - 'filter' != false implies 'searchable' = true
 - 'multiple' has no effect if filter != 'select'

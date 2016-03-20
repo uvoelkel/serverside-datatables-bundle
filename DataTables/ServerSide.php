@@ -4,6 +4,7 @@ namespace Voelkel\DataTablesBundle\DataTables;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
+use Voelkel\DataTablesBundle\Table\AbstractContainerAwareTableDefinition;
 use Voelkel\DataTablesBundle\Table\AbstractTableDefinition;
 use Voelkel\DataTablesBundle\DataTables\Request as DataTablesRequest;
 use Voelkel\DataTablesBundle\Table\Column\Column;
@@ -109,8 +110,13 @@ class ServerSide
 
         $qb = $repository->createQueryBuilder($this->table->getPrefix());
 
+        $container = null;
+        if ($this->table instanceof AbstractContainerAwareTableDefinition) {
+            $container = $this->table->getContainer();
+        }
+
         foreach ($this->table->getColumns() as $column) {
-            $column->container = $this->table->container;
+            $column->container = $container;
 
             /** @var EntityColumn $column */
             if (get_class($column) === 'Voelkel\DataTablesBundle\Table\Column\EntityColumn') {

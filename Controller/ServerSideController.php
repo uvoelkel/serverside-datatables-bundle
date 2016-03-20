@@ -4,6 +4,7 @@ namespace Voelkel\DataTablesBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Voelkel\DataTablesBundle\Table\AbstractContainerAwareTableDefinition;
 use Voelkel\DataTablesBundle\Table\AbstractTableDefinition;
 
 class ServerSideController extends Controller
@@ -19,13 +20,15 @@ class ServerSideController extends Controller
         if (class_exists($table)) {
             $table = new $table();
         } elseif ($this->has($table)) {
-            /** @var AbstractTableDefinition $table */
             $table = $this->get($table);
         } else {
             throw new \Exception(sprintf('table definition class or service "%s" not found.', $table));
         }
 
-        $table->container = $this->container;
+        /** @var AbstractTableDefinition|AbstractContainerAwareTableDefinition $table */
+        if ($table instanceof AbstractContainerAwareTableDefinition) {
+            $table->setContainer($this->container);
+        }
 
         return $this->get('voelkel.datatables')->processRequest($table, $request);
     }
