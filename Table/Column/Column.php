@@ -24,6 +24,7 @@ class Column
         'unbound' => false,
         'order' => null, // null|'asc'|'desc'
         'label' => null, // null|string|false
+        'abbr' => null,
     ];
 
     /**

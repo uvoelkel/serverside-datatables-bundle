@@ -41,5 +41,16 @@ class ColumnTest extends \PHPUnit_Framework_TestCase
             'label' => 'Test label',
         ]);
         $this->assertEquals('Test label', $column->getLabel());
+
+        $column = new Column('test_name', 'testField', [
+            'label' => false,
+        ]);
+        $this->assertEquals('', $column->getLabel());
+
+        $column = new Column('test_name', 'testField', [
+            'label' => 42,
+        ]);
+        $this->setExpectedException('\Exception', 'invalid label option: 42');
+        $column->getLabel();
     }
 }
