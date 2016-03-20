@@ -27,6 +27,9 @@ class Column
         'abbr' => null,
     ];
 
+    /** @var \Symfony\Component\DependencyInjection\ContainerInterface|null */
+    public $container = null;
+
     /**
      * @param string $name
      * @param string $field

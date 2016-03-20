@@ -25,6 +25,8 @@ class ServerSideController extends Controller
             throw new \Exception(sprintf('table definition class or service "%s" not found.', $table));
         }
 
+        $table->container = $this->container;
+
         return $this->get('voelkel.datatables')->processRequest($table, $request);
     }
 }

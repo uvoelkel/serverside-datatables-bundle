@@ -110,6 +110,8 @@ class ServerSide
         $qb = $repository->createQueryBuilder($this->table->getPrefix());
 
         foreach ($this->table->getColumns() as $column) {
+            $column->container = $this->table->container;
+
             /** @var EntityColumn $column */
             if (get_class($column) === 'Voelkel\DataTablesBundle\Table\Column\EntityColumn') {
                 $this->joinColumn($qb, $column);

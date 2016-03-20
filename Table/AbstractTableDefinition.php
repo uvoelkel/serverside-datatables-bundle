@@ -39,6 +39,9 @@ abstract class AbstractTableDefinition
     /** @var bool */
     protected $hasColumnFilter = false;
 
+    /** @var \Symfony\Component\DependencyInjection\ContainerInterface|null */
+    public $container = null;
+
     /**
      * @param string $entity
      * @param string $name
