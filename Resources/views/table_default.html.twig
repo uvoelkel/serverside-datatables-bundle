@@ -7,7 +7,7 @@
                 {% if column.options.filter == 'text' %}
                     <input type="text" id="{{ table.name }}_{{ column.name }}_filter" placeholder="{{ column.label }}">
                 {% elseif column.options.filter == 'select' %}
-                    <select id="{{ table.name }}_{{ column.name }}_filter"{% if column.options.multiple %} multiple="multiple"{% endif %}>
+                    <select id="{{ table.name }}_{{ column.name }}_filter" {% if column.options.multiple %} multiple="multiple"{% endif %}>
 
                         {% if not column.options.multiple %}
                             <option value="">-- {{ column.label }} --</option>

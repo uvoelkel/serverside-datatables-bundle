@@ -226,6 +226,7 @@ In your controller
         'unbound' => false,
         'order' => null, // null|'asc'|'desc'
         'label' => null, // null|string|false
+        'abbr' => null, // null|string
     ];
 
 - 'filter' != false implies 'searchable' = true

@@ -10,11 +10,20 @@ use Voelkel\DataTablesBundle\Table\AbstractTableDefinition;
  */
 class DataTablesExtension extends \Twig_Extension
 {
+    /** @var RouterInterface */
     private $router;
 
-    public function __construct(RouterInterface $router)
+    /** @var string */
+    private $theme;
+
+    /**
+     * @param RouterInterface $router
+     * @param string $theme
+     */
+    public function __construct(RouterInterface $router, $theme)
     {
         $this->router = $router;
+        $this->theme = $theme;
     }
 
     /**
@@ -36,20 +45,16 @@ class DataTablesExtension extends \Twig_Extension
 
     public function renderHtml(\Twig_Environment $twig, AbstractTableDefinition $table, array $options = [])
     {
-        if (!isset($options['class'])) {
-            $options['class'] = 'table table-striped table-bordered table-hover table-condensed table-responsive';
-        }
-
-        return $twig->render('@VoelkelDataTables/table.html.twig', [
+        return $twig->render('@VoelkelDataTables/table_' . $this->theme . '.html.twig', [
             'table' => $table,
             'options' => $options,
         ]);
     }
 
-    public function renderJavascript(\Twig_Environment $twig, AbstractTableDefinition $table, $path = null)
+    public function renderJavascript(\Twig_Environment $twig, AbstractTableDefinition $table, $path = null, $options = [])
     {
         if (null === $path) {
-            $path = $this->router->generate('voelkel_datatables_list', [
+            $path = $this->router->generate('serverside_datatables_list', [
                 'table' => null !== $table->getServiceId() ? $table->getServiceId() : get_class($table),
             ]);
         }
@@ -57,6 +62,7 @@ class DataTablesExtension extends \Twig_Extension
         return $twig->render('@VoelkelDataTables/table.js.twig', [
             'table' => $table,
             'path' => $path,
+            'options' => $options,
         ]);
     }
 

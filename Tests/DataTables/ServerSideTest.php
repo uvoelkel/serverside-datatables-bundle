@@ -2,6 +2,7 @@
 
 namespace Voelkel\DataTablesBundle\Tests\DataTables;
 
+use Voelkel\DataTablesBundle\DataTables\DataToStringConverter;
 use Voelkel\DataTablesBundle\DataTables\ServerSide;
 
 class ServerSideTest extends \PHPUnit_Framework_TestCase
@@ -121,7 +122,7 @@ class ServerSideTest extends \PHPUnit_Framework_TestCase
             'length' => 50,
         ]);
 
-        $serverSide = new ServerSide($em);
+        $serverSide = new ServerSide($em, new DataToStringConverter('en'));
         $respone = $serverSide->processRequest($table, $sfRequest);
 
         $data = json_decode($respone->getContent(), true);

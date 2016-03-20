@@ -14,8 +14,15 @@ class DataBuilder
      * @param AbstractTableDefinition $table
      * @param \Doctrine\ORM\QueryBuilder $qb
      * @param Response $response
+     * @param DataToStringConverter $dataToStringConverter
+     * @throws \Exception
      */
-    static public function build(AbstractTableDefinition $table, \Doctrine\ORM\QueryBuilder $qb, Response $response) {
+    static public function build(
+        AbstractTableDefinition $table,
+        \Doctrine\ORM\QueryBuilder $qb,
+        Response $response,
+        DataToStringConverter $dataToStringConverter
+    ) {
         $entities = $qb->getQuery()->getResult();
 
         foreach ($entities as $result) {
@@ -35,7 +42,7 @@ class DataBuilder
 
             foreach ($table->getColumns() as $column) {
                 if (!($column instanceof EntitiesCountColumn)) {
-                    $tmp[$column->getName()] = self::getColumnProperty($entity, $column);
+                    $tmp[$column->getName()] = self::getColumnProperty($entity, $column, $dataToStringConverter);
                 } else {
                     $tmp[$column->getName()] = $result[$column->getField() . '_count'];
                 }
@@ -48,10 +55,11 @@ class DataBuilder
     /**
      * @param mixed $object
      * @param Column $column
+     * @param DataToStringConverter $dataToStringConverter
      * @return string
      * @throws \Exception
      */
-    static public function getColumnProperty($object, Column $column)
+    static private function getColumnProperty($object, Column $column, DataToStringConverter $dataToStringConverter)
     {
         $data = null;
 
@@ -73,13 +81,12 @@ class DataBuilder
 
             if ($callback instanceof \Closure) {
                 return call_user_func($callback, $data, $object, $column);
-                //return $callback($data, $column);
             }
 
             throw new \Exception(sprintf('invalid "format_data_callback" of type "%s"', get_class($callback)));
         }
 
-        return self::convertDataToString($data);
+        return $dataToStringConverter->convertDataToString($data);
     }
 
     /**
@@ -135,28 +142,5 @@ class DataBuilder
         }
 
         throw new \Exception(sprintf('no getter found for property "%s" in object of class "%s".', $name, get_class($object)));
-    }
-
-    /**
-     * @param mixed $data
-     * @return string
-     */
-    static private function convertDataToString($data)
-    {
-        if (is_object($data)) {
-            if ($data instanceof \DateTimeInterface) {
-                return $data->format('d.m.Y H:i:s');
-            }
-
-            if (method_exists($data, '__toString')) {
-                return $data->__toString();
-            }
-
-            return get_class($data);
-        } elseif (is_bool($data)) {
-            return $data ? 'true' : 'false';
-        }
-
-        return $data;
     }
 }

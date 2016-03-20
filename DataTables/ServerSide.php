@@ -16,6 +16,9 @@ class ServerSide
     /** @var EntityManagerInterface  */
     private $em;
 
+    /** @var DataToStringConverter */
+    private $dataConverter;
+
     /** @var AbstractTableDefinition */
     private $table;
 
@@ -30,10 +33,12 @@ class ServerSide
 
     /**
      * @param EntityManagerInterface $em
+     * @param DataToStringConverter $dataToStringConverter
      */
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(EntityManagerInterface $em, DataToStringConverter $dataToStringConverter)
     {
         $this->em = $em;
+        $this->dataConverter = $dataToStringConverter;
     }
 
     /**
@@ -86,9 +91,9 @@ class ServerSide
         // get result
         $resultCallback = $this->table->getResultCallback();
         if (null !== $resultCallback) {
-            call_user_func($resultCallback, $this->table, $qb, $response);
+            call_user_func($resultCallback, $this->table, $qb, $response, $this->dataConverter);
         } else {
-            call_user_func(['Voelkel\DataTablesBundle\DataTables\DataBuilder', 'build'], $this->table, $qb, $response);
+            call_user_func(['Voelkel\DataTablesBundle\DataTables\DataBuilder', 'build'], $this->table, $qb, $response, $this->dataConverter);
         }
 
         return $response->create();

@@ -25,7 +25,9 @@ class TestContainer implements ContainerInterface
         if (null === $em) {
             $this->services['voelkel.datatables'] = new TestServerSide();
         } else {
-            $this->services['voelkel.datatables'] = new \Voelkel\DataTablesBundle\DataTables\ServerSide($em);
+            $this->services['voelkel.datatables'] = new \Voelkel\DataTablesBundle\DataTables\ServerSide(
+                $em, new \Voelkel\DataTablesBundle\DataTables\DataToStringConverter('en')
+            );
         }
 
     }

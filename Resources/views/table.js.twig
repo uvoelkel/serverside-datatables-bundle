@@ -15,9 +15,11 @@ var {{ table.name }}_table = $('#{{ table.name }}').DataTable({
         {
             'data': '{{ column.name }}',
             'name': '{{ column.name }}',
+            {% if column.options.abbr is not null -%}
+            'title': '<abbr title="{{ column.label }}">{{ column.options.abbr }}</abbr>',
+            {%- endif %}
             'orderable': {% if column.options.sortable %}true{% else %}false{% endif %},
             'searchable': {% if column.options.searchable %}true{% else %}false{% endif %}
-
         }
         {%- if not loop.last %},
         {% endif %}
@@ -50,6 +52,13 @@ var {{ table.name }}_table = $('#{{ table.name }}').DataTable({
             }
         });
     }
+
+    {%- if options is defined %}
+    ,
+    {% for key, value in options %}
+    '{{ key }}': {{ value | raw }},
+    {% endfor %}
+    {% endif %}
 });
 
 {% for column in table.columns %}
