@@ -10,6 +10,9 @@ class Column
     /** @var string */
     private $field;
 
+    const ORDER_ASCENDING = 'asc';
+    const ORDER_DESCENDING = 'desc';
+
     /** @var array */
     private $options = [
         'sortable' => true,
