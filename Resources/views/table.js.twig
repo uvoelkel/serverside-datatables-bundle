@@ -1,4 +1,4 @@
-var {{ table.name }}_table = $('#{{ table.name }}').DataTable({
+var {{ tableVar }}_table = $('#{{ tableId }}').DataTable({
     'ajax': '{{ path }}',
     'serverSide': true,
     'order': [
@@ -35,8 +35,8 @@ var {{ table.name }}_table = $('#{{ table.name }}').DataTable({
                 return true;
             }
 
-            var $input = $('#{{ table.name }}_' + settings.aoColumns[index].name + '_filter');
-            var $inputEmpty = $('#{{ table.name }}_' + settings.aoColumns[index].name + '_filter_empty');
+            var $input = $('#{{ tableId }}_' + settings.aoColumns[index].name + '_filter');
+            var $inputEmpty = $('#{{ tableId }}_' + settings.aoColumns[index].name + '_filter_empty');
             if (0 < $inputEmpty.length) {
                 if ('|empty=true' == value.substring(value.length - 11)) {
                     $inputEmpty.prop('checked', true);
@@ -64,18 +64,18 @@ var {{ table.name }}_table = $('#{{ table.name }}').DataTable({
 {% for column in table.columns %}
 
     {% if column.options.filter_empty %}
-    var {{ table.name }}_{{ column.name }}_filter_empty = $('#{{ table.name }}_{{ column.name }}_filter_empty').is(':checked')
+    var {{ tableId }}_{{ column.name }}_filter_empty = $('#{{ tableId }}_{{ column.name }}_filter_empty').is(':checked')
 
-    $('#{{ table.name }}_{{ column.name }}_filter_empty').on('change', function() {
-        {{ table.name }}_{{ column.name }}_filter_empty = $(this).is(':checked');
+    $('#{{ tableId }}_{{ column.name }}_filter_empty').on('change', function() {
+        {{ tableId }}_{{ column.name }}_filter_empty = $(this).is(':checked');
 
         {% if column.options.filter == false %}
-        var value = '|empty=' + {{ table.name }}_{{ column.name }}_filter_empty.toString();
-        {{ table.name }}_table.column({{ loop.index0 }})
+        var value = '|empty=' + {{ tableId }}_{{ column.name }}_filter_empty.toString();
+        {{ tableVar }}_table.column({{ loop.index0 }})
                 .search(value)
                 .draw();
         {% else %}
-        $('#{{ table.name }}_{{ column.name }}_filter').trigger('change');
+        $('#{{ tableId }}_{{ column.name }}_filter').trigger('change');
         {% endif %}
     });
     {% endif %}
@@ -83,7 +83,7 @@ var {{ table.name }}_table = $('#{{ table.name }}').DataTable({
 
     {% if column.options.filter == 'text' %}
     var throttle = null;
-    $('#{{ table.name }}_{{ column.name }}_filter').on('keyup change', function() {
+    $('#{{ tableId }}_{{ column.name }}_filter').on('keyup change', function() {
         if (throttle != null) {
             window.clearTimeout(throttle);
             throttle = null;
@@ -91,23 +91,23 @@ var {{ table.name }}_table = $('#{{ table.name }}').DataTable({
 
         var value = $(this).val();
         {% if column.options.filter_empty %}
-        value += '|empty=' + {{ table.name }}_{{ column.name }}_filter_empty.toString();
+        value += '|empty=' + {{ tableVar }}_{{ column.name }}_filter_empty.toString();
         {% endif %}
-        if ({{ table.name }}_table.column({{ loop.index0 }}).search() !== value) {
+        if ({{ tableVar }}_table.column({{ loop.index0 }}).search() !== value) {
             throttle = window.setTimeout(function() {
-                {{ table.name }}_table.column({{ loop.index0 }})
+                {{ tableVar }}_table.column({{ loop.index0 }})
                     .search(value)
                     .draw();
             }, 200);
         }
     });
     {% elseif column.options.filter == 'select' %}
-    $('#{{ table.name }}_{{ column.name }}_filter').on('change', function() {
+    $('#{{ tableId }}_{{ column.name }}_filter').on('change', function() {
         var value = $(this).val();
         {% if column.options.filter_empty %}
-        value += '|empty=' + {{ table.name }}_{{ column.name }}_filter_empty.toString();
+        value += '|empty=' + {{ tableId }}_{{ column.name }}_filter_empty.toString();
         {% endif %}
-        {{ table.name }}_table.column({{ loop.index0 }})
+        {{ tableVar }}_table.column({{ loop.index0 }})
             .search(value)
             .draw();
     });

@@ -45,9 +45,16 @@ class DataTablesExtension extends \Twig_Extension
 
     public function renderHtml(\Twig_Environment $twig, AbstractTableDefinition $table, array $options = [])
     {
+        $tableId = $table->getName();
+        if (isset($options['id'])) {
+            $tableId = $options['id'];
+            unset($options['id']);
+        }
+
         return $twig->render('@VoelkelDataTables/table_' . $this->theme . '.html.twig', [
             'table' => $table,
             'options' => $options,
+            'tableId' => $tableId,
         ]);
     }
 
@@ -59,10 +66,24 @@ class DataTablesExtension extends \Twig_Extension
             ]);
         }
 
+        $tableVar = $table->getName();
+        if (isset($options['var'])) {
+            $tableVar = $options['var'];
+            unset($options['var']);
+        }
+
+        $tableId = $table->getName();
+        if (isset($options['id'])) {
+            $tableId = $options['id'];
+            unset($options['id']);
+        }
+
         return $twig->render('@VoelkelDataTables/table.js.twig', [
             'table' => $table,
             'path' => $path,
             'options' => $options,
+            'tableId' => $tableId,
+            'tableVar' => $tableVar,
         ]);
     }
 

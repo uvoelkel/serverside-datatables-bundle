@@ -1,4 +1,4 @@
-<table id="{{ table.name }}" class="table table-striped_ table-bordered_ table-hover table-condensed_{% if options.class is defined %} {{ options.class }}{% endif %}">
+<table id="{{ tableId }}" class="table table-striped_ table-bordered_ table-hover table-condensed_{% if options.class is defined %} {{ options.class }}{% endif %}">
     <thead>
         {% if table.hasColumnFilter %}
         <tr>
@@ -12,9 +12,9 @@
                 {% endif %}
 
                     {% if column.options.filter == 'text' %}
-                    <input type="text" class="form-control input-sm" id="{{ table.name }}_{{ column.name }}_filter" placeholder="{{ column.label }}">
+                    <input type="text" class="form-control input-sm" id="{{ tableId }}_{{ column.name }}_filter" placeholder="{{ column.label }}">
                     {% elseif column.options.filter == 'select' %}
-                    <select id="{{ table.name }}_{{ column.name }}_filter" title="{{ column.label }}" class="form-control input-sm"{% if column.options.multiple %} multiple="multiple"{% endif %}>
+                    <select id="{{ tableId }}_{{ column.name }}_filter" title="{{ column.label }}" class="form-control input-sm"{% if column.options.multiple %} multiple="multiple"{% endif %}>
 
                         {% if not column.options.multiple %}
                             <option value="">-- {{ column.label }} --</option>
@@ -29,12 +29,12 @@
                     {% if column.options.filter_empty %}
                         {% if group %}
                         <span class="input-group-addon">
-                            <input type="checkbox" id="{{ table.name }}_{{ column.name }}_filter_empty">
+                            <input type="checkbox" id="{{ tableId }}_{{ column.name }}_filter_empty">
                         </span>
                         {% else %}
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" id="{{ table.name }}_{{ column.name }}_filter_empty">
+                                <input type="checkbox" id="{{ tableId }}_{{ column.name }}_filter_empty">
                             </label>
                         </div>
                         {% endif %}
