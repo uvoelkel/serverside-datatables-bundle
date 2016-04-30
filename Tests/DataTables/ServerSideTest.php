@@ -52,7 +52,7 @@ class ServerSideTest extends \PHPUnit_Framework_TestCase
 
         $queryBuilder->expects($this->exactly(1))
             ->method('leftJoin')
-            ->with('u.groups', 'g')
+            ->with('u.groups', 'g_0')
             ->will($this->returnValue($queryBuilder));
 
         $queryBuilder->expects($this->exactly(3))

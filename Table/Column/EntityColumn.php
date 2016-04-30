@@ -10,6 +10,8 @@ class EntityColumn extends Column
     /** @var string[] */
     private $prefixes = [];
 
+    private static $tableWidePrefixes = [];
+
     /**
      * @param string $name
      * @param string $field
@@ -73,26 +75,42 @@ class EntityColumn extends Column
      */
     static public function createEntityPrefix($field)
     {
-        $result = $field[0];
+        $fullField = $field;
+        $prefix = $field[0];
 
         if (false !== ($pos = strpos($field, '_'))) {
             // snake_case
             do {
                 $field = substr($field, $pos + 1);
-                $result .= $field[0];
+                $prefix .= $field[0];
                 $pos = strpos($field, '_');
             } while (false !== $pos);
         } else {
             // camelCase
             $camel = strpbrk($field, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
             while (0 < strlen($camel) && strlen($camel) < strlen($field)) {
-                $result .= strtolower($camel[0]);
+                $prefix .= strtolower($camel[0]);
 
                 $field = $camel;
                 $camel = substr($camel, 1);
                 $camel = strpbrk($camel, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
             }
         }
+
+
+        $number = 0;
+        do {
+            $result = $prefix . '_' . $number;
+
+            if (!isset(self::$tableWidePrefixes[$result])) {
+                self::$tableWidePrefixes[$result] = $fullField;
+                break;
+            } elseif (self::$tableWidePrefixes[$result] === $fullField) {
+                break;
+            } elseif (self::$tableWidePrefixes[$result] !== $fullField) {
+                $number++;
+            }
+        } while (true);
 
         return $result;
     }
