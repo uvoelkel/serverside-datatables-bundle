@@ -23,6 +23,11 @@ abstract class AbstractTableDefinition
     /** @var null|string */
     protected $serviceId;
 
+    protected $options = [
+        'stateSave' => false,
+        'stateDuration' => 7200, // -1 sessionStorage. 0 or greater localStorage. 0 infinite. > 0 duration in seconds
+    ];
+
     /** @var null|callable */
     protected $conditionCallback;
 
@@ -72,10 +77,15 @@ abstract class AbstractTableDefinition
             $this->serviceId = $settings['service'];
         }
 
+        $options = $this->configureOptions();
+        $this->options = array_merge($this->options, $options);
+
         $this->build();
     }
 
     protected function getSettings(array &$settings) { }
+
+    protected function configureOptions() { return []; }
 
     protected function build() { }
 
@@ -109,6 +119,14 @@ abstract class AbstractTableDefinition
     public function getServiceId()
     {
         return $this->serviceId;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOptions()
+    {
+        return $this->options;
     }
 
     /**

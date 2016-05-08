@@ -27,7 +27,8 @@ var {{ tableVar }}_table = $('#{{ tableId }}').DataTable({
 
     ],
 
-    'stateSave': true,
+    'stateSave': {% if table.options.stateSave %}true{% else %}false{% endif %},
+    'stateDuration': {{ table.options.stateDuration }},
     'stateLoaded': function (settings, data) {
         $(data.columns).each(function(index, item) {
             var value = item.search.search;

@@ -128,9 +128,9 @@ class CustomerTable extends AbstractContainerAwareTableDefinition
 
         // ...        
         ->addColumn(new Column('id', 'id', [
-            'format_data_callback' => function ($data, $object, Column $column) {
+            'format_data_callback' => function($data, $object, Column $column) {
                 // but you can here
-                $router = $column->container->get('router');
+                $router = $this->container->get('router');
             },
         ]))
         // ...
@@ -253,6 +253,14 @@ class CustomerTable extends AbstractTableDefinition
 }
 ```
 
+### Table options
+
+```php
+$default = [
+    'stateSave' => false,
+    'stateDuration' => 7200, // -1 sessionStorage. 0 or greater localStorage. 0 infinite. > 0 duration in seconds
+];
+```
 
 ### Column options
 
