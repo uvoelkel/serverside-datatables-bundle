@@ -257,6 +257,15 @@ class ServerSide
      */
     private function applyOrder(QueryBuilder $qb)
     {
+        if (0 === sizeof($this->request->getOrder())) {
+            foreach ($this->table->getColumns() as $column) {
+                if (null !== $column->getOptions()['order']) {
+                    $qb->addOrderBy($this->getPrefixedField($column), $column->getOptions()['order']);
+                }
+            }
+            return;
+        }
+
         $columns = $this->request->getColumns();
         foreach ($this->request->getOrder() as $order) {
             $columnIndex = $order['column'];
