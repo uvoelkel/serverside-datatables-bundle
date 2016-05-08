@@ -20,6 +20,7 @@ abstract class AbstractContainerAwareTableDefinition extends AbstractTableDefini
 
     /**
      * @return null|ContainerInterface
+     * @deprecated
      */
     public function getContainer()
     {

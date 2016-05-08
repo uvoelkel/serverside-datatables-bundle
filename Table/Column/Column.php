@@ -10,6 +10,10 @@ class Column
     /** @var string */
     private $field;
 
+    const FILTER_NONE = false;
+    const FILTER_TEXT = 'text';
+    const FILTER_SELECT = 'select';
+
     const ORDER_ASCENDING = 'asc';
     const ORDER_DESCENDING = 'desc';
 
@@ -30,7 +34,10 @@ class Column
         'abbr' => null,
     ];
 
-    /** @var \Symfony\Component\DependencyInjection\ContainerInterface|null */
+    /**
+     * @var \Symfony\Component\DependencyInjection\ContainerInterface|null
+     * @deprecated use '$this->container' in column callbacks
+     */
     public $container = null;
 
     /**
