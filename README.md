@@ -233,7 +233,6 @@ public function indexAction()
 class CustomerTable extends AbstractTableDefinition
 {
     // ...
-
     protected function build()
     {
         $this
@@ -258,8 +257,24 @@ class CustomerTable extends AbstractTableDefinition
 ```php
 $default = [
     'stateSave' => false,
-    'stateDuration' => 7200, // -1 sessionStorage. 0 or greater localStorage. 0 infinite. > 0 duration in seconds
+    'stateDuration' => 7200,
 ];
+```
+
+- 'stateDuration': -1 sessionStorage. 0 or greater localStorage. 0 infinite. > 0 duration in seconds
+
+```php
+class CustomerTable extends AbstractTableDefinition
+{
+    // ...
+    protected function configureOptions()
+    {
+        return [
+            'stateSave' => true,
+            'stateDuration' => 120,
+        ];
+    }
+}
 ```
 
 ### Column options
