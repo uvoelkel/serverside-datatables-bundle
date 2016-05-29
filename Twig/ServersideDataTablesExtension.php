@@ -2,28 +2,29 @@
 
 namespace Voelkel\DataTablesBundle\Twig;
 
-use Symfony\Component\Routing\RouterInterface;
-use Voelkel\DataTablesBundle\Table\AbstractTableDefinition;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Voelkel\DataTablesBundle\Table\AbstractDataTable;
 
 /**
  * @codeCoverageIgnore
  */
-class DataTablesExtension extends \Twig_Extension
+class ServersideDataTablesExtension extends \Twig_Extension
 {
-    /** @var RouterInterface */
-    private $router;
-
-    /** @var string */
-    private $theme;
+    /** @var ContainerInterface */
+    private $container;
 
     /**
-     * @param RouterInterface $router
-     * @param string $theme
+     * @var string
+     * @deprecated
      */
-    public function __construct(RouterInterface $router, $theme)
+    private $theme = 'bootstrap3';
+
+    /**
+     * @param ContainerInterface $container
+     */
+    public function __construct(ContainerInterface $container)
     {
-        $this->router = $router;
-        $this->theme = $theme;
+        $this->container = $container;
     }
 
     /**
@@ -43,8 +44,10 @@ class DataTablesExtension extends \Twig_Extension
         ];
     }
 
-    public function renderHtml(\Twig_Environment $twig, AbstractTableDefinition $table, array $options = [])
+    public function renderHtml(\Twig_Environment $twig, AbstractDataTable $table, array $options = [])
     {
+        $table->setContainer($this->container);
+
         $tableId = $table->getName();
         if (isset($options['id'])) {
             $tableId = $options['id'];
@@ -58,10 +61,12 @@ class DataTablesExtension extends \Twig_Extension
         ]);
     }
 
-    public function renderJavascript(\Twig_Environment $twig, AbstractTableDefinition $table, $path = null, $options = [])
+    public function renderJavascript(\Twig_Environment $twig, AbstractDataTable $table, $path = null, $options = [])
     {
+        $table->setContainer($this->container);
+
         if (null === $path) {
-            $path = $this->router->generate('serverside_datatables_list', [
+            $path = $this->container->get('router')->generate('serverside_datatables_list', [
                 'table' => null !== $table->getServiceId() ? $table->getServiceId() : get_class($table),
             ]);
         }
@@ -92,6 +97,6 @@ class DataTablesExtension extends \Twig_Extension
      */
     public function getName()
     {
-        return 'datatables_extension';
+        return 'serverside_datatables_extension';
     }
 }

@@ -6,6 +6,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ScopeInterface;
 use Voelkel\DataTablesBundle\Controller\ServerSideController;
+use Voelkel\DataTablesBundle\DataTables\TableOptionsFactory;
 use Voelkel\DataTablesBundle\Table\AbstractTableDefinition;
 
 class TestServerSide
@@ -23,13 +24,15 @@ class TestContainer implements ContainerInterface
     public function __construct(\Doctrine\ORM\EntityManagerInterface $em = null)
     {
         if (null === $em) {
-            $this->services['voelkel.datatables'] = new TestServerSide();
+            $this->services['serverside_datatables'] = new TestServerSide();
         } else {
-            $this->services['voelkel.datatables'] = new \Voelkel\DataTablesBundle\DataTables\ServerSide(
+            $this->services['serverside_datatables'] = new \Voelkel\DataTablesBundle\DataTables\ServerSide(
                 $em, new \Voelkel\DataTablesBundle\DataTables\DataToStringConverter('en')
             );
         }
 
+
+        $this->services['serverside_datatables.table_options_factory'] = new TableOptionsFactory([]);
     }
 
     public function get($id, $invalidBehavior = self::EXCEPTION_ON_INVALID_REFERENCE)
@@ -37,7 +40,7 @@ class TestContainer implements ContainerInterface
         return $this->services[$id];
     }
 
-    public function set($id, $service, $scope = self::SCOPE_CONTAINER)
+    public function set($id, $service, $scope = null) // = self::SCOPE_CONTAINER)
     {
         $this->services[$id] = $service;
     }
@@ -55,6 +58,7 @@ class TestContainer implements ContainerInterface
     public function addScope(ScopeInterface $scope) {}
     public function hasScope($name) {}
     public function isScopeActive($name) {}
+    public function initialized($id) { return true; }
 }
 
 class ServerSideControllerTest extends \PHPUnit_Framework_TestCase //KernelTestCase

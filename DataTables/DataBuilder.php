@@ -2,7 +2,7 @@
 
 namespace Voelkel\DataTablesBundle\DataTables;
 
-use Voelkel\DataTablesBundle\Table\AbstractTableDefinition;
+use Voelkel\DataTablesBundle\Table\AbstractDataTable;
 use Voelkel\DataTablesBundle\Table\Column\Column;
 use Voelkel\DataTablesBundle\Table\Column\EntityColumn;
 use Voelkel\DataTablesBundle\Table\Column\EntitiesColumn;
@@ -11,14 +11,14 @@ use Voelkel\DataTablesBundle\Table\Column\EntitiesCountColumn;
 class DataBuilder
 {
     /**
-     * @param AbstractTableDefinition $table
+     * @param AbstractDataTable $table
      * @param \Doctrine\ORM\QueryBuilder $qb
      * @param Response $response
      * @param DataToStringConverter $dataToStringConverter
      * @throws \Exception
      */
     static public function build(
-        AbstractTableDefinition $table,
+        AbstractDataTable $table,
         \Doctrine\ORM\QueryBuilder $qb,
         Response $response,
         DataToStringConverter $dataToStringConverter

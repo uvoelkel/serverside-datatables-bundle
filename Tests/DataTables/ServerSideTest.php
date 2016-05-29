@@ -115,6 +115,7 @@ class ServerSideTest extends \PHPUnit_Framework_TestCase
 
 
         $table = new TestTable();
+        $table->setContainer(null);
 
         $sfRequest = new \Symfony\Component\HttpFoundation\Request([
             'draw' => 42,

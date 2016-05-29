@@ -34,11 +34,32 @@ class Column
         'abbr' => null,
     ];
 
-    /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface|null
-     * @deprecated use '$this->container' in column callbacks
-     */
-    public $container = null;
+    private $fields = [];
+
+    public function __get($name)
+    {
+        if (!isset($this->fields[$name])) {
+            return null;
+        }
+
+        if ('container' === $name) {
+            @trigger_error(
+                'The "container" property is deprecated. Use "$this->container" in column callbacks instead.',
+                E_USER_DEPRECATED
+            );
+        }
+
+        return $this->fields[$name];
+    }
+
+    public function __set($name, $value)
+    {
+        if ('container' !== $name) {
+            throw new \Exception('magic setter is for deprecated fields only.');
+        }
+
+        $this->fields[$name] = $value;
+    }
 
     /**
      * @param string $name

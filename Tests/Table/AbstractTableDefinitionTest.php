@@ -20,12 +20,15 @@ class AbstractTableDefinitionTest extends \PHPUnit_Framework_TestCase
     public function testTableDefinitionConstructor()
     {
         $table = new TableDefinition('AppBundle\Entity\Test', 'test');
+        $table->setContainer(null);
+
         $this->assertEquals('t', $table->getPrefix());
     }
 
     public function testGetters()
     {
         $table = new TestDefinition('AppBundle\Entity\Test', 'test');
+        $table->setContainer(null);
 
         $this->assertEquals('AppBundle\Entity\Test', $table->getEntity());
         $this->assertEquals('test', $table->getName());

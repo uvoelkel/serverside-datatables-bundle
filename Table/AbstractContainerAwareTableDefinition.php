@@ -2,28 +2,18 @@
 
 namespace Voelkel\DataTablesBundle\Table;
 
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-
-abstract class AbstractContainerAwareTableDefinition extends AbstractTableDefinition implements ContainerAwareInterface
+/**
+ * @deprecated
+ */
+abstract class AbstractContainerAwareTableDefinition extends AbstractTableDefinition
 {
-    /** @var \Symfony\Component\DependencyInjection\ContainerInterface|null */
-    protected $container = null;
-
-    /**
-     * @inheritdoc
-     */
-    public function setContainer(ContainerInterface $container = null)
+    public function __construct($entity = null, $name = null, $serviceId = null)
     {
-        $this->container = $container;
-    }
+        @trigger_error(
+            'The '.__CLASS__.' class is deprecated. Use the Voelkel\DataTablesBundle\AbstractDataTable class instead.',
+            E_USER_DEPRECATED
+        );
 
-    /**
-     * @return null|ContainerInterface
-     * @deprecated
-     */
-    public function getContainer()
-    {
-        return $this->container;
+        parent::__construct($entity, $name, $serviceId, false);
     }
 }

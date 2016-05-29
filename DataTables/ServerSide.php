@@ -4,8 +4,7 @@ namespace Voelkel\DataTablesBundle\DataTables;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
-use Voelkel\DataTablesBundle\Table\AbstractContainerAwareTableDefinition;
-use Voelkel\DataTablesBundle\Table\AbstractTableDefinition;
+use Voelkel\DataTablesBundle\Table\AbstractDataTable;
 use Voelkel\DataTablesBundle\DataTables\Request as DataTablesRequest;
 use Voelkel\DataTablesBundle\Table\Column\Column;
 use Voelkel\DataTablesBundle\Table\Column\EntitiesColumn;
@@ -20,7 +19,7 @@ class ServerSide
     /** @var DataToStringConverter */
     private $dataConverter;
 
-    /** @var AbstractTableDefinition */
+    /** @var AbstractDataTable */
     private $table;
 
     /** @var \Voelkel\DataTablesBundle\DataTables\Request */
@@ -43,12 +42,12 @@ class ServerSide
     }
 
     /**
-     * @param AbstractTableDefinition $table
+     * @param AbstractDataTable $table
      * @param \Symfony\Component\HttpFoundation\Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \Exception
      */
-    public function processRequest(AbstractTableDefinition $table, \Symfony\Component\HttpFoundation\Request $request)
+    public function processRequest(AbstractDataTable $table, \Symfony\Component\HttpFoundation\Request $request)
     {
         $this->table = $table;
         $this->request = new DataTablesRequest($request);
@@ -110,13 +109,8 @@ class ServerSide
 
         $qb = $repository->createQueryBuilder($this->table->getPrefix());
 
-        $container = null;
-        if ($this->table instanceof AbstractContainerAwareTableDefinition) {
-            $container = $this->table->getContainer();
-        }
-
         foreach ($this->table->getColumns() as $column) {
-            $column->container = $container;
+            $column->__set('container', $this->table->getContainer());
 
             /** @var EntityColumn $column */
             if (get_class($column) === 'Voelkel\DataTablesBundle\Table\Column\EntityColumn') {

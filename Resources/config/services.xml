@@ -4,24 +4,23 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
-    <parameters>
-        <parameter key="voelkel.datatables.theme">bootstrap3</parameter>
-    </parameters>
-
     <services>
-        <service id="voelkel.datatables.twig_extension" class="Voelkel\DataTablesBundle\Twig\DataTablesExtension" public="false">
+        <service id="serverside_datatables.twig_extension" class="Voelkel\DataTablesBundle\Twig\ServersideDataTablesExtension" public="false">
             <tag name="twig.extension" />
-            <argument type="service" id="router" />
-            <argument type="string">%voelkel.datatables.theme%</argument>
+            <argument type="service" id="service_container" />
         </service>
 
-        <service id="voelkel.datatables.data_to_string_converter" class="Voelkel\DataTablesBundle\DataTables\DataToStringConverter" public="false">
+        <service id="serverside_datatables.table_options_factory" class="Voelkel\DataTablesBundle\DataTables\TableOptionsFactory">
+            <argument>%serverside_datatables.table_options%</argument>
+        </service>
+
+        <service id="serverside_datatables.data_to_string_converter" class="Voelkel\DataTablesBundle\DataTables\DataToStringConverter" public="false">
             <argument type="string">%locale%</argument>
         </service>
 
-        <service id="voelkel.datatables" class="Voelkel\DataTablesBundle\DataTables\ServerSide">
+        <service id="serverside_datatables" class="Voelkel\DataTablesBundle\DataTables\ServerSide">
             <argument type="service" id="doctrine.orm.entity_manager" />
-            <argument type="service" id="voelkel.datatables.data_to_string_converter" />
+            <argument type="service" id="serverside_datatables.data_to_string_converter" />
         </service>
     </services>
 
