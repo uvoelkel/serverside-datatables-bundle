@@ -20,4 +20,9 @@ class TableOptionsFactory
 
         return $options;
     }
+
+    public function getDefaultOptions()
+    {
+        return \Voelkel\DataTablesBundle\Table\TableOptions::getDefaultOptions();
+    }
 }

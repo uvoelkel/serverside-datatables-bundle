@@ -49,10 +49,6 @@ abstract class AbstractDataTable implements ContainerAwareInterface
     /** @var \Symfony\Component\DependencyInjection\ContainerInterface|null */
     protected $container = null;
 
-    public function __construct()
-    {
-    }
-
     /**
      * @inheritdoc
      */
@@ -91,10 +87,20 @@ abstract class AbstractDataTable implements ContainerAwareInterface
 
     /**
      * @return null|ContainerInterface
+     * @internal
      */
     public function getContainer()
     {
         return $this->container;
+    }
+
+    public function get($serviceId)
+    {
+        if (null === $this->container) {
+            return null;
+        }
+
+        return $this->container->get($serviceId);
     }
 
     //protected function getSettings(array &$settings) { }

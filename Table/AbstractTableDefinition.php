@@ -24,7 +24,5 @@ abstract class AbstractTableDefinition extends AbstractDataTable
         $this->entity = $entity;
         $this->name = $name;
         $this->serviceId = $serviceId;
-        
-        parent::__construct();
     }
 }
