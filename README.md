@@ -58,19 +58,21 @@ Create a Table definition
 
 namespace AppBundle\DataTable;
 
-use Voelkel\DataTablesBundle\Table\AbstractTableDefinition;
+use Voelkel\DataTablesBundle\Table\AbstractDataTable;
+use Voelkel\DataTablesBundle\Table\TableOptions;
+use Voelkel\DataTablesBundle\Table\TableSettings;
 use Voelkel\DataTablesBundle\Table\Column\Column;
 use Voelkel\DataTablesBundle\Table\Column\UnboundColumn;
 use Voelkel\DataTablesBundle\Table\Column\CallbackColumn;
 use Voelkel\DataTablesBundle\Table\Column\EntityColumn;
 use Voelkel\DataTablesBundle\Table\Column\EntitiesColumn;    
 
-class CustomerTable extends AbstractTableDefinition
+class CustomerTable extends AbstractDataTable
 {
-    protected function getSettings(array &$settings)
+    protected function configure(TableSettings $settings, TableOptions $options)
     {
-        $settings['name'] = 'customer';
-        $settings['entity'] = 'AppBundle\Entity\Customer';
+        $settings->setName('customer');
+        $settings->setEntity('AppBundle\Entity\Customer');
     }
 
     protected function build()
@@ -104,36 +106,12 @@ class CustomerTable extends AbstractTableDefinition
                 'edit' => [
                     'title' => 'edit customer',
                     'label' => '<i class="fa fa-edit"></i>',
-                    'callback' => function(Customer $customer) {
-                        // to inject symfony's router define the table definition as a service (see below)
-                        return '/customer/' . $customer->getId() . '/edit/';
+                    'callback' => function(Customer $customer, \Symfony\Component\Routing\RouterInterface $router) {
+                        return $router->generate('customer_edit', ['id' => $customer->getId()]);
                     },
                 ],
             ])
         ;
-    }
-}
-```
-
-Container aware table definition
-
-```php
-use Voelkel\DataTablesBundle\Table\AbstractContainerAwareTableDefinition;
-
-class CustomerTable extends AbstractContainerAwareTableDefinition
-{
-    protected function build()
-    {
-        // you can't access the container here
-
-        // ...        
-        ->addColumn(new Column('id', 'id', [
-            'format_data_callback' => function($data, $object, Column $column) {
-                // but you can here
-                $router = $this->container->get('router');
-            },
-        ]))
-        // ...
     }
 }
 ```
@@ -177,6 +155,31 @@ And in your index template
         </script>
     {% endblock %}
 
+### Access DI container
+
+```php
+use Voelkel\DataTablesBundle\Table\AbstractDataTable;
+
+class CustomerTable extends AbstractDataTable
+{
+    protected function build()
+    {
+        $service = $this->container->get('service');
+        // or short
+        $service = $this->get('service');
+
+        // ...
+        ->addColumn(new Column('id', 'id', [
+            'format_data_callback' => function($data, $object, Column $column) {
+                $router = $this->container->get('router');
+                // or
+                $router = $this->get('router');
+            },
+        ]))
+        // ...
+    }
+}
+```
 
 ### Table definition as a service
 
@@ -198,15 +201,13 @@ private $myAwesomeService;
 public function __construct($myAwesomeService)
 {
     $this->myAwesomeService = $myAwesomeService;
-
-    parent::__construct();
 }
 
-protected function getSettings(array &$settings)
+protected function configure(TableSettings $settings, TableOptions $options)
 {
-    $settings['name'] = 'customer';
-    $settings['entity'] = 'AppBundle\Entity\Customer';
-    $settings['service'] = 'app.table.customer';
+    $settings->setName('customer');
+    $settings->setEntity('AppBundle\Entity\Customer');
+    $settings->setServiceId('app.table.customer');
 }
 ```
 
@@ -230,7 +231,7 @@ public function indexAction()
 
 // ...
 
-class CustomerTable extends AbstractTableDefinition
+class CustomerTable extends AbstractDataTable
 {
     // ...
     protected function build()
