@@ -212,6 +212,8 @@ abstract class AbstractDataTable implements ContainerAwareInterface
             $this->hasColumnFilter = true;
         }
 
+        $column->setTable($this);
+
         return $this;
     }
 

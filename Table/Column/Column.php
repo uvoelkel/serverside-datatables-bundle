@@ -10,6 +10,9 @@ class Column
     /** @var string */
     private $field;
 
+    /** @var \Voelkel\DataTablesBundle\Table\AbstractDataTable */
+    private $table;
+
     const FILTER_NONE = false;
     const FILTER_TEXT = 'text';
     const FILTER_SELECT = 'select';
@@ -100,6 +103,22 @@ class Column
     public function getOptions()
     {
         return $this->options;
+    }
+
+    /**
+     * @return \Voelkel\DataTablesBundle\Table\AbstractDataTable
+     */
+    public function getTable()
+    {
+        return $this->table;
+    }
+
+    /**
+     * @param \Voelkel\DataTablesBundle\Table\AbstractDataTable $table
+     */
+    public function setTable($table)
+    {
+        $this->table = $table;
     }
 
     /**

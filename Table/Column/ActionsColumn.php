@@ -6,14 +6,11 @@ class ActionsColumn extends UnboundColumn
 {
     public function __construct($name, array $actions, array $options = [])
     {
-        //$options['dropdown'] = false;
-
-        $callback = function ($data, $object, ActionsColumn $column) use ($actions) {
+        $callback = function ($data) use ($actions, $options) {
 
             $result = '';
 
-            $options = $column->getOptions();
-            $isDropdown = (true === $options['dropdown']);
+            $isDropdown = isset($options['dropdown']) && (true === $options['dropdown']);
             if ($isDropdown) {
                 $default = null;
                 foreach ($actions as $action => $settings) {
@@ -37,27 +34,42 @@ class ActionsColumn extends UnboundColumn
                 }
 
                 $result .= '<ul class="dropdown-menu dropdown-menu-right">';
+            } else {
+                $result .= '<div class="btn-group btn-group-xs">';
             }
 
+            /** @var \Symfony\Component\Routing\RouterInterface $router */
+            $router = $this->getTable()->get('router');
+
             foreach ($actions as $action => $settings) {
-                $url = call_user_func($settings['callback'], $data);
+                $url = null;
+
+                if (isset($settings['callback'])) {
+                    $url = call_user_func($settings['callback'], $data, $router);
+                } elseif (isset($settings['route']) && method_exists($data, 'getId')) {
+                    $url = $router->generate($settings['route'], ['id' => $data->getId()]);
+                }
+
                 if (!is_string($url)) {
                     continue;
                 }
 
-                $title = isset($settings['title']) ? $settings['title'] : $action;
+                $label = isset($settings['label']) ? $settings['label'] : $action;
+                $title = isset($settings['title']) ? $settings['title'] : $label;
 
                 if ($isDropdown) {
-                    $link = '<a href="' . $url . '" title="' . $title . '">' . $settings['label'] . ' ' . $title . '</a> ';
+                    $link = '<a href="' . $url . '" title="' . $title . '">' . $label . '</a> ';
                     $result .= '<li>' . $link . '</li>';
                 } else {
-                    $link = '<a href="' . $url . '" title="' . $title . '">' . $settings['label'] . '</a> ';
+                    $link = '<a class="btn btn-default" href="' . $url . '" title="' . $title . '">' . $label . '</a> ';
                     $result .= $link;
                 }
             }
 
             if ($isDropdown) {
                 $result .= '</ul></div>';
+            } else {
+                $result .= '</div>';
             }
 
             return $result;
