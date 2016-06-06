@@ -32,7 +32,7 @@ class TestContainer implements ContainerInterface
         }
 
 
-        $this->services['serverside_datatables.table_options_factory'] = new TableOptionsFactory([]);
+        $this->services['serverside_datatables.table_options_factory'] = new TableOptionsFactory([], 'en');
     }
 
     public function get($id, $invalidBehavior = self::EXCEPTION_ON_INVALID_REFERENCE)
