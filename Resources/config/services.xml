@@ -11,7 +11,8 @@
         </service>
 
         <service id="serverside_datatables.table_options_factory" class="Voelkel\DataTablesBundle\DataTables\TableOptionsFactory">
-            <argument>%serverside_datatables.table_options%</argument>
+            <argument>%serverside_datatables.config%</argument>
+            <argument>%kernel.default_locale%</argument>
         </service>
 
         <service id="serverside_datatables.data_to_string_converter" class="Voelkel\DataTablesBundle\DataTables\DataToStringConverter" public="false">

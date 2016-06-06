@@ -4,11 +4,14 @@ namespace Voelkel\DataTablesBundle\DataTables;
 
 class TableOptionsFactory
 {
-    private $configurationOptions;
+    private $configuration;
 
-    public function __construct($configurationOptions)
+    private $defaultLocale;
+
+    public function __construct($configuration, $defaultLocale)
     {
-        $this->configurationOptions = $configurationOptions;
+        $this->configuration = $configuration;
+        $this->defaultLocale = $defaultLocale;
     }
 
     /**
@@ -23,6 +26,8 @@ class TableOptionsFactory
 
     public function getDefaultOptions()
     {
-        return \Voelkel\DataTablesBundle\Table\TableOptions::getDefaultOptions();
+        $default = \Voelkel\DataTablesBundle\Table\TableOptions::getDefaultOptions($this->defaultLocale);
+        $default->merge($this->configuration['table_options']);
+        return $default;
     }
 }

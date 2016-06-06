@@ -10,7 +10,7 @@ class TableOptions implements \ArrayAccess
     const PAGING_TYPE_FULL              = 'full';           // 'First', 'Previous', 'Next' and 'Last' buttons
     const PAGING_TYPE_FULL_NUMBERS      = 'full_numbers';   // 'First', 'Previous', 'Next' and 'Last' buttons, plus page numbers
 
-    static function getDefaultOptions()
+    static function getDefaultOptions($locale)
     {
         $options = new TableOptions();
         $options->data = [
@@ -18,20 +18,48 @@ class TableOptions implements \ArrayAccess
             'pageLength' => 25,
             'autoWidth' => false,
             'pagingType' => TableOptions::PAGING_TYPE_NUMBERS,
-            //'lengthMenu' => [ [ 10, 25, 50, 100 ], [ 10, 25, 50, 100 ] ],
+            //'lengthMenu' => '[ [ 10, 25, 50, 100 ], [ 10, 25, 50, 100 ] ]',
+            //'dom' => "<'row'<'col-sm-12'pl>>" . "<'row'<'col-sm-12'<'table-responsive'tr>>>" . "<'row'<'col-xs-12'<'hr'>><'col-sm-5'i><'col-sm-7'p>>",
         ];
+
+        if ('de' === $locale) {
+            $options->data['language'] = [
+                'processing' => 'Bitte warten...',
+                'search' => 'Suchen',
+                'lengthMenu' => '_MENU_', // _MENU_ Einträge anzeigen",
+                'info' => '_START_ bis _END_ von _TOTAL_ Einträgen',
+                'infoEmpty' => '0 bis 0 von 0 Einträgen',
+                'infoFiltered' => '(gefiltert aus _MAX_ Einträgen)',
+                'infoPostFix' => '',
+                'loadingRecords' => 'Wird geladen...',
+                'zeroRecords' => 'Keine Einträge vorhanden',
+                'emptyTable' => 'Keine Daten in der Tabelle vorhanden',
+                'paginate' => [
+                    'first' => 'Erste',
+                    'previous' => 'Zurück',
+                    'next' => 'Weiter',
+                    'last' => 'Letzte',
+                ],
+                'aria' => [
+                    'sortAscending' => ': aktivieren, um Spalte aufsteigend zu sortieren',
+                    'sortDescending' => ': aktivieren, um Spalte absteigend zu sortieren',
+                ],
+            ];
+        }
 
         return $options;
     }
-
-
-
 
     private $data = [];
 
     public function all()
     {
         return $this->data;
+    }
+
+    public function merge($options = [])
+    {
+        $this->data = array_merge_recursive($this->data, $options);
     }
 
     /**

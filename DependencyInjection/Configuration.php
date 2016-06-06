@@ -37,6 +37,11 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
+                ->arrayNode('table_options')
+                ->children()
+                    ->scalarNode('dom')
+                    ->end()
+                ->end()
             ->end();
 
         return $treeBuilder;

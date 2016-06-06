@@ -23,7 +23,14 @@ class VoelkelDataTablesExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
 
-        $options = isset($config['options']) ? $config['options'] : [];
-        $container->setParameter('serverside_datatables.table_options', $options);
+        if (!isset($config['options'])) {
+            $config['options'] = [];
+        }
+
+        if (!isset($config['table_options'])) {
+            $config['table_options'] = [];
+        }
+
+        $container->setParameter('serverside_datatables.config', $config);
     }
 }

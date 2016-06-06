@@ -86,13 +86,13 @@ class ServersideDataTablesExtension extends \Twig_Extension
                     $result .= "'" . $key . "': ";
 
                     if (is_string($value)) {
-                        $result .= "'" . $value . "'";
+                        $result .= '"' . $value . '"';
                     } elseif (is_int($value)) {
                         $result .= $value;
                     } elseif (is_bool($value)) {
                         $result .= $value ? 'true' : 'false';
                     } elseif (is_array($value)) {
-                        $result .= $render($value, $depth + 1);
+                        $result .= "{\n" . $render($value, $depth + 1) . "\n" . str_repeat("\t", $depth) . "}";
                     } else {
                         throw new \Exception('unhandled value ' . $value);
                     }
