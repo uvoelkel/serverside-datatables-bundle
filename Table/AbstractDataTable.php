@@ -40,6 +40,13 @@ abstract class AbstractDataTable implements ContainerAwareInterface
      */
     protected $resultCallback;
 
+    /**
+     * @var null|callable
+     *
+     * function($enity, \Voelkel\DataTablesBundle\Table\AbstractDataTable $table)
+     */
+    protected $rowCallback;
+
     /** @var bool */
     protected $hasCountColumns = false;
 
@@ -271,6 +278,22 @@ abstract class AbstractDataTable implements ContainerAwareInterface
     public function getResultCallback()
     {
         return $this->resultCallback;
+    }
+
+    /**
+     * @param callable $callback
+     */
+    public function setRowCallback(callable $callback)
+    {
+        $this->rowCallback = $callback;
+    }
+
+    /**
+     * @return callable|null
+     */
+    public function getRowCallback()
+    {
+        return $this->rowCallback;
     }
 
     /**

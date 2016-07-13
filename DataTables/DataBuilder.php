@@ -21,7 +21,8 @@ class DataBuilder
         AbstractDataTable $table,
         \Doctrine\ORM\QueryBuilder $qb,
         Response $response,
-        DataToStringConverter $dataToStringConverter
+        DataToStringConverter $dataToStringConverter,
+        $rowCallback = null
     ) {
         $entities = $qb->getQuery()->getResult();
 
@@ -38,6 +39,11 @@ class DataBuilder
                 $tmp['DT_RowAttr'] = ['data-entity' => $entity->getId()];
                 // DT_RowClass
                 // DT_RowData
+            }
+
+            if (is_callable($rowCallback)) {
+                $cbResult = $rowCallback($entity, $table);
+                $tmp = array_merge($tmp, $cbResult);
             }
 
             foreach ($table->getColumns() as $column) {

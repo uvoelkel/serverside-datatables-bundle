@@ -93,7 +93,14 @@ class ServerSide
         if (null !== $resultCallback) {
             call_user_func($resultCallback, $this->table, $qb, $response, $this->dataConverter);
         } else {
-            call_user_func(['Voelkel\DataTablesBundle\DataTables\DataBuilder', 'build'], $this->table, $qb, $response, $this->dataConverter);
+            call_user_func(
+                ['Voelkel\DataTablesBundle\DataTables\DataBuilder', 'build'],
+                $this->table,
+                $qb,
+                $response,
+                $this->dataConverter,
+                $this->table->getRowCallback()
+            );
         }
 
         return $response->create();
