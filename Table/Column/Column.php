@@ -24,6 +24,7 @@ class Column
     private $options = [
         'sortable' => true,
         'searchable' => true,
+        'width' => null,
         'filter' => false, // false|'text'|'select' todo: |'bool'|'date'|'datetime'|'date_range'|'datetime_range'|\Voelkel\DataTablesBundle\Table\Filter\FilterInterface
         'filter_choices' => [], // 'filter' => 'select' only
         'filter_query' => '%f%',

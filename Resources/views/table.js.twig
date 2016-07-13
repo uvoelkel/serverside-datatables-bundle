@@ -18,6 +18,9 @@ var {{ tableVar }}_table = $('#{{ tableId }}').DataTable({
             {% if column.options.abbr is not null -%}
             'title': '<abbr title="{{ column.label }}">{{ column.options.abbr }}</abbr>',
             {%- endif %}
+            {% if column.options.width is not null -%}
+            'width': '{{ column.options.width }}',
+            {%- endif %}
             'orderable': {% if column.options.sortable %}true{% else %}false{% endif %},
             'searchable': {% if column.options.searchable %}true{% else %}false{% endif %}
         }
