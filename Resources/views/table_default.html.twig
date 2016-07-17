@@ -1,5 +1,5 @@
 <table id="{{ table.name }}"{% if options.class is defined %} class="{{ options.class }}"{% endif %}>
-    <thead>
+    <thead{% if table.hasColumnFilter %} class="has_filter"{% endif %}>
         {% if table.hasColumnFilter %}
         <tr>
             {% for column in table.columns %}

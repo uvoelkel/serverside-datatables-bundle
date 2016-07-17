@@ -53,6 +53,8 @@ var {{ tableVar }}_table = $('#{{ tableId }}').DataTable({
 
             if (1 === $input.length) {
                 $input.val(value);
+                $input.closest('th').addClass('filtered');
+                //$input.closest('thead').addClass('filtered');
             }
         });
     }
@@ -97,6 +99,14 @@ var {{ tableVar }}_table = $('#{{ tableId }}').DataTable({
         {% if column.options.filter_empty %}
         value += '|empty=' + {{ tableVar }}_{{ column.name }}_filter_empty.toString();
         {% endif %}
+
+        var empty = (value == '' || value == '|empty=false');
+        if (empty) {
+            $(this).closest('th').removeClass('filtered');
+        } else {
+            $(this).closest('th').addClass('filtered');
+        }
+
         if ({{ tableVar }}_table.column({{ loop.index0 }}).search() !== value) {
             throttle = window.setTimeout(function() {
                 {{ tableVar }}_table.column({{ loop.index0 }})
@@ -111,6 +121,14 @@ var {{ tableVar }}_table = $('#{{ tableId }}').DataTable({
         {% if column.options.filter_empty %}
         value += '|empty=' + {{ tableId }}_{{ column.name }}_filter_empty.toString();
         {% endif %}
+
+        var empty = (value == '' || value == '|empty=false');
+        if (empty) {
+            $(this).closest('th').removeClass('filtered');
+        } else {
+            $(this).closest('th').addClass('filtered');
+        }
+
         {{ tableVar }}_table.column({{ loop.index0 }})
             .search(value)
             .draw();

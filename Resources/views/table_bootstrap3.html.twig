@@ -1,5 +1,5 @@
 <table id="{{ tableId }}" class="table table-striped_ table-bordered_ table-hover table-condensed_{% if options.class is defined %} {{ options.class }}{% endif %}">
-    <thead>
+    <thead{% if table.hasColumnFilter %} class="has_filter"{% endif %}>
         {% if table.hasColumnFilter %}
         <tr>
             {% for column in table.columns %}
