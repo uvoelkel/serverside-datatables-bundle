@@ -4,6 +4,7 @@ namespace Voelkel\DataTablesBundle\DataTables;
 
 use Voelkel\DataTablesBundle\Table\AbstractDataTable;
 use Voelkel\DataTablesBundle\Table\Column\Column;
+use Voelkel\DataTablesBundle\Table\Column\EntitiesScalarColumn;
 use Voelkel\DataTablesBundle\Table\Column\EntityColumn;
 use Voelkel\DataTablesBundle\Table\Column\EntitiesColumn;
 use Voelkel\DataTablesBundle\Table\Column\EntitiesCountColumn;
@@ -28,7 +29,7 @@ class DataBuilder
 
         foreach ($entities as $result) {
             $entity = $result;
-            if ($table->getHasCountColumns()) {
+            if ($table->getHasScalarColumns()) {
                 $entity = $result[0];
             }
 
@@ -47,10 +48,12 @@ class DataBuilder
             }
 
             foreach ($table->getColumns() as $column) {
-                if (!($column instanceof EntitiesCountColumn)) {
-                    $tmp[$column->getName()] = self::getColumnProperty($entity, $column, $dataToStringConverter);
-                } else {
+                if ($column instanceof EntitiesCountColumn) {
                     $tmp[$column->getName()] = $result[$column->getField() . '_count'];
+                } elseif ($column instanceof EntitiesScalarColumn) {
+                    $tmp[$column->getName()] = $result[$column->getField() . '_' . $column->getOperation()];
+                } else {
+                    $tmp[$column->getName()] = self::getColumnProperty($entity, $column, $dataToStringConverter);
                 }
             }
 

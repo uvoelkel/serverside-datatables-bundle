@@ -8,6 +8,7 @@ use Voelkel\DataTablesBundle\Table\AbstractDataTable;
 use Voelkel\DataTablesBundle\DataTables\Request as DataTablesRequest;
 use Voelkel\DataTablesBundle\Table\Column\Column;
 use Voelkel\DataTablesBundle\Table\Column\EntitiesColumn;
+use Voelkel\DataTablesBundle\Table\Column\EntitiesScalarColumn;
 use Voelkel\DataTablesBundle\Table\Column\EntityColumn;
 use Voelkel\DataTablesBundle\Table\Column\EntitiesCountColumn;
 
@@ -67,14 +68,16 @@ class ServerSide
         call_user_func_array([$qb, 'select'], $prefixes);
 
         // add count
-        if ($this->table->getHasCountColumns()) {
+        if ($this->table->getHasScalarColumns()) {
             foreach ($this->table->getColumns() as $column) {
                 if ($column instanceof EntitiesCountColumn) {
                     $qb->addSelect('count(' . $column->getEntityPrefix() . ') as ' . $column->getField() . '_count'); // '.' .  $column->getField() .
+                } elseif ($column instanceof EntitiesScalarColumn) {
+                    $qb->addSelect($column->getOperation() . '(' . $column->getEntityPrefix() . '.' . $column->getEntityField() . ') as ' . $column->getField() . '_' . $column->getOperation()); // '.' .  $column->getField() .
+                    $qb->addGroupBy($this->table->getPrefix() . '.id');
                 }
             }
         }
-
 
         // order
         $this->applyOrder($qb);
@@ -82,6 +85,19 @@ class ServerSide
         // paginate
         $paginate = clone $qb;
         $paginate->select('distinct(' . $this->table->getPrefix() . '.' . $this->getIdentifierField() . ')');
+
+        // add scalar fields as hidden (todo: clean up this mess)
+        if ($this->table->getHasScalarColumns()) {
+            foreach ($this->table->getColumns() as $column) {
+                if ($column instanceof EntitiesCountColumn) {
+                    $paginate->addSelect('count(' . $column->getEntityPrefix() . ') as hidden ' . $column->getField() . '_count'); // '.' .  $column->getField() .
+                } elseif ($column instanceof EntitiesScalarColumn) {
+                    $paginate->addSelect($column->getOperation() . '(' . $column->getEntityPrefix() . '.' . $column->getEntityField() . ') as hidden ' . $column->getField() . '_' . $column->getOperation()); // '.' .  $column->getField() .
+                    $paginate->addGroupBy($this->table->getPrefix() . '.id');
+                }
+            }
+        }
+
         $paginate->setFirstResult($this->request->getStart())->setMaxResults($this->request->getLength());
         $ids = $paginate->getQuery()->getResult();
 
@@ -125,6 +141,10 @@ class ServerSide
             }
 
             if ($column instanceof EntitiesColumn) {
+                $this->joinColumn($qb, $column);
+            }
+
+            if ($column instanceof EntitiesScalarColumn) {
                 $this->joinColumn($qb, $column);
             }
         }
@@ -287,8 +307,10 @@ class ServerSide
     private function getPrefixedField(Column $column)
     {
         if ($column instanceof EntitiesCountColumn) {
-            return $column->getField() . '_count';
-        } elseif ($column instanceof EntityColumn) {
+            return $column->getField().'_count';
+        } elseif ($column instanceof EntitiesScalarColumn) {
+            return $column->getField() . '_' . $column->getOperation();
+        }elseif ($column instanceof EntityColumn) {
             return $column->getEntityPrefix() . '.' . $column->getEntityField();
         }
 

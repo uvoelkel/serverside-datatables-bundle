@@ -5,6 +5,7 @@ namespace Voelkel\DataTablesBundle\Table;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Voelkel\DataTablesBundle\Table\Column\Column;
+use Voelkel\DataTablesBundle\Table\Column\EntitiesScalarColumn;
 use Voelkel\DataTablesBundle\Table\Column\EntityColumn;
 use Voelkel\DataTablesBundle\Table\Column\EntitiesCountColumn;
 
@@ -49,6 +50,9 @@ abstract class AbstractDataTable implements ContainerAwareInterface
 
     /** @var bool */
     protected $hasCountColumns = false;
+
+    /** @var bool */
+    protected $hasScalarColumns = false;
 
     /** @var bool */
     protected $hasColumnFilter = false;
@@ -213,6 +217,8 @@ abstract class AbstractDataTable implements ContainerAwareInterface
 
         if ($column instanceof EntitiesCountColumn) {
             $this->hasCountColumns = true;
+        } elseif ($column instanceof EntitiesScalarColumn) {
+            $this->hasScalarColumns = true;
         }
 
         if (false !== $column->getOptions()['filter']) {
@@ -298,10 +304,19 @@ abstract class AbstractDataTable implements ContainerAwareInterface
 
     /**
      * @return bool
+     * @deprecated use 'getHasScalarColumns' instead
      */
     public function getHasCountColumns()
     {
         return $this->hasCountColumns;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getHasScalarColumns()
+    {
+        return $this->hasCountColumns || $this->hasScalarColumns;
     }
 
     /**
