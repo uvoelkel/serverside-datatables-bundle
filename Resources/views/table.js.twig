@@ -89,13 +89,13 @@ var {{ tableVar }}_table = $('#{{ tableId }}').DataTable({
 
     {% if column.options.filter == 'text' %}
     var throttle = null;
-    $('#{{ tableId }}_{{ column.name }}_filter').on('keyup change', function() {
+    var onTextChange = function($input) {
         if (throttle != null) {
             window.clearTimeout(throttle);
             throttle = null;
         }
 
-        var value = $(this).val();
+        var value = $input.val();
         {% if column.options.filter_empty %}
         value += '|empty=' + {{ tableVar }}_{{ column.name }}_filter_empty.toString();
         {% endif %}
@@ -110,11 +110,22 @@ var {{ tableVar }}_table = $('#{{ tableId }}').DataTable({
         if ({{ tableVar }}_table.column({{ loop.index0 }}).search() !== value) {
             throttle = window.setTimeout(function() {
                 {{ tableVar }}_table.column({{ loop.index0 }})
-                    .search(value)
-                    .draw();
+                        .search(value)
+                        .draw();
             }, 200);
         }
+    };
+
+    $('#{{ tableId }}_{{ column.name }}_filter').on('change', function() {
+        onTextChange($(this));
     });
+    $('#{{ tableId }}_{{ column.name }}_filter').on('keyup', function(event) {
+        if ('Enter' == event.key || 13 == event.keyCode) {
+            event.preventDefault();
+        }
+        onTextChange($(this));
+    });
+
     {% elseif column.options.filter == 'select' %}
     $('#{{ tableId }}_{{ column.name }}_filter').on('change', function() {
         var value = $(this).val();
