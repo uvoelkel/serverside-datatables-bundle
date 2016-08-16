@@ -88,11 +88,11 @@ var {{ tableVar }}_table = $('#{{ tableId }}').DataTable({
 
 
     {% if column.options.filter == 'text' %}
-    var throttle = null;
-    var onTextChange = function($input) {
-        if (throttle != null) {
-            window.clearTimeout(throttle);
-            throttle = null;
+    var {{ tableId }}_{{ column.name }}Throttle = null;
+    var on{{ tableId }}_{{ column.name }}TextChange = function($input) {
+        if ({{ tableId }}_{{ column.name }}Throttle != null) {
+            window.clearTimeout({{ tableId }}_{{ column.name }}Throttle);
+            {{ tableId }}_{{ column.name }}Throttle = null;
         }
 
         var value = $input.val();
@@ -108,7 +108,7 @@ var {{ tableVar }}_table = $('#{{ tableId }}').DataTable({
         }
 
         if ({{ tableVar }}_table.column({{ loop.index0 }}).search() !== value) {
-            throttle = window.setTimeout(function() {
+            {{ tableId }}_{{ column.name }}Throttle = window.setTimeout(function() {
                 {{ tableVar }}_table.column({{ loop.index0 }})
                         .search(value)
                         .draw();
@@ -117,13 +117,13 @@ var {{ tableVar }}_table = $('#{{ tableId }}').DataTable({
     };
 
     $('#{{ tableId }}_{{ column.name }}_filter').on('change', function() {
-        onTextChange($(this));
+        on{{ tableId }}_{{ column.name }}TextChange($(this));
     });
     $('#{{ tableId }}_{{ column.name }}_filter').on('keypress keyup', function(event) {
         if ('Enter' == event.key || 13 == event.keyCode) {
             event.preventDefault();
         }
-        onTextChange($(this));
+        on{{ tableId }}_{{ column.name }}TextChange($(this));
     });
     {% elseif column.options.filter == 'select' %}
     $('#{{ tableId }}_{{ column.name }}_filter').on('change', function() {
