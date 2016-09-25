@@ -266,7 +266,7 @@ class ServerSide
                 if (false !== strpos($filterQuery, 'value')) {
                     $like = str_replace('value', $value, $filterQuery);
                     $qb->andWhere($field.' like '.$parameter);
-                    $qb->setParameter($parameter, '%'.$value.'%');
+                    $qb->setParameter($parameter, $like);
                 } elseif (false !== strpos($filterQuery, 'split(')) {
                     $splitStart = strpos($filterQuery, 'split(');
                     $splitEnd = strpos($filterQuery, ')', $splitStart) + 1;
