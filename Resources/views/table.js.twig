@@ -30,6 +30,19 @@ var {{ tableVar }}_table = $('#{{ tableId }}').DataTable({
 
     ],
 
+    {% if deferLoading is not null %}
+    'data': [
+        {% for row in deferLoading.rows %}
+        {
+            {% for key, value in row %}
+            '{{ key }}': '{{ value }}'{% if not loop.last %},{% endif %}
+            {% endfor %}
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ],
+    'deferLoading': {{ deferLoading.total }},
+    {% endif %}
+
     'stateSave': {% if table.options.stateSave %}true{% else %}false{% endif %},
     'stateDuration': {{ table.options.stateDuration }},
     'stateLoaded': function (settings, data) {

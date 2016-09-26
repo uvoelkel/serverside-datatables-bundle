@@ -202,6 +202,15 @@ abstract class AbstractDataTable implements ContainerAwareInterface
         return $this->options;
     }
 
+    public function getOption($option, $default = null)
+    {
+        if (!isset($this->options[$option])) {
+            return $default;
+        }
+
+        return $this->options[$option];
+    }
+
     /**
      * @param Column $column
      * @return $this

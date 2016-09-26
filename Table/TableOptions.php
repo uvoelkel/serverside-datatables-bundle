@@ -18,6 +18,7 @@ class TableOptions implements \ArrayAccess
             'pageLength' => 25,
             'autoWidth' => false,
             'pagingType' => TableOptions::PAGING_TYPE_NUMBERS,
+            'deferLoading' => null,
             //'lengthMenu' => '[ [ 10, 25, 50, 100 ], [ 10, 25, 50, 100 ] ]',
             //'dom' => "<'row'<'col-sm-12'pl>>" . "<'row'<'col-sm-12'<'table-responsive'tr>>>" . "<'row'<'col-xs-12'<'hr'>><'col-sm-5'i><'col-sm-7'p>>",
         ];

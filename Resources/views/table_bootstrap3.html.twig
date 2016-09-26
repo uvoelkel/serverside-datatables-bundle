@@ -17,7 +17,7 @@
                     <select id="{{ tableId }}_{{ column.name }}_filter" title="{{ column.label }}" class="form-control input-sm"{% if column.options.multiple %} multiple="multiple"{% endif %}>
 
                         {% if not column.options.multiple %}
-                            <option value="">-- {{ column.label }} --</option>
+                            <option value="">{{ 'select all' | trans }}</option>
                         {% endif %}
 
                         {% for key, label in column.options.filter_choices %}
@@ -53,5 +53,9 @@
             {% endfor %}
         </tr>
     </thead>
-    <tbody></tbody>
+    <tbody>
+    {% if table.options.deferLoading is defined and table.options.deferLoading == true %}
+    {% endif %}
+    </tbody>
 </table>
+

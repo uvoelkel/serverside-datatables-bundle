@@ -45,7 +45,7 @@ class ServerSide
     /**
      * @param AbstractDataTable $table
      * @param \Symfony\Component\HttpFoundation\Request $request
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
      * @throws \Exception
      */
     public function processRequest(AbstractDataTable $table, \Symfony\Component\HttpFoundation\Request $request)

@@ -25,7 +25,7 @@ class Response
     public $data = [];
 
     /**
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
     public function create()
     {
@@ -36,8 +36,6 @@ class Response
             'data' => $this->data,
         ];
 
-        $response = new \Symfony\Component\HttpFoundation\Response(json_encode($result));
-        $response->headers->set('Content-Type', 'application/json');
-        return $response;
+        return new \Symfony\Component\HttpFoundation\JsonResponse($result);
     }
 }

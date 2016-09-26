@@ -91,6 +91,8 @@ class ServersideDataTablesExtension extends \Twig_Extension
                         $result .= $value;
                     } elseif (is_bool($value)) {
                         $result .= $value ? 'true' : 'false';
+                    } elseif (is_null($value)) {
+                        $result .= 'null';
                     } elseif (is_array($value)) {
                         $result .= "{\n" . $render($value, $depth + 1) . "\n" . str_repeat("\t", $depth) . "}";
                     } else {
@@ -138,6 +140,41 @@ class ServersideDataTablesExtension extends \Twig_Extension
             unset($options['id']);
         }
 
+        $deferLoading = null;
+        if (true === $table->getOption('deferLoading')) {
+            $request = new \Symfony\Component\HttpFoundation\Request();
+            $request->query->add([
+                'draw' => 0,
+                'start' => 0,
+                'length' => 10,
+            ]);
+
+            $response = $this->container->get('serverside_datatables')->processRequest($table, $request);
+            $data = json_decode($response->getContent(), true);
+
+            $deferLoading = [
+                'total' => $data['recordsTotal'],
+                'filtered' => $data['recordsFiltered'],
+                'rows' => [],
+            ];
+
+
+            foreach ($data['data'] as $row) {
+
+                $tmp = [];
+
+                foreach ($row as $key => $value ) {
+                    if (0 === strpos($key, 'DT_')) {
+                        continue;
+                    }
+
+                    $tmp[$key] = $value;
+                }
+
+                $deferLoading['rows'][] = $tmp;
+            }
+        }
+
         $result = $this->renderDefaults($twig);
         $result .= $twig->render('@VoelkelDataTables/table.js.twig', [
             'table' => $table,
@@ -145,6 +182,7 @@ class ServersideDataTablesExtension extends \Twig_Extension
             'options' => $options,
             'tableId' => $tableId,
             'tableVar' => $tableVar,
+            'deferLoading' => $deferLoading,
         ]);
 
         return $result;
