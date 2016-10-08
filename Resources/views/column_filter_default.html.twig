@@ -1,0 +1,18 @@
+{% if column.filter is datatables_textfilter %}
+    <input type="text" id="{{ table.name }}_{{ column.name }}_filter" placeholder="{{ column.label }}">
+{% elseif column.filter is datatables_choicefilter %}
+    <select id="{{ table.name }}_{{ column.name }}_filter" {% if column.filter.options.multiple %} multiple="multiple"{% endif %}>
+
+        {% if not column.filter.options.multiple %}
+            <option value="">-- {{ column.label }} --</option>
+        {% endif %}
+
+        {% for key, label in column.filter.options.choices %}
+            <option value="{{ key }}">{{ label }}</option>
+        {% endfor %}
+    </select>
+{% endif %}
+
+{% if column.options.filter_empty %}
+    <input type="checkbox" id="{{ table.name }}_{{ column.name }}_filter_empty">
+{% endif %}

@@ -3,7 +3,11 @@
 namespace Voelkel\DataTablesBundle\Twig;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Validator\Constraints\Choice;
 use Voelkel\DataTablesBundle\Table\AbstractDataTable;
+use Voelkel\DataTablesBundle\Table\Column\Column;
+use Voelkel\DataTablesBundle\Table\Filter\TextFilter;
+use Voelkel\DataTablesBundle\Table\Filter\ChoiceFilter;
 
 /**
  * @codeCoverageIgnore
@@ -46,6 +50,11 @@ class ServersideDataTablesExtension extends \Twig_Extension
             new \Twig_SimpleFunction('datatables_js', [$this, 'renderJavascript'], [
                 'needs_environment' => true,
                 'is_safe' => ['html', 'js'],
+            ]),
+
+            new \Twig_SimpleFunction('datatables_column_filter', [$this, 'renderColumnFilter'], [
+                'needs_environment' => true,
+                'is_safe' => ['html'],
             ]),
         ];
     }
@@ -186,6 +195,44 @@ class ServersideDataTablesExtension extends \Twig_Extension
         ]);
 
         return $result;
+    }
+
+    public function renderColumnFilter(\Twig_Environment $twig, AbstractDataTable $table, $column, array $options = [])
+    {
+        $table->setContainer($this->container);
+
+        if (is_string($column)) {
+            $column = $table->getColumn($column);
+        }
+
+        if (!($column instanceof Column)) {
+            throw new \Exception();
+        }
+
+        if (true === $column->filterRendered) {
+            return '';
+        }
+
+        $column->filterRendered = true;
+
+        return $twig->render('@VoelkelDataTables/column_filter_' . $this->theme . '.html.twig', [
+            'table' => $table,
+            'column' => $column,
+            'options' => $options,
+            'tableId' => $table->getName(),
+        ]);
+    }
+
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getTests()
+    {
+        return [
+            new \Twig_SimpleTest('datatables_textfilter', function ($filter) { return $filter instanceof TextFilter; }),
+            new \Twig_SimpleTest('datatables_choicefilter', function ($filter) { return $filter instanceof ChoiceFilter; }),
+        ];
     }
 
     /**

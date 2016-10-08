@@ -2,6 +2,9 @@
 
 namespace Voelkel\DataTablesBundle\Table\Column;
 
+use Voelkel\DataTablesBundle\Table\Filter\ChoiceFilter;
+use Voelkel\DataTablesBundle\Table\Filter\TextFilter;
+
 class Column
 {
     /** @var string */
@@ -13,6 +16,8 @@ class Column
     /** @var \Voelkel\DataTablesBundle\Table\AbstractDataTable */
     private $table;
 
+    public $filterRendered = false;
+
     const FILTER_NONE = false;
     const FILTER_TEXT = 'text';
     const FILTER_SELECT = 'select';
@@ -22,6 +27,7 @@ class Column
 
     /** @var array */
     private $options = [
+        'visible' => true,
         'sortable' => true,
         'searchable' => true,
         'width' => null,
@@ -80,6 +86,19 @@ class Column
         if (false !== $this->options['filter']) {
             $this->options['searchable'] = true;
         }
+
+        if (self::FILTER_TEXT === $this->options['filter']) {
+            $this->options['filter'] = new TextFilter([
+                'filter_operator' => 'like',
+                'filter_query' => $this->options['filter_query'],
+            ]);
+        } elseif (self::FILTER_SELECT === $this->options['filter']) {
+            $this->options['filter'] = new ChoiceFilter([
+                'choices' => $this->options['filter_choices'],
+                'multiple' => $this->options['multiple'],
+                'expanded' => $this->options['expanded'],
+            ]);
+        }
     }
 
     /**
@@ -104,6 +123,14 @@ class Column
     public function getOptions()
     {
         return $this->options;
+    }
+
+    /**
+     * @return null|\Voelkel\DataTablesBundle\Table\Filter\AbstractColumnFilter
+     */
+    public function getFilter()
+    {
+        return false === $this->options['filter'] ? null : $this->options['filter'];
     }
 
     /**

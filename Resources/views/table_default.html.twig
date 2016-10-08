@@ -4,6 +4,9 @@
         <tr>
             {% for column in table.columns %}
             <th>
+                {{ datatables_column_filter(table, column) }}
+
+                {#
                 {% if column.options.filter == 'text' %}
                     <input type="text" id="{{ table.name }}_{{ column.name }}_filter" placeholder="{{ column.label }}">
                 {% elseif column.options.filter == 'select' %}
@@ -22,6 +25,7 @@
                 {% if column.options.filter_empty %}
                     <input type="checkbox" id="{{ table.name }}_{{ column.name }}_filter_empty">
                 {% endif %}
+                #}
             </th>
             {% endfor %}
         </tr>

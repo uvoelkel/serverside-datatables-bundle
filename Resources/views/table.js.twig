@@ -21,6 +21,7 @@ var {{ tableVar }}_table = $('#{{ tableId }}').DataTable({
             {% if column.options.width is not null -%}
             'width': '{{ column.options.width }}',
             {%- endif %}
+            'visible': {% if column.options.visible %}true{% else %}false{% endif %},
             'orderable': {% if column.options.sortable %}true{% else %}false{% endif %},
             'searchable': {% if column.options.searchable %}true{% else %}false{% endif %}
         }
@@ -100,7 +101,7 @@ var {{ tableVar }}_table = $('#{{ tableId }}').DataTable({
     {% endif %}
 
 
-    {% if column.options.filter == 'text' %}
+    {% if column.filter is datatables_textfilter %}
     var {{ tableId }}_{{ column.name }}Throttle = null;
     var on{{ tableId }}_{{ column.name }}TextChange = function($input) {
         if ({{ tableId }}_{{ column.name }}Throttle != null) {
@@ -115,9 +116,9 @@ var {{ tableVar }}_table = $('#{{ tableId }}').DataTable({
 
         var empty = (value == '' || value == '|empty=false');
         if (empty) {
-            $(this).closest('th').removeClass('filtered');
+            $input.removeClass('filtered');
         } else {
-            $(this).closest('th').addClass('filtered');
+            $input.addClass('filtered');
         }
 
         if ({{ tableVar }}_table.column({{ loop.index0 }}).search() !== value) {
@@ -138,7 +139,7 @@ var {{ tableVar }}_table = $('#{{ tableId }}').DataTable({
         }
         on{{ tableId }}_{{ column.name }}TextChange($(this));
     });
-    {% elseif column.options.filter == 'select' %}
+    {% elseif column.filter is datatables_choicefilter %}
     $('#{{ tableId }}_{{ column.name }}_filter').on('change', function() {
         var value = $(this).val();
         {% if column.options.filter_empty %}
@@ -147,8 +148,10 @@ var {{ tableVar }}_table = $('#{{ tableId }}').DataTable({
 
         var empty = (value == '' || value == '|empty=false');
         if (empty) {
+            $(this).removeClass('filtered');
             $(this).closest('th').removeClass('filtered');
         } else {
+            $(this).addClass('filtered');
             $(this).closest('th').addClass('filtered');
         }
 

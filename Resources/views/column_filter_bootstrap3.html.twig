@@ -1,0 +1,39 @@
+{% set filter = column.options.filter != false or column.options.filter_empty != false %}
+{% set group = column.options.filter != false and column.options.filter_empty != false %}
+
+{% if group %}
+<div class="input-group input-group-sm">
+{% endif %}
+
+    {% if column.filter is datatables_textfilter %}
+    <input type="text" class="form-control input-sm" id="{{ tableId }}_{{ column.name }}_filter" placeholder="{{ column.label }}">
+    {% elseif column.filter is datatables_choicefilter %}
+    <select id="{{ tableId }}_{{ column.name }}_filter" title="{{ column.label }}" class="form-control input-sm"{% if column.filter.options.multiple %} multiple="multiple"{% endif %}>
+
+        {% if not column.filter.options.multiple %}
+            <option value="">{{ 'select all' | trans }}</option>
+        {% endif %}
+
+        {% for key, label in column.filter.options.choices %}
+            <option value="{{ key }}">{{ label }}</option>
+        {% endfor %}
+    </select>
+    {% endif %}
+
+    {% if column.options.filter_empty %}
+        {% if group %}
+        <span class="input-group-addon">
+            <input type="checkbox" id="{{ tableId }}_{{ column.name }}_filter_empty">
+        </span>
+        {% else %}
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" id="{{ tableId }}_{{ column.name }}_filter_empty">
+            </label>
+        </div>
+        {% endif %}
+    {% endif %}
+
+{% if group %}
+</div>
+{% endif %}

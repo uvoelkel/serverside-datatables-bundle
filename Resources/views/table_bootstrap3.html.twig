@@ -4,6 +4,9 @@
         <tr>
             {% for column in table.columns %}
             <th>
+                {{ datatables_column_filter(table, column) }}
+
+                {#
                 {% set filter = column.options.filter != false or column.options.filter_empty != false %}
                 {% set group = column.options.filter != false and column.options.filter_empty != false %}
 
@@ -43,6 +46,7 @@
                 {% if group %}
                 </div>
                 {% endif %}
+                #}
             </th>
             {% endfor %}
         </tr>

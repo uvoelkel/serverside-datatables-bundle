@@ -249,61 +249,17 @@ class ServerSide
 
         $parameter = ':' . $column->getName() . '_filter';
 
-        if ('select' === $column->getOptions()['filter']) {
-            if (null !== $value) {
-                if (true === $column->getOptions()['multiple']) {
-                    $qb->andWhere($field . ' in (' . $parameter . ')');
-                    $qb->setParameter($parameter, explode(',', $value));
-                } else {
-                    $qb->andWhere($field . ' = ' . $parameter);
-                    $qb->setParameter($parameter, $value);
-                }
+
+        if ($column->getOptions()['filter'] instanceof \Voelkel\DataTablesBundle\Table\Filter\AbstractColumnFilter) {
+            if (
+                isset($column->getOptions()['filter']->options['field']) &&
+                null !== $column->getOptions()['filter']->options['field']
+            ) {
+                $field = $this->table->getPrefix() . '.' . $column->getOptions()['filter']->options['field'];
             }
-        } elseif ('text' === $column->getOptions()['filter']) {
-            if (null !== $value) {
-                $filterQuery = $column->getOptions()['filter_query'];
 
-                if (false !== strpos($filterQuery, 'value')) {
-                    $like = str_replace('value', $value, $filterQuery);
-                    $qb->andWhere($field.' like '.$parameter);
-                    $qb->setParameter($parameter, $like);
-                } elseif (false !== strpos($filterQuery, 'split(')) {
-                    $splitStart = strpos($filterQuery, 'split(');
-                    $splitEnd = strpos($filterQuery, ')', $splitStart) + 1;
-                    $split = substr($filterQuery, $splitStart, $splitEnd - $splitStart);
-
-                    $splitSettings = str_replace('split(', '', $split);
-                    $splitSettings = str_replace(')', '', $splitSettings);
-                    $splitSettings = explode('|', $splitSettings);
-
-                    $splitChar = $splitSettings[0];
-                    $parts = explode($splitChar, $value);
-
-                    $splitOp = $splitSettings[1];
-
-                    $fields = [];
-                    $params = [];
-
-                    $param = str_replace('.', '_', $field);
-
-                    for ($i = 0; $i < sizeof($parts); $i++) {
-                        $parameter = str_replace($split, $parts[$i], $filterQuery);
-                        if (0 === strlen(str_replace('%', '', $parameter))) {
-                            continue;
-                        }
-
-                        $fields[$i] = $field . ' like :' . $param . '_' . $i;
-                        $params[$i] = $parameter;
-                    }
-                    $sql = '(' . join(' ' . $splitOp . ' ', $fields) . ')';
-
-                    $qb->andWhere($sql);
-                    foreach ($params as $key => $value) {
-                        $qb->setParameter($param . '_' . $key, $value);
-                    }
-                }
-            }
-        } elseif (false !== $column->getOptions()['filter']) {
+            $column->getOptions()['filter']->buildQuery($qb, $field, $parameter, $value);
+        }elseif (false !== $column->getOptions()['filter']) {
             throw new \Exception(sprintf('invalid filter type "%s"', $column->getOptions()['filter']));
         }
 
