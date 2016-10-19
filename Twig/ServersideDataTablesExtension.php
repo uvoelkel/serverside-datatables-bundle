@@ -201,6 +201,12 @@ class ServersideDataTablesExtension extends \Twig_Extension
     {
         $table->setContainer($this->container);
 
+        $tableId = $table->getName();
+        if (isset($options['id'])) {
+            $tableId = $options['id'];
+            unset($options['id']);
+        }
+
         if (is_string($column)) {
             $column = $table->getColumn($column);
         }
@@ -219,7 +225,7 @@ class ServersideDataTablesExtension extends \Twig_Extension
             'table' => $table,
             'column' => $column,
             'options' => $options,
-            'tableId' => $table->getName(),
+            'tableId' => $tableId,
         ]);
     }
 

@@ -4,7 +4,7 @@
         <tr>
             {% for column in table.columns %}
             <th>
-                {{ datatables_column_filter(table, column) }}
+                {{ datatables_column_filter(table, column, {'id': tableId}) }}
 
                 {#
                 {% if column.options.filter == 'text' %}
