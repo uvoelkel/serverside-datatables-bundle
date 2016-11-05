@@ -258,6 +258,7 @@ class ServerSide
                 $field = $this->table->getPrefix() . '.' . $column->getOptions()['filter']->options['field'];
             }
 
+            $column->getOptions()['filter']->setContainer($this->table->getContainer());
             $column->getOptions()['filter']->buildQuery($qb, $field, $parameter, $value);
         }elseif (false !== $column->getOptions()['filter']) {
             throw new \Exception(sprintf('invalid filter type "%s"', $column->getOptions()['filter']));

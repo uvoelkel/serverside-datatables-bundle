@@ -67,6 +67,8 @@ var {{ tableVar }}_table = $('#{{ tableId }}').DataTable({
 
             if (1 === $input.length) {
                 $input.val(value);
+                $input.addClass('filtered');
+                $input.trigger('change');
                 $input.closest('th').addClass('filtered');
                 //$input.closest('thead').addClass('filtered');
             }

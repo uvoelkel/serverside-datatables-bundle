@@ -6,9 +6,9 @@
 {% endif %}
 
     {% if column.filter is datatables_textfilter %}
-    <input type="text" class="form-control input-sm" id="{{ tableId }}_{{ column.name }}_filter" placeholder="{{ column.label }}">
+    <input type="text" class="form-control input-sm datatables-filter-input" id="{{ tableId }}_{{ column.name }}_filter" placeholder="{{ column.label }}">
     {% elseif column.filter is datatables_choicefilter %}
-    <select id="{{ tableId }}_{{ column.name }}_filter" title="{{ column.label }}" class="form-control input-sm"{% if column.filter.options.multiple %} multiple="multiple"{% endif %}>
+    <select id="{{ tableId }}_{{ column.name }}_filter" title="{{ column.label }}" class="form-control input-sm datatables-filter-input"{% if column.filter.options.multiple %} multiple="multiple"{% endif %}>
 
         {% if not column.filter.options.multiple %}
             <option value="">{{ 'select all' | trans }}</option>
@@ -23,12 +23,12 @@
     {% if column.options.filter_empty %}
         {% if group %}
         <span class="input-group-addon">
-            <input type="checkbox" id="{{ tableId }}_{{ column.name }}_filter_empty">
+            <input type="checkbox" id="{{ tableId }}_{{ column.name }}_filter_empty" class="datatables-filter-input">
         </span>
         {% else %}
         <div class="checkbox">
             <label>
-                <input type="checkbox" id="{{ tableId }}_{{ column.name }}_filter_empty">
+                <input type="checkbox" id="{{ tableId }}_{{ column.name }}_filter_empty" class="datatables-filter-input">
             </label>
         </div>
         {% endif %}
