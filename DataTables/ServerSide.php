@@ -65,7 +65,15 @@ class ServerSide
 
         // select entities
         $prefixes = array_merge([$this->table->getPrefix()], $this->table->getJoinPrefixes());
-        call_user_func_array([$qb, 'select'], $prefixes);
+
+        $dql = null;
+
+        if (AbstractDataTable::QUERY_MODE_QUERY_BUILDER === $this->table->getQueryMode()) {
+            call_user_func_array([$qb, 'select'], $prefixes);
+        } else {
+            $dql = 'SELECT ' . join(', ', $prefixes) . ' ';
+        }
+
 
         // add count
         if ($this->table->getHasScalarColumns()) {
@@ -80,11 +88,16 @@ class ServerSide
         }
 
         // order
-        $this->applyOrder($qb);
+        $qb = $this->applyOrder($qb);
 
         // paginate
-        $paginate = clone $qb;
-        $paginate->select('distinct(' . $this->table->getPrefix() . '.' . $this->getIdentifierField() . ')');
+        if (AbstractDataTable::QUERY_MODE_QUERY_BUILDER === $this->table->getQueryMode()) {
+            $paginate = clone $qb;
+            $paginate->select('distinct('.$this->table->getPrefix().'.'.$this->getIdentifierField().')');
+        } else {
+            $paginate = $qb;
+            $paginate = 'SELECT distinct('.$this->table->getPrefix().'.'.$this->getIdentifierField().') ' . $qb;
+        }
 
         // add scalar fields as hidden (todo: clean up this mess)
         if ($this->table->getHasScalarColumns()) {
@@ -98,21 +111,46 @@ class ServerSide
             }
         }
 
-        $paginate->setFirstResult($this->request->getStart())->setMaxResults($this->request->getLength());
-        $ids = $paginate->getQuery()->getResult();
+        if (AbstractDataTable::QUERY_MODE_QUERY_BUILDER === $this->table->getQueryMode()) {
+            $paginate->setFirstResult($this->request->getStart())->setMaxResults($this->request->getLength());
+            $ids = $paginate->getQuery()->getResult();
+        } else {
+            $qry = $this->em->createQuery($paginate);
+            $qry->setFirstResult($this->request->getStart())->setMaxResults($this->request->getLength());
+            $ids = $qry->getArrayResult();
+        }
 
-        $qb->andWhere($this->table->getPrefix() . '.' . $this->getIdentifierField() . ' in (:ids)')
-            ->setParameter('ids', $ids);
+
+        if (AbstractDataTable::QUERY_MODE_QUERY_BUILDER === $this->table->getQueryMode()) {
+            $qb->andWhere($this->table->getPrefix().'.'.$this->getIdentifierField().' in (:ids)')
+                ->setParameter('ids', $ids);
+        } else {
+
+            $tmp = [];
+            foreach ($ids as $id) {
+                $tmp[] = $id[1];
+            }
+
+            $ids = $this->table->getPrefix().'.'.$this->getIdentifierField().' in (' . join(',' , $tmp) . ')';
+            $qb = str_replace('WHERE 1 = 1', 'WHERE ' . $ids, $qb);
+            $dql .= $qb;
+        }
+
+        if (AbstractDataTable::QUERY_MODE_QUERY_BUILDER === $this->table->getQueryMode()) {
+            $query = $qb->getQuery();
+        } else {
+            $query = $this->em->createQuery($dql);
+        }
 
         // get result
         $resultCallback = $this->table->getResultCallback();
         if (null !== $resultCallback) {
-            call_user_func($resultCallback, $this->table, $qb, $response, $this->dataConverter);
+            call_user_func($resultCallback, $this->table, $query, $response, $this->dataConverter);
         } else {
             call_user_func(
                 ['Voelkel\DataTablesBundle\DataTables\DataBuilder', 'build'],
                 $this->table,
-                $qb,
+                $query,
                 $response,
                 $this->dataConverter,
                 $this->table->getRowCallback()
@@ -123,35 +161,48 @@ class ServerSide
     }
 
     /**
-     * @return QueryBuilder
+     * @return QueryBuilder|string
      */
     private function createQueryBuilder()
     {
-        /** @var \Doctrine\ORM\EntityRepository $repository */
-        $repository = $this->em->getRepository($this->table->getEntity());
-
-        $qb = $repository->createQueryBuilder($this->table->getPrefix());
+        if (AbstractDataTable::QUERY_MODE_QUERY_BUILDER === $this->table->getQueryMode()) {
+            /** @var \Doctrine\ORM\EntityRepository $repository */
+            $repository = $this->em->getRepository($this->table->getEntity());
+            $qb = $repository->createQueryBuilder($this->table->getPrefix());
+        } else {
+            $qb = 'FROM ' . $this->table->getEntity() . ' ' . $this->table->getPrefix() . ' ';
+        }
 
         foreach ($this->table->getColumns() as $column) {
             $column->__set('container', $this->table->getContainer());
 
             /** @var EntityColumn $column */
             if (get_class($column) === 'Voelkel\DataTablesBundle\Table\Column\EntityColumn') {
-                $this->joinColumn($qb, $column);
+                $qb = $this->joinColumn($qb, $column);
             }
 
             if ($column instanceof EntitiesColumn) {
-                $this->joinColumn($qb, $column);
+                $qb = $this->joinColumn($qb, $column);
             }
 
             if ($column instanceof EntitiesScalarColumn) {
-                $this->joinColumn($qb, $column);
+                $qb = $this->joinColumn($qb, $column);
             }
+        }
+
+        if (AbstractDataTable::QUERY_MODE_DQL === $this->table->getQueryMode()) {
+            $qb .= 'WHERE 1 = 1 ';
         }
 
         $callback = $this->table->getConditionCallback();
         if (null !== $callback) {
-            call_user_func($callback, $qb);
+
+            if (AbstractDataTable::QUERY_MODE_DQL === $this->table->getQueryMode()) {
+                $qb = call_user_func($callback, $qb);
+            } else {
+                call_user_func($callback, $qb);
+            }
+
         }
 
         return $qb;
@@ -178,22 +229,26 @@ class ServerSide
     }
 
     /**
-     * @param QueryBuilder $qb
+     * @param QueryBuilder|string $qb
      * @return integer
      */
-    private function countTotals(QueryBuilder $qb)
+    private function countTotals($qb)
     {
-        $qb->select('count(distinct(' . $this->table->getPrefix() . '.' . $this->getIdentifierField() . '))');
-
-        return $qb->getQuery()->getSingleScalarResult();
+        if (AbstractDataTable::QUERY_MODE_QUERY_BUILDER === $this->table->getQueryMode()) {
+            $qb->select('count(distinct('.$this->table->getPrefix().'.'.$this->getIdentifierField().'))');
+            return $qb->getQuery()->getSingleScalarResult();
+        } else {
+            $dql = 'SELECT count(distinct('.$this->table->getPrefix().'.'.$this->getIdentifierField().')) ' . $qb;
+            return $this->em->createQuery($dql)->getSingleScalarResult();
+        }
     }
 
     /**
-     * @param QueryBuilder $qb
+     * @param QueryBuilder|string $qb
      * @return integer|null
      * @throws \Exception
      */
-    private function applyFilterAndCount(QueryBuilder $qb)
+    private function applyFilterAndCount($qb)
     {
         if (null === $this->request->getSearchValue() && !$this->table->getHasColumnFilter()) {
             return null;
@@ -225,23 +280,33 @@ class ServerSide
         }
 
         if (null !== $this->request->getSearchValue()) {
-            $where = '(' . join(' like :filter OR ', $filter) . ' like :filter)';
-            $qb->andWhere($where);
-            $qb->setParameter('filter', '%' . $this->request->getSearchValue() . '%');
+            if (AbstractDataTable::QUERY_MODE_QUERY_BUILDER === $this->table->getQueryMode()) {
+                $where = '(' . join(' like :filter OR ', $filter) . ' like :filter)';
+                $qb->andWhere($where);
+                $qb->setParameter('filter', '%' . $this->request->getSearchValue() . '%');
+            } else {
+                $value = '%' . $this->request->getSearchValue() . '%';
+                $qb .= ' AND ' . sprintf('(' . join(' like %s OR ', $filter) . ' like %s)', $value, $value);
+            }
         }
 
-        return $qb->getQuery()->getSingleScalarResult();
+        if (AbstractDataTable::QUERY_MODE_QUERY_BUILDER === $this->table->getQueryMode()) {
+            return $qb->getQuery()->getSingleScalarResult();
+        } else {
+            $dql = 'SELECT count(distinct('.$this->table->getPrefix().'.'.$this->getIdentifierField().')) ' . $qb;
+            return $this->em->createQuery($dql)->getSingleScalarResult();
+        }
     }
 
     /**
      * @param Column $column
      * @param null|string $value
-     * @param QueryBuilder $qb
+     * @param QueryBuilder|string $qb
      * @param string $field
      * @param null|bool $empty
      * @throws \Exception
      */
-    private function applyColumnFilter(Column $column, $value, QueryBuilder $qb, $field, $empty)
+    private function applyColumnFilter(Column $column, $value, $qb, $field, $empty)
     {
         if (null === $value && false === $column->getOptions()['filter_empty']) {
             throw new \Exception('this is just wrong');
@@ -258,31 +323,57 @@ class ServerSide
                 $field = $this->table->getPrefix() . '.' . $column->getOptions()['filter']->options['field'];
             }
 
-            $column->getOptions()['filter']->setContainer($this->table->getContainer());
+            if ($qb instanceof QueryBuilder && AbstractDataTable::QUERY_MODE_QUERY_BUILDER === $this->table->getQueryMode()) {
+                $column->getOptions()['filter']->setContainer($this->table->getContainer());
             $column->getOptions()['filter']->buildQuery($qb, $field, $parameter, $value);
-        }elseif (false !== $column->getOptions()['filter']) {
+            } elseif (is_string($qb) && AbstractDataTable::QUERY_MODE_DQL === $this->table->getQueryMode()) {
+
+                // todo
+                //$column->getOptions()['filter']->buildQuery($qb, $field, $parameter, $value);
+
+            } else {
+                throw new \Exception();
+            }
+
+        } elseif (false !== $column->getOptions()['filter']) {
             throw new \Exception(sprintf('invalid filter type "%s"', $column->getOptions()['filter']));
         }
 
         if (null !== $empty && is_bool($empty) && true === $empty && true === $column->getOptions()['filter_empty']) {
-            $qb->andWhere($field . ' is ' . ($empty ? '': 'not ') . 'null');
+
+            if ($qb instanceof QueryBuilder && AbstractDataTable::QUERY_MODE_QUERY_BUILDER === $this->table->getQueryMode()) {
+                $qb->andWhere($field . ' is ' . ($empty ? '': 'not ') . 'null');
+            } elseif (is_string($qb) && AbstractDataTable::QUERY_MODE_DQL === $this->table->getQueryMode()) {
+                $qb .= ' AND ' . $field . ' IS ' . ($empty ? '': 'NOT ') . 'NULL';
+            } else {
+                throw new \Exception();
+            }
+
         }
     }
 
     /**
-     * @param QueryBuilder $qb
+     * @param QueryBuilder|string $qb
      */
-    private function applyOrder(QueryBuilder $qb)
+    private function applyOrder($qb)
     {
         if (0 === sizeof($this->request->getOrder())) {
+            $count = 0;
             foreach ($this->table->getColumns() as $column) {
                 if (null !== $column->getOptions()['order']) {
-                    $qb->addOrderBy($this->getPrefixedField($column), $column->getOptions()['order']);
+                    if ($qb instanceof QueryBuilder && AbstractDataTable::QUERY_MODE_QUERY_BUILDER === $this->table->getQueryMode()) {
+                        $qb->addOrderBy($this->getPrefixedField($column), $column->getOptions()['order']);
+                    } else {
+                        $qb .= (0 === $count ? ' ORDER BY ' : ' , ');
+                        $qb .= $this->getPrefixedField($column) . ' ' . $column->getOptions()['order'];
+                    }
+                    $count++;
                 }
             }
-            return;
+            return $qb;
         }
 
+        $count = 0;
         $columns = $this->request->getColumns();
         foreach ($this->request->getOrder() as $order) {
             $columnIndex = $order['column'];
@@ -291,9 +382,17 @@ class ServerSide
             $column = $this->table->getColumns()[$columnName];
 
             if(true === $column->getOptions()['sortable']) {
-                $qb->addOrderBy($this->getPrefixedField($column), $order['dir']);
+                if ($qb instanceof QueryBuilder && AbstractDataTable::QUERY_MODE_QUERY_BUILDER === $this->table->getQueryMode()) {
+                    $qb->addOrderBy($this->getPrefixedField($column), $order['dir']);
+                } else {
+                    $qb .= (0 === $count ? ' ORDER BY ' : ' , ');
+                    $qb .= $this->getPrefixedField($column) . ' ' . $column->getOptions()['order'];
+                }
+                $count++;
             }
         }
+
+        return $qb;
     }
 
     /**
@@ -314,10 +413,10 @@ class ServerSide
     }
 
     /**
-     * @param QueryBuilder $qb
+     * @param QueryBuilder|string $qb
      * @param EntityColumn $column
      */
-    private function joinColumn(QueryBuilder $qb, EntityColumn $column)
+    private function joinColumn($qb, EntityColumn $column)
     {
         $joins = [];
 
@@ -353,10 +452,20 @@ class ServerSide
 
         foreach ($joins as $key => $join) {
             if (!isset($this->joins[$key])) {
-                $qb->leftJoin($join[0] . '.' . $join[1], $join[2]);
+
+                if ($qb instanceof QueryBuilder && AbstractDataTable::QUERY_MODE_QUERY_BUILDER === $this->table->getQueryMode()) {
+                    $qb->leftJoin($join[0].'.'.$join[1], $join[2]);
+                } elseif (is_string($qb) && AbstractDataTable::QUERY_MODE_DQL === $this->table->getQueryMode()) {
+                    $qb .= ' LEFT JOIN ' . $join[0] . '.' . $join[1] . ' ' . $join[2] . ' ';
+                } else {
+                    throw new \Exception();
+                }
+
                 $this->joins[$key] = $join;
             }
         }
+
+        return $qb;
     }
 
     /**

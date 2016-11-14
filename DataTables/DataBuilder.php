@@ -13,19 +13,19 @@ class DataBuilder
 {
     /**
      * @param AbstractDataTable $table
-     * @param \Doctrine\ORM\QueryBuilder $qb
+     * @param \Doctrine\ORM\Query $query
      * @param Response $response
      * @param DataToStringConverter $dataToStringConverter
      * @throws \Exception
      */
     static public function build(
         AbstractDataTable $table,
-        \Doctrine\ORM\QueryBuilder $qb,
+        \Doctrine\ORM\Query $query,
         Response $response,
         DataToStringConverter $dataToStringConverter,
         $rowCallback = null
     ) {
-        $entities = $qb->getQuery()->getResult();
+        $entities = $query->getResult();
 
         foreach ($entities as $result) {
             $entity = $result;

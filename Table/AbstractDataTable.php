@@ -60,6 +60,11 @@ abstract class AbstractDataTable implements ContainerAwareInterface
     /** @var \Symfony\Component\DependencyInjection\ContainerInterface|null */
     protected $container = null;
 
+    const QUERY_MODE_QUERY_BUILDER = 'qb';
+    const QUERY_MODE_DQL = 'dql';
+
+    protected $queryMode = self::QUERY_MODE_QUERY_BUILDER ;
+
     /**
      * @inheritdoc
      */
@@ -350,5 +355,10 @@ abstract class AbstractDataTable implements ContainerAwareInterface
         }
 
         return array_unique($result);
+    }
+
+    public function getQueryMode()
+    {
+        return $this->queryMode;
     }
 }
