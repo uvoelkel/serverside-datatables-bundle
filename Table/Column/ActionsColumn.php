@@ -20,14 +20,16 @@ class ActionsColumn extends UnboundColumn
                     }
                 }
 
+                $label = isset($options['dropdown_label']) ? $options['dropdown_label'] : 'Action';
+
                 $result .= '<div class="btn-group">';
 
                 if (null === $default) {
                     $result .= '<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' .
-                        'Action <span class="caret"></span>' .
+                        $label .' <span class="caret"></span>' .
                         '</button>';
                 } else {
-                    $result .= '<button type="button" class="btn btn-default btn-xs">Action</button>' .
+                    $result .= '<button type="button" class="btn btn-default btn-xs">' . $actions[$default]['label'] . '</button>' .
                         '<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' .
                         '<span class="caret"></span>' .
                         '</button>';
