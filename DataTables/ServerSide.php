@@ -79,9 +79,6 @@ class ServerSide
             }
         }
 
-        // order
-        $this->applyOrder($qb);
-
         // paginate
         $paginate = clone $qb;
         $paginate->select('distinct(' . $this->table->getPrefix() . '.' . $this->getIdentifierField() . ')');
@@ -100,6 +97,9 @@ class ServerSide
 
         $paginate->setFirstResult($this->request->getStart())->setMaxResults($this->request->getLength());
         $ids = $paginate->getQuery()->getResult();
+
+        // order
+        $this->applyOrder($qb);
 
         $qb->andWhere($this->table->getPrefix() . '.' . $this->getIdentifierField() . ' in (:ids)')
             ->setParameter('ids', $ids);
