@@ -201,7 +201,13 @@ class ServerSide
 
         $filter = [];
         foreach ($this->table->getColumns() as $column) {
-            if ($column instanceof EntitiesCountColumn || true === $column->getOptions()['unbound']) {
+            if (
+                $column instanceof EntitiesCountColumn ||
+                (
+                    true === $column->getOptions()['unbound'] &&
+                    !($column->getOptions()['filter'] instanceof \Voelkel\DataTablesBundle\Table\Filter\AbstractColumnFilter)
+                )
+            ) {
                 continue;
             }
 
