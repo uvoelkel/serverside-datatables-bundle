@@ -5,10 +5,15 @@
 <div class="input-group input-group-sm">
 {% endif %}
 
+    {% set attrs = '' %}
+    {% for key, value in column.options.filter_attr %}
+        {% set attrs = attrs ~ ' ' ~ key ~ '=' ~ value %}
+    {% endfor %}
+
     {% if column.filter is datatables_textfilter %}
-    <input type="text" class="form-control input-sm datatables-filter-input" id="{{ tableId }}_{{ column.name }}_filter" placeholder="{{ column.label }}">
+    <input type="text" class="form-control input-sm datatables-filter-input" id="{{ tableId }}_{{ column.name }}_filter" placeholder="{{ column.label }}"{{ attrs }}>
     {% elseif column.filter is datatables_choicefilter %}
-    <select id="{{ tableId }}_{{ column.name }}_filter" title="{{ column.label }}" class="form-control input-sm datatables-filter-input"{% if column.filter.options.multiple %} multiple="multiple"{% endif %}>
+    <select id="{{ tableId }}_{{ column.name }}_filter" title="{{ column.label }}" class="form-control input-sm datatables-filter-input"{% if column.filter.options.multiple %} multiple="multiple"{% endif %}{{ attrs }}>
 
         {% if not column.filter.options.multiple %}
             <option value="">{{ 'select all' | trans }}</option>

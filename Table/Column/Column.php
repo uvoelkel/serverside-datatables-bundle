@@ -34,6 +34,7 @@ class Column
         'filter' => false, // false|'text'|'select' todo: |'bool'|'date'|'datetime'|'date_range'|'datetime_range'|\Voelkel\DataTablesBundle\Table\Filter\FilterInterface
         'filter_choices' => [], // 'filter' => 'select' only
         'filter_query' => '%value%', // [%]value|split( |and)[%]
+        'filter_attr' => [],
         'filter_empty' => false, // add a checkbox to filter empty resp null values
         'multiple' => false,
         'expanded' => false,
