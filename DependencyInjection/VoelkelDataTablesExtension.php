@@ -31,6 +31,14 @@ class VoelkelDataTablesExtension extends Extension
             $config['table_options'] = [];
         }
 
+        if (!isset($config['localization'])) {
+            $config['localization'] = [];
+        }
+
+        if (!isset($config['localization']['locale'])) {
+            $config['localization']['locale'] = $container->getParameter('locale');
+        }
+
         $container->setParameter('serverside_datatables.config', $config);
     }
 }

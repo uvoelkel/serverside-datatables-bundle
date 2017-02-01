@@ -47,6 +47,18 @@ After installing the bundle, make sure you add this route to your routing:
         resource: "@VoelkelDataTablesBundle/Resources/config/routing.xml"
 
 
+### Localization
+
+    # app/config/config.yml
+    voelkel_data_tables:
+        localization:
+            locale: "%locale%"
+            data:
+                true: "Jepp"
+                false: "Nope"
+                datetime: "Y-m-d H:i:s"
+
+
 ## Usage
 
 Create a Table definition

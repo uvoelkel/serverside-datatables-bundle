@@ -71,6 +71,11 @@ abstract class AbstractDataTable implements ContainerAwareInterface
 
         $this->container = $container;
 
+        if (null !== $this->container) {
+            $config = $this->container->getParameter('serverside_datatables.config');
+            Localization::setConfig($config['localization']);
+        }
+
         $settings = new TableSettings();
         $options = (null !== $this->container) ?
             $this->container->get('serverside_datatables.table_options_factory')->create() :

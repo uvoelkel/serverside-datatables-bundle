@@ -2,6 +2,8 @@
 
 namespace Voelkel\DataTablesBundle\DataTables;
 
+use Voelkel\DataTablesBundle\Table\Localization;
+
 class DataToStringConverter
 {
     private $locale;
@@ -19,9 +21,7 @@ class DataToStringConverter
     {
         if (is_object($data)) {
             if ($data instanceof \DateTimeInterface) {
-                //setlocale(LC_TIME, "de_DE");
-                // strftime('%c', $data->getTimestamp());
-                return $data->format('d.m.Y H:i:s');
+                return $data->format(Localization::get('datetime'));
             }
 
             if (method_exists($data, '__toString')) {
@@ -30,7 +30,7 @@ class DataToStringConverter
 
             return get_class($data);
         } elseif (is_bool($data)) {
-            return $data ? 'true' : 'false';
+            return $data ? Localization::get('true') : Localization::get('false');
         }
 
         return $data;
