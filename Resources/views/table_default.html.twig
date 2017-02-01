@@ -1,4 +1,11 @@
-<table id="{{ table.name }}"{% if options.class is defined %} class="{{ options.class }}"{% endif %}>
+{% set attributes = '' %}
+{% if options.attr is defined %}
+    {% for key, value in options.attr %}
+        {% set attributes = attributes ~ ' ' ~ key ~ '="' ~ value ~ '"' %}
+    {% endfor %}
+{% endif %}
+
+<table id="{{ table.name }}"{% if options.class is defined %} class="{{ options.class }}"{% endif %} {{ attributes | raw }}>
     <thead{% if table.hasColumnFilter %} class="has_filter"{% endif %}>
         {% if table.hasColumnFilter %}
         <tr>

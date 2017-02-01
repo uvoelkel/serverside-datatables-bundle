@@ -1,4 +1,11 @@
-<table id="{{ tableId }}" class="table table-striped_ table-bordered_ table-hover table-condensed_{% if options.class is defined %} {{ options.class }}{% endif %}">
+{% set attributes = '' %}
+{% if options.attr is defined %}
+    {% for key, value in options.attr %}
+        {% set attributes = attributes ~ ' ' ~ key ~ '="' ~ value ~ '"' %}
+    {% endfor %}
+{% endif %}
+
+<table id="{{ tableId }}" class="table table-striped_ table-bordered_ table-hover table-condensed_{% if options.class is defined %} {{ options.class }}{% endif %}" {{ attributes | raw }}>
     <thead{% if table.hasColumnFilter %} class="has_filter"{% endif %}>
         {% if table.hasColumnFilter %}
         <tr>
