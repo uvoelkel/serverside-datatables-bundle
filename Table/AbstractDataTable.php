@@ -60,6 +60,8 @@ abstract class AbstractDataTable implements ContainerAwareInterface
     /** @var \Symfony\Component\DependencyInjection\ContainerInterface|null */
     protected $container = null;
 
+    protected $requestParameters = [];
+
     /**
      * @inheritdoc
      */
@@ -355,5 +357,36 @@ abstract class AbstractDataTable implements ContainerAwareInterface
         }
 
         return array_unique($result);
+    }
+
+    /**
+     * @param array $parameters
+     * @return $this
+     */
+    public function setRequestParameters(array $parameters)
+    {
+        $this->requestParameters = $parameters;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRequestParameters()
+    {
+        return $this->requestParameters;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public function getRequestParameter($key, $default = null)
+    {
+        if (isset($this->requestParameters[$key])) {
+            return $this->requestParameters[$key];
+        }
+
+        return $default;
     }
 }

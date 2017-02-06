@@ -132,9 +132,12 @@ class ServersideDataTablesExtension extends \Twig_Extension
         $table->setContainer($this->container);
 
         if (null === $path) {
-            $path = $this->container->get('router')->generate('serverside_datatables_list', [
-                'table' => null !== $table->getServiceId() ? $table->getServiceId() : get_class($table),
-            ]);
+            $params = array_merge(
+                ['table' => null !== $table->getServiceId() ? $table->getServiceId() : get_class($table)],
+                ['parameters' => $table->getRequestParameters()]
+            );
+
+            $path = $this->container->get('router')->generate('serverside_datatables_list', $params);
         }
 
         $tableVar = $table->getName();
