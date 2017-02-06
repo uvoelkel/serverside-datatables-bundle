@@ -50,7 +50,19 @@ class TestContainer implements ContainerInterface
         return isset($this->services[$id]);
     }
 
-    public function getParameter($name) {}
+    public function getParameter($name)
+    {
+        if ('serverside_datatables.config' === $name) {
+            return [
+                'localization' => [
+                    'locale' => 'en',
+                ],
+            ];
+        }
+
+        return null;
+    }
+
     public function hasParameter($name) {}
     public function setParameter($name, $value) {}
     public function enterScope($name) {}

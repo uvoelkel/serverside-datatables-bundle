@@ -11,7 +11,7 @@ class DataToStringConverterTest extends \PHPUnit_Framework_TestCase
         $converter = new DataToStringConverter('en');
 
         $data = new \DateTime();
-        $expected = $data->format('d.m.Y H:i:s');
+        $expected = $data->format('Y-m-d H:i:s');
         $this->assertSame($expected, $converter->convertDataToString($data));
     }
 
