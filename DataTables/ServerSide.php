@@ -86,6 +86,13 @@ class ServerSide
         $paginate = clone $qb;
         $paginate->select('distinct(' . $this->table->getPrefix() . '.' . $this->getIdentifierField() . ')');
 
+        // MySQL 5.7 enables ONLY_FULL_GROUP_BY by default, which breaks the pagination
+        // removing ONLY_FULL_GROUP_BY from the current session should do it as a temporary fix.
+        $sqlMode = $this->em->getConnection()->executeQuery('SELECT @@sql_mode')->fetch();
+        if (false !== strpos($sqlMode['@@sql_mode'], 'ONLY_FULL_GROUP_BY')) {
+            $this->em->getConnection()->exec('SET sql_mode=(SELECT REPLACE(@@sql_mode, \'ONLY_FULL_GROUP_BY\', \'\'))');
+        }
+
         // add scalar fields as hidden (todo: clean up this mess)
         if ($this->table->getHasScalarColumns()) {
             foreach ($this->table->getColumns() as $column) {
@@ -100,6 +107,10 @@ class ServerSide
 
         $paginate->setFirstResult($this->request->getStart())->setMaxResults($this->request->getLength());
         $ids = $paginate->getQuery()->getResult();
+
+        if (false !== strpos($sqlMode['@@sql_mode'], 'ONLY_FULL_GROUP_BY')) {
+            $this->em->getConnection()->exec('SET sql_mode=(SELECT CONCAT(@@sql_mode,\',ONLY_FULL_GROUP_BY\'))');
+        }
 
         $qb->andWhere($this->table->getPrefix() . '.' . $this->getIdentifierField() . ' in (:ids)')
             ->setParameter('ids', $ids);
