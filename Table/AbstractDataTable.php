@@ -71,6 +71,10 @@ abstract class AbstractDataTable implements ContainerAwareInterface
             return;
         }
 
+        if (!method_exists($this, 'build')) {
+            throw new \Exception('descendants of AbstractDataTable need to implement the "build(TableBuilderInterface $builder)" function');
+        }
+
         $this->container = $container;
 
         if (null !== $this->container) {
@@ -100,7 +104,11 @@ abstract class AbstractDataTable implements ContainerAwareInterface
         $this->prefix = $this->name[0];
         $this->options = array_merge($this->options, $options->all());
 
-        $this->build();
+        $builder = new TableBuilder();
+        $this->build($builder);
+        foreach ($builder->getColumns() as $column) {
+            $this->addColumn($column);
+        }
     }
 
     /**
@@ -167,7 +175,7 @@ abstract class AbstractDataTable implements ContainerAwareInterface
         }
     }
 
-    protected function build() { }
+    //protected function build(TableBuilderInterface $builder) { }
 
     /**
      * @return string
