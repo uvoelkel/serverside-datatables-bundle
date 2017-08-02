@@ -66,7 +66,15 @@ class EntityColumn extends Column
      */
     public function getEntityPrefixes()
     {
-        return $this->prefixes;
+        $result = [];
+
+        $prefix = '';
+        foreach ($this->prefixes as $pf) {
+            $prefix .= (empty($prefix) ? '' : '_') . $pf;
+            $result[] = $prefix;
+        }
+
+        return $result;
     }
 
     /**

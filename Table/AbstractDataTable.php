@@ -352,7 +352,7 @@ abstract class AbstractDataTable implements ContainerAwareInterface
 
         foreach ($this->columns as $column) {
             if ($column instanceof EntityColumn) {
-                $result[] = $column->getEntityPrefix();
+                $result = array_merge($result, $column->getEntityPrefixes());
             }
         }
 
