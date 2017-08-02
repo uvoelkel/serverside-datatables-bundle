@@ -114,6 +114,30 @@ class ServerSideTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($metadata));
 
 
+
+        // sql mode
+        $statement = $this->getMockBuilder('Doctrine\DBAL\Driver\Statement')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $statement->expects($this->exactly(1))
+            ->method('fetch')
+            ->will($this->returnValue(['@@sql_mode' => '']));
+
+        $connection = $this->getMockBuilder('Doctrine\DBAL\Connection')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $connection->expects($this->exactly(1))
+            ->method('executeQuery')
+            ->will($this->returnValue($statement));
+
+        $em->expects($this->exactly(1))
+            ->method('getConnection')
+            ->will($this->returnValue($connection));
+
+
+
         $table = new TestTable();
         $table->setContainer(null);
 

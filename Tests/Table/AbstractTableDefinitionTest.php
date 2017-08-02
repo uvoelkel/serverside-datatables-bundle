@@ -13,13 +13,15 @@ class TestDefinition extends AbstractTableDefinition
     {
         parent::__construct($entity, $name, $prefix);
     }
+
+    protected function build() {}
 }
 
 class AbstractTableDefinitionTest extends \PHPUnit_Framework_TestCase
 {
     public function testTableDefinitionConstructor()
     {
-        $table = new TableDefinition('AppBundle\Entity\Test', 'test');
+        $table = new TestDefinition('AppBundle\Entity\Test', 'test');
         $table->setContainer(null);
 
         $this->assertEquals('t', $table->getPrefix());
