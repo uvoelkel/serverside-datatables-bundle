@@ -2,7 +2,7 @@
 
 namespace Voelkel\DataTablesBundle\Table;
 
-class TableDefinition extends AbstractTableDefinition
+class TableDefinition extends AbstractDataTable
 {
     /**
      * @param string $entity
@@ -10,6 +10,9 @@ class TableDefinition extends AbstractTableDefinition
      */
     public function __construct($entity, $name)
     {
-        parent::__construct($entity, $name);
+        $this->entity = $entity;
+        $this->name = $name;
     }
+
+    protected function build() { }
 }
