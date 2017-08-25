@@ -19,4 +19,11 @@ interface TableBuilderInterface
      * @return TableBuilderInterface
      */
     public function addColumn(Column $column);
+
+    /**
+     * @param callable $callback
+     *
+     * function(\Doctrine\ORM\QueryBuilder $qb) {}
+     */
+    public function setConditionCallback(callable $callback);
 }

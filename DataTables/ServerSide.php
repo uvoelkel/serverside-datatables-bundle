@@ -347,7 +347,7 @@ class ServerSide
                 $join = [empty($prefix) ? $this->table->getPrefix() : $prefix];
 
                 $field = substr($fields, 0, $pos);
-                $prefix .= (empty($prefix) ? '' : '_') . EntityColumn::createEntityPrefix($field);
+                $prefix = $column->getEntityPrefix($field);
 
                 array_push($join, $field, $prefix);
                 $joins[join('.', $join)] = $join;

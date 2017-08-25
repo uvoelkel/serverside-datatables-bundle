@@ -7,7 +7,11 @@ use Voelkel\DataTablesBundle\Table\Column\EntityColumn;
 
 class TableBuilder implements TableBuilderInterface
 {
+    /** @var Column[] */
     private $columns = [];
+
+    /** @var null|callable */
+    private $conditionCallback;
 
     public function add(string $field, $class = null, $options = [])
     {
@@ -58,5 +62,23 @@ class TableBuilder implements TableBuilderInterface
     public function getColumns()
     {
         return $this->columns;
+    }
+
+    /**
+     * @param callable $callback
+     *
+     * function(\Doctrine\ORM\QueryBuilder $qb) {}
+     */
+    public function setConditionCallback(callable $callback)
+    {
+        $this->conditionCallback = $callback;
+    }
+
+    /**
+     * @return callable|null
+     */
+    public function getConditionCallback()
+    {
+        return $this->conditionCallback;
     }
 }

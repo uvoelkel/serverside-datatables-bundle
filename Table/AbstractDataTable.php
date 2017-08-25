@@ -109,6 +109,10 @@ abstract class AbstractDataTable implements ContainerAwareInterface
         foreach ($builder->getColumns() as $column) {
             $this->addColumn($column);
         }
+
+        if (null !== $builder->getConditionCallback() && null === $this->getConditionCallback()) {
+            $this->setConditionCallback($builder->getConditionCallback());
+        }
     }
 
     /**

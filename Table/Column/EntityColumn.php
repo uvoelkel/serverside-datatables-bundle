@@ -8,6 +8,9 @@ class EntityColumn extends Column
     private $entityField;
 
     /** @var string[] */
+    private $fields = [];
+
+    /** @var string[] */
     private $prefixes = [];
 
     private static $tableWidePrefixes = [];
@@ -28,7 +31,8 @@ class EntityColumn extends Column
 
             while (false !== $pos) {
                 $sub = substr($fields, 0, $pos);
-                $this->prefixes[] = EntityColumn::createEntityPrefix($sub);
+                $this->fields[] = $sub;
+                $this->prefixes[$sub] = EntityColumn::createEntityPrefix($sub);
 
                 $fields = substr($fields, $pos + 1);
                 $pos = strpos($fields, '.');
@@ -39,7 +43,8 @@ class EntityColumn extends Column
             }
 
         } else {
-            $this->prefixes[] = self::createEntityPrefix($field);
+            $this->fields[] = $field;
+            $this->prefixes[$field] = self::createEntityPrefix($field);
         }
 
         parent::__construct($name, $field, $options);
@@ -56,9 +61,9 @@ class EntityColumn extends Column
     /**
      * @return string|null
      */
-    public function getEntityPrefix()
+    public function getEntityPrefix($part = null)
     {
-        return join('_', $this->prefixes);
+        return join('_', $this->getPrefixesInOrder($part));
     }
 
     /**
@@ -69,11 +74,27 @@ class EntityColumn extends Column
         $result = [];
 
         $prefix = '';
-        foreach ($this->prefixes as $pf) {
+        foreach ($this->getPrefixesInOrder() as $pf) {
             $prefix .= (empty($prefix) ? '' : '_') . $pf;
             $result[] = $prefix;
         }
 
+        return $result;
+    }
+
+    /**
+     * @param null|string $part
+     * @return string[]
+     */
+    private function getPrefixesInOrder(string $part = null)
+    {
+        $result = [];
+        foreach ($this->fields as $field) {
+            $result[] = $this->prefixes[$field];
+            if (null !== $part && $part === $field) {
+                break;
+            }
+        }
         return $result;
     }
 
