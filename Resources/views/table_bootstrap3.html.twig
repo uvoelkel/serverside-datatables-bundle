@@ -1,3 +1,5 @@
+{% trans_default_domain "datatables" %}
+
 {% set attributes = '' %}
 {% if options.attr is defined %}
     {% for key, value in options.attr %}
@@ -12,55 +14,13 @@
             {% for column in table.columns %}
             <th>
                 {{ datatables_column_filter(table, column, {'id': tableId}) }}
-
-                {#
-                {% set filter = column.options.filter != false or column.options.filter_empty != false %}
-                {% set group = column.options.filter != false and column.options.filter_empty != false %}
-
-                {% if group %}
-                <div class="input-group input-group-sm">
-                {% endif %}
-
-                    {% if column.options.filter == 'text' %}
-                    <input type="text" class="form-control input-sm" id="{{ tableId }}_{{ column.name }}_filter" placeholder="{{ column.label }}">
-                    {% elseif column.options.filter == 'select' %}
-                    <select id="{{ tableId }}_{{ column.name }}_filter" title="{{ column.label }}" class="form-control input-sm"{% if column.options.multiple %} multiple="multiple"{% endif %}>
-
-                        {% if not column.options.multiple %}
-                            <option value="">{{ 'select all' | trans }}</option>
-                        {% endif %}
-
-                        {% for key, label in column.options.filter_choices %}
-                            <option value="{{ key }}">{{ label }}</option>
-                        {% endfor %}
-                    </select>
-                    {% endif %}
-
-                    {% if column.options.filter_empty %}
-                        {% if group %}
-                        <span class="input-group-addon">
-                            <input type="checkbox" id="{{ tableId }}_{{ column.name }}_filter_empty">
-                        </span>
-                        {% else %}
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" id="{{ tableId }}_{{ column.name }}_filter_empty">
-                            </label>
-                        </div>
-                        {% endif %}
-                    {% endif %}
-
-                {% if group %}
-                </div>
-                {% endif %}
-                #}
             </th>
             {% endfor %}
         </tr>
         {% endif %}
         <tr>
             {% for column in table.columns %}
-                <th>{{ column.label }}</th>
+            <th>{{ column.label }}</th>
             {% endfor %}
         </tr>
     </thead>

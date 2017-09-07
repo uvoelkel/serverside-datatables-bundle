@@ -1,3 +1,5 @@
+{% trans_default_domain "datatables" %}
+
 {% set attributes = '' %}
 {% if options.attr is defined %}
     {% for key, value in options.attr %}
@@ -12,34 +14,13 @@
             {% for column in table.columns %}
             <th>
                 {{ datatables_column_filter(table, column, {'id': tableId}) }}
-
-                {#
-                {% if column.options.filter == 'text' %}
-                    <input type="text" id="{{ table.name }}_{{ column.name }}_filter" placeholder="{{ column.label }}">
-                {% elseif column.options.filter == 'select' %}
-                    <select id="{{ table.name }}_{{ column.name }}_filter" {% if column.options.multiple %} multiple="multiple"{% endif %}>
-
-                        {% if not column.options.multiple %}
-                            <option value="">-- {{ column.label }} --</option>
-                        {% endif %}
-
-                        {% for key, label in column.options.filter_choices %}
-                            <option value="{{ key }}">{{ label }}</option>
-                        {% endfor %}
-                    </select>
-                {% endif %}
-
-                {% if column.options.filter_empty %}
-                    <input type="checkbox" id="{{ table.name }}_{{ column.name }}_filter_empty">
-                {% endif %}
-                #}
             </th>
             {% endfor %}
         </tr>
         {% endif %}
         <tr>
             {% for column in table.columns %}
-                <th>{{ column.label }}</th>
+            <th>{{ column.label }}</th>
             {% endfor %}
         </tr>
     </thead>

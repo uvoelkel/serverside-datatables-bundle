@@ -1,14 +1,16 @@
+{% trans_default_domain "datatables" %}
+
 {% if column.filter is datatables_textfilter %}
     <input type="text" class="datatables-filter-input" id="{{ table.name }}_{{ column.name }}_filter" placeholder="{{ column.label }}">
 {% elseif column.filter is datatables_choicefilter %}
     <select id="{{ table.name }}_{{ column.name }}_filter" class="datatables-filter-input" {% if column.filter.options.multiple %} multiple="multiple"{% endif %}>
 
         {% if not column.filter.options.multiple %}
-            <option value="">-- {{ column.label }} --</option>
+        <option value="">-- {{ column.label }} --</option>
         {% endif %}
 
         {% for key, label in column.filter.options.choices %}
-            <option value="{{ key }}">{{ label }}</option>
+        <option value="{{ key }}">{{ label }}</option>
         {% endfor %}
     </select>
 {% endif %}
