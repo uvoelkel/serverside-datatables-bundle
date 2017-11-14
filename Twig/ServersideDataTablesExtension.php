@@ -51,6 +51,10 @@ class ServersideDataTablesExtension extends \Twig_Extension
                 'needs_environment' => true,
                 'is_safe' => ['html', 'js'],
             ]),
+            new \Twig_SimpleFunction('datatables_id', [$this, 'getTableId'], [
+                'needs_environment' => false,
+                //'is_safe' => ['html'],
+            ]),
 
             new \Twig_SimpleFunction('datatables_column_filter', [$this, 'renderColumnFilter'], [
                 'needs_environment' => true,
@@ -198,6 +202,13 @@ class ServersideDataTablesExtension extends \Twig_Extension
         ]);
 
         return $result;
+    }
+
+    public function getTableId(AbstractDataTable $table)
+    {
+        $table->setContainer($this->container);
+
+        return $table->getName();
     }
 
     public function renderColumnFilter(\Twig_Environment $twig, AbstractDataTable $table, $column, array $options = [])
