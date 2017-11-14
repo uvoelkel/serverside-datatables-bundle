@@ -83,6 +83,11 @@ var {{ tableVar }}_table = $('#{{ tableId }}').DataTable({
     {% endif %}
 });
 
+{{ tableVar }}_table.resetFilter = function() {
+    $('#{{ tableId }} > thead .datatables-filter-input').val('');
+    $('#{{ tableId }} > thead .datatables-filter-input').trigger('change');
+};
+
 {% for column in table.columns %}
 
     {% if column.options.filter_empty %}
