@@ -17,11 +17,8 @@ class ServersideDataTablesExtension extends \Twig_Extension
     /** @var ContainerInterface */
     private $container;
 
-    /**
-     * @var string
-     * @deprecated
-     */
-    private $theme = 'bootstrap3';
+    /** @var string */
+    private $theme;
 
     private static $defaultsRendered = false;
 
@@ -31,6 +28,7 @@ class ServersideDataTablesExtension extends \Twig_Extension
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
+        $this->theme = $container->getParameter('serverside_datatables.config')['options']['theme'];
     }
 
     /**
@@ -73,7 +71,14 @@ class ServersideDataTablesExtension extends \Twig_Extension
             unset($options['id']);
         }
 
-        return $twig->render('@VoelkelDataTables/table_' . $this->theme . '.html.twig', [
+        if (isset($options['theme'])) {
+            $theme = $options['theme'];
+            unset($options['theme']);
+        } else {
+            $theme = $this->theme;
+        }
+
+        return $twig->render('@VoelkelDataTables/table_' . $theme . '.html.twig', [
             'table' => $table,
             'options' => $options,
             'tableId' => $tableId,
@@ -221,6 +226,13 @@ class ServersideDataTablesExtension extends \Twig_Extension
             unset($options['id']);
         }
 
+        if (isset($options['theme'])) {
+            $theme = $options['theme'];
+            unset($options['theme']);
+        } else {
+            $theme = $this->theme;
+        }
+
         if (is_string($column)) {
             $column = $table->getColumn($column);
         }
@@ -235,7 +247,7 @@ class ServersideDataTablesExtension extends \Twig_Extension
 
         $column->filterRendered = true;
 
-        return $twig->render('@VoelkelDataTables/column_filter_' . $this->theme . '.html.twig', [
+        return $twig->render('@VoelkelDataTables/column_filter_' . $theme . '.html.twig', [
             'table' => $table,
             'column' => $column,
             'options' => $options,

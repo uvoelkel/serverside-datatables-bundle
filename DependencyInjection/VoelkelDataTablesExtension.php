@@ -23,18 +23,6 @@ class VoelkelDataTablesExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
 
-        if (!isset($config['options'])) {
-            $config['options'] = [];
-        }
-
-        if (!isset($config['table_options'])) {
-            $config['table_options'] = [];
-        }
-
-        if (!isset($config['localization'])) {
-            $config['localization'] = [];
-        }
-
         if (!isset($config['localization']['locale'])) {
             $config['localization']['locale'] = $container->getParameter('locale');
         }

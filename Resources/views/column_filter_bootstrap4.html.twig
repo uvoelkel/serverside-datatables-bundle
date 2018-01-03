@@ -1,0 +1,46 @@
+{% trans_default_domain "datatables" %}
+
+{% set filter = column.options.filter != false or column.options.filter_empty != false %}
+{% set group = column.options.filter != false and column.options.filter_empty != false %}
+
+{% if group %}
+<div class="input-group input-group-sm">
+{% endif %}
+
+    {% set attrs = '' %}
+    {% for key, value in column.options.filter_attr %}
+        {% set attrs = attrs ~ ' ' ~ key ~ '=' ~ value %}
+    {% endfor %}
+
+    {% if column.filter is datatables_textfilter %}
+    <input type="text" class="form-control input-sm datatables-filter-input" id="{{ tableId }}_{{ column.name }}_filter" placeholder="{{ column.label }}"{{ attrs }}>
+    {% elseif column.filter is datatables_choicefilter %}
+    <select id="{{ tableId }}_{{ column.name }}_filter" title="{{ column.label }}" class="form-control input-sm datatables-filter-input"{% if column.filter.options.multiple %} multiple="multiple"{% endif %}{{ attrs }}>
+
+        {% if not column.filter.options.multiple %}
+            <option value="">{{ 'select all' | trans }}</option>
+        {% endif %}
+
+        {% for key, label in column.filter.options.choices %}
+            <option value="{{ key }}">{{ label }}</option>
+        {% endfor %}
+    </select>
+    {% endif %}
+
+    {% if column.options.filter_empty %}
+        {% if group %}
+        <span class="input-group-addon">
+            <input type="checkbox" id="{{ tableId }}_{{ column.name }}_filter_empty" class="datatables-filter-input">
+        </span>
+        {% else %}
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" id="{{ tableId }}_{{ column.name }}_filter_empty" class="datatables-filter-input">
+            </label>
+        </div>
+        {% endif %}
+    {% endif %}
+
+{% if group %}
+</div>
+{% endif %}

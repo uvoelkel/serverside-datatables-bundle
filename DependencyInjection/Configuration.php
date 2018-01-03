@@ -23,6 +23,7 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->arrayNode('options')
+                    ->addDefaultsIfNotSet()
                     ->children()
                         ->scalarNode('theme')
                             ->defaultValue('default')
@@ -36,6 +37,7 @@ class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
                 ->arrayNode('table_options')
+                    ->addDefaultsIfNotSet()
                     ->children()
                         ->scalarNode('dom')->end()
                     ->end()

@@ -1,0 +1,32 @@
+{% trans_default_domain "datatables" %}
+
+{% set attributes = '' %}
+{% if options.attr is defined %}
+    {% for key, value in options.attr %}
+        {% set attributes = attributes ~ ' ' ~ key ~ '="' ~ value ~ '"' %}
+    {% endfor %}
+{% endif %}
+
+<table id="{{ tableId }}" class="table table-responsive_ table-striped_ table-bordered_ table-hover table-condensed_{% if options.class is defined %} {{ options.class }}{% endif %}" {{ attributes | raw }}>
+    <thead{% if table.hasColumnFilter %} class="has_filter"{% endif %}>
+        {% if table.hasColumnFilter %}
+        <tr>
+            {% for column in table.columns %}
+            <th>
+                {{ datatables_column_filter(table, column, {'id': tableId}) }}
+            </th>
+            {% endfor %}
+        </tr>
+        {% endif %}
+        <tr>
+            {% for column in table.columns %}
+            <th>{{ column.label }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+    {% if table.options.deferLoading is defined and table.options.deferLoading == true %}
+    {% endif %}
+    </tbody>
+</table>
+
