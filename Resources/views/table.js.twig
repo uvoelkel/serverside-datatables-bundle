@@ -93,7 +93,7 @@ var {{ tableVar }}_table = $('#{{ tableId }}').DataTable({
     {% if column.options.filter_empty %}
     var {{ tableId }}_{{ column.name }}_filter_empty = $('#{{ tableId }}_{{ column.name }}_filter_empty').is(':checked')
 
-    $('#{{ tableId }}_{{ column.name }}_filter_empty').on('change', function() {
+    $('body').on('change', '#{{ tableId }}_{{ column.name }}_filter_empty', function() {
         {{ tableId }}_{{ column.name }}_filter_empty = $(this).is(':checked');
 
         {% if column.options.filter == false %}
@@ -137,17 +137,17 @@ var {{ tableVar }}_table = $('#{{ tableId }}').DataTable({
         }
     };
 
-    $('#{{ tableId }}_{{ column.name }}_filter').on('change', function() {
+    $('body').on('change', '#{{ tableId }}_{{ column.name }}_filter', function() {
         on{{ tableId }}_{{ column.name }}TextChange($(this));
     });
-    $('#{{ tableId }}_{{ column.name }}_filter').on('keypress keyup', function(event) {
+    $('body').on('keypress keyup', '#{{ tableId }}_{{ column.name }}_filter', function(event) {
         if ('Enter' == event.key || 13 == event.keyCode) {
             event.preventDefault();
         }
         on{{ tableId }}_{{ column.name }}TextChange($(this));
     });
     {% elseif column.filter is datatables_choicefilter %}
-    $('#{{ tableId }}_{{ column.name }}_filter').on('change', function() {
+    $('body').on('change', '#{{ tableId }}_{{ column.name }}_filter', function() {
         var value = $(this).val();
         {% if column.options.filter_empty %}
         value += '|empty=' + {{ tableId }}_{{ column.name }}_filter_empty.toString();
