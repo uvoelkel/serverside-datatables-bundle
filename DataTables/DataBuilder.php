@@ -88,7 +88,7 @@ class DataBuilder
         if (isset($column->getOptions()['format_data_callback'])) {
             $callback = $column->getOptions()['format_data_callback'];
 
-            if ($callback instanceof \Closure) {
+            if ($callback instanceof \Closure || is_array($callback)) {
                 return call_user_func($callback, $data, $object, $column);
             }
 

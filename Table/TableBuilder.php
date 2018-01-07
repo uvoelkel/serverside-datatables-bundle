@@ -2,6 +2,7 @@
 
 namespace Voelkel\DataTablesBundle\Table;
 
+use Voelkel\DataTablesBundle\Table\Column\ActionsColumn;
 use Voelkel\DataTablesBundle\Table\Column\Column;
 use Voelkel\DataTablesBundle\Table\Column\EntityColumn;
 
@@ -39,6 +40,11 @@ class TableBuilder implements TableBuilderInterface
                 $entityField = array_pop($fields);
                 $field = join('.', $fields);
                 $this->columns[] = new EntityColumn($name, $field, $entityField, $options);
+                break;
+            case ActionsColumn::class:
+                $actions = $options['actions'];
+                unset($options['actions']);
+                $this->columns[] = new ActionsColumn($name, $actions, $options);
                 break;
             default:
                 throw new \Exception('unhandled column class ' . $class);
