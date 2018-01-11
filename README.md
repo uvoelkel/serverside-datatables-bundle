@@ -11,7 +11,7 @@ The DataTablesBundle let's you easily create (sortable and filterable) [serverSi
 
 This bundle is under the MIT license. See the complete license in the bundle:
 
-    Resources/meta/LICENSE
+    LICENSE
 
 ## Installation
 
@@ -84,44 +84,54 @@ class CustomerTable extends AbstractDataTable
     protected function configure(TableSettings $settings, TableOptions $options)
     {
         $settings->setName('customer');
-        $settings->setEntity('AppBundle\Entity\Customer');
+        $settings->setEntity('App\Entity\Customer');
+
+        $options['stateSave'] = true;
     }
 
     protected function build()
     {
         $this
-            ->addColumn(new Column('id', 'id'))
-            ->addColumn(new Column('gender', 'gender'))
-            ->addColumn(new Column('firstname', 'firstname'))
-            ->addColumn(new Column('lastname', 'lastname'))
-            ->addColumn(new UnboundColumn('opening', function(Customer $customer) {
-                return 'Dear ' . ('f' === $customer->getGender() ? 'Madam' : 'Sir');
-            }))
-            ->addColumn(new CallbackColumn('status', 'status', function($status) {
-                switch ($status) {
-                    case 1:
-                        return 'something';
-                        break;
-                    case 2:
-                        return 'something else';
-                        break;
-                    default:
-                        return 'invalid';
-                        break;
+            ->add('id')            
+            ->add('firstname')
+            ->add('lastname', Column::class, [
+                'label' => 'Lastname'
+            ])
+            ->add('opening', UnboundColumn::class, [
+                'callback' => function(Customer $customer) {
+                    return 'Dear ' . ('f' === $customer->getGender() ? 'Madam' : 'Sir');
                 }
-            }))
-            ->addColumn(new EntityColumn('group', 'group', 'name'))                 // customer has one group
+            ])
+            ->add('status', CallbackColumn::class, [
+                'callback' => function($status) {
+                    switch ($status) {
+                        case 1:
+                            return 'something';
+                            break;
+                        case 2:
+                            return 'something else';
+                            break;
+                        default:
+                            return 'invalid';
+                            break;
+                }
+            ])
+            ->add('group.name'))                                                    // customer has one group
             ->addColumn(new EntityColumn('state', 'city.state', 'name'))            // customer has one city. city has one state
             ->addColumn(new EntitiesColumn('orders', 'orders', 'number'))           // customer has many orders
             ->addColumn(new EntitiesCountColumn('addresses_count', 'addresses'))    // customer has many addresses
-            ->addColumn(new ActionsColumn('actions', [
-                'edit' => [
-                    'title' => 'edit customer',
-                    'label' => '<i class="fa fa-edit"></i>',
-                    'callback' => function(Customer $customer, \Symfony\Component\Routing\RouterInterface $router) {
-                        return $router->generate('customer_edit', ['id' => $customer->getId()]);
-                    },
+            ->addColumn('actions', ActionsColumn::class, [
+                'actions' => [
+                    'edit' => [
+                        'title' => 'edit customer',
+                        'label' => '<i class="fa fa-edit"></i>',
+                        'callback' => function(Customer $customer, \Symfony\Component\Routing\RouterInterface $router) {
+                            return $router->generate('customer_edit', ['id' => $customer->getId()]);
+                        },
+                    ],
                 ],
+                'dropdown' => true,
+                'dropdown_label' => 'Actions',
             ])
         ;
     }
@@ -250,16 +260,16 @@ class CustomerTable extends AbstractDataTable
     {
         $this
             // ...
-            ->addColumn(new Column('gender', 'gender', [
+            ->add('gender', Column:class, [
                 'filter' => 'select',
                 'filter_choices' => [
                     'm' => 'male',
                     'f' => 'female',
                 ],
-            ]))
-            ->addColumn(new Column('lastname', 'lastname', [
+            ])
+            ->add('lastname', Column::class, [
                 'filter' => 'text',
-            ]))
+            ])
         ;
     }
 }
@@ -280,12 +290,10 @@ $default = [
 class CustomerTable extends AbstractTableDefinition
 {
     // ...
-    protected function configureOptions()
+    protected function configure(TableSettings $settings, TableOptions $options)
     {
-        return [
-            'stateSave' => true,
-            'stateDuration' => 120,
-        ];
+        $options['stateSave'] = true;
+        $options['stateDuration'] = 120;
     }
 }
 ```

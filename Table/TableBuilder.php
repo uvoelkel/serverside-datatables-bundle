@@ -3,8 +3,10 @@
 namespace Voelkel\DataTablesBundle\Table;
 
 use Voelkel\DataTablesBundle\Table\Column\ActionsColumn;
+use Voelkel\DataTablesBundle\Table\Column\CallbackColumn;
 use Voelkel\DataTablesBundle\Table\Column\Column;
 use Voelkel\DataTablesBundle\Table\Column\EntityColumn;
+use Voelkel\DataTablesBundle\Table\Column\UnboundColumn;
 
 class TableBuilder implements TableBuilderInterface
 {
@@ -46,6 +48,16 @@ class TableBuilder implements TableBuilderInterface
                 unset($options['actions']);
                 $this->columns[] = new ActionsColumn($name, $actions, $options);
                 break;
+            case CallbackColumn::class:
+                $callback = $options['callback'];
+                unset($options['callback']);
+                $this->columns[] = new CallbackColumn($name, $field, callback, $options);
+                break;
+            case UnboundColumn::class:
+                $callback = $options['callback'];
+                unset($options['callback']);
+                $this->columns[] = new UnboundColumn($name, $callback, $options);
+                break;
             default:
                 throw new \Exception('unhandled column class ' . $class);
                 break;
@@ -54,12 +66,13 @@ class TableBuilder implements TableBuilderInterface
         return $this;
     }
 
+    /**
+     * @param Column $column
+     *
+     * @return $this|TableBuilderInterface
+     */
     public function addColumn(Column $column)
     {
-        /*if (isset($this->columns[$column->getName()])) {
-            throw new \Exception(sprintf('a column with the name "%s" already exists.', $column->getName()));
-        }*/
-
         $this->columns[] = $column;
 
         return $this;

@@ -107,7 +107,7 @@ abstract class AbstractDataTable implements ContainerAwareInterface
         $builder = new TableBuilder();
         $this->build($builder);
         foreach ($builder->getColumns() as $column) {
-            $this->addColumn($column);
+            $this->doAddColumn($column);
         }
 
         if (null !== $builder->getConditionCallback() && null === $this->getConditionCallback()) {
@@ -231,11 +231,28 @@ abstract class AbstractDataTable implements ContainerAwareInterface
     }
 
     /**
+     * @deprecated
      * @param Column $column
      * @return $this
      * @throws \Exception
      */
     public function addColumn(Column $column)
+    {
+        @trigger_error(
+            'The use of "addColumn()" is deprecated. Use "$builder->add()" instead.',
+            E_USER_DEPRECATED
+        );
+
+        return $this->doAddColumn($column);
+    }
+
+    /**
+     * @param Column $column
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    private function doAddColumn(Column $column)
     {
         if (isset($this->columns[$column->getName()])) {
             throw new \Exception(sprintf('a column with the name "%s" already exists.', $column->getName()));
