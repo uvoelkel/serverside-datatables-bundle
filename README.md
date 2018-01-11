@@ -71,6 +71,7 @@ Create a Table definition
 namespace AppBundle\DataTable;
 
 use Voelkel\DataTablesBundle\Table\AbstractDataTable;
+use Voelkel\DataTablesBundle\Table\TableBuilderInterface;
 use Voelkel\DataTablesBundle\Table\TableOptions;
 use Voelkel\DataTablesBundle\Table\TableSettings;
 use Voelkel\DataTablesBundle\Table\Column\Column;
@@ -89,10 +90,10 @@ class CustomerTable extends AbstractDataTable
         $options['stateSave'] = true;
     }
 
-    protected function build()
+    protected function build(TableBuilderInterface $builder)
     {
-        $this
-            ->add('id')            
+        $builder
+            ->add('id')
             ->add('firstname')
             ->add('lastname', Column::class, [
                 'label' => 'Lastname'
