@@ -42,6 +42,7 @@ class Column
         'unbound' => false,
         'order' => null, // null|'asc'|'desc'
         'label' => null, // null|string|false
+        'placeholder' => null, // null|string|false
         'abbr' => null,
     ];
 
@@ -164,6 +165,23 @@ class Column
             return '';
         } else {
             throw new \Exception('invalid label option: ' . $this->options['label']);
+        }
+    }
+
+    /**
+     * @return string
+     * @throws \Exception
+     */
+    public function getPlaceholder()
+    {
+        if (null === $this->options['placeholder']) {
+            return $this->getLabel();
+        } elseif (is_string($this->options['placeholder'])) {
+            return $this->options['placeholder'];
+        } elseif (false === $this->options['placeholder']) {
+            return '';
+        } else {
+            throw new \Exception('invalid placeholder option: ' . $this->options['placeholder']);
         }
     }
 }

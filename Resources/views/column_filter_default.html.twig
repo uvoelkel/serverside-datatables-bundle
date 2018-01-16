@@ -1,7 +1,7 @@
 {% trans_default_domain "datatables" %}
 
 {% if column.filter is datatables_textfilter %}
-    <input type="text" class="datatables-filter-input" id="{{ table.name }}_{{ column.name }}_filter" placeholder="{{ column.label }}">
+    <input type="text" class="datatables-filter-input" id="{{ table.name }}_{{ column.name }}_filter" placeholder="{{ column.placeholder }}">
 {% elseif column.filter is datatables_choicefilter %}
     <select id="{{ table.name }}_{{ column.name }}_filter" class="datatables-filter-input" {% if column.filter.options.multiple %} multiple="multiple"{% endif %}>
 
