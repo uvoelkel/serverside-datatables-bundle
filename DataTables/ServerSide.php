@@ -32,6 +32,12 @@ class ServerSide
     /** @var array */
     private $joins = [];
 
+    /** @var bool */
+    private $hasOneToOneRelation = false;
+
+    /** @var bool */
+    private $hasOneToManyRelation = false;
+
     /**
      * @param EntityManagerInterface $em
      * @param DataToStringConverter $dataToStringConverter
@@ -84,13 +90,19 @@ class ServerSide
 
         // paginate
         $paginate = clone $qb;
-        $paginate->select('distinct(' . $this->table->getPrefix() . '.' . $this->getIdentifierField() . ')');
+        if (false === $this->hasOneToManyRelation) {
+            $paginate->select($this->table->getPrefix() . '.' . $this->getIdentifierField());
+        } else {
+            $paginate->select('distinct(' . $this->table->getPrefix() . '.' . $this->getIdentifierField() . ')');
+        }
 
-        // MySQL 5.7 enables ONLY_FULL_GROUP_BY by default, which breaks the pagination
-        // removing ONLY_FULL_GROUP_BY from the current session should do it as a temporary fix.
-        $sqlMode = $this->em->getConnection()->executeQuery('SELECT @@sql_mode')->fetch();
-        if (false !== strpos($sqlMode['@@sql_mode'], 'ONLY_FULL_GROUP_BY')) {
-            $this->em->getConnection()->exec('SET sql_mode=(SELECT REPLACE(@@sql_mode, \'ONLY_FULL_GROUP_BY\', \'\'))');
+        if (true === $this->hasOneToManyRelation) {
+            // MySQL 5.7 enables ONLY_FULL_GROUP_BY by default, which breaks the pagination
+            // removing ONLY_FULL_GROUP_BY from the current session should do it as a temporary fix.
+            $sqlMode = $this->em->getConnection()->executeQuery('SELECT @@sql_mode')->fetch();
+            if (false !== strpos($sqlMode['@@sql_mode'], 'ONLY_FULL_GROUP_BY')) {
+                $this->em->getConnection()->exec('SET sql_mode=(SELECT REPLACE(@@sql_mode, \'ONLY_FULL_GROUP_BY\', \'\'))');
+            }
         }
 
         // add scalar fields as hidden (todo: clean up this mess)
@@ -108,8 +120,10 @@ class ServerSide
         $paginate->setFirstResult($this->request->getStart())->setMaxResults($this->request->getLength());
         $ids = $paginate->getQuery()->getResult();
 
-        if (false !== strpos($sqlMode['@@sql_mode'], 'ONLY_FULL_GROUP_BY')) {
-            $this->em->getConnection()->exec('SET sql_mode=(SELECT CONCAT(@@sql_mode,\',ONLY_FULL_GROUP_BY\'))');
+        if (true === $this->hasOneToManyRelation) {
+            if (false !== strpos($sqlMode['@@sql_mode'], 'ONLY_FULL_GROUP_BY')) {
+                $this->em->getConnection()->exec('SET sql_mode=(SELECT CONCAT(@@sql_mode,\',ONLY_FULL_GROUP_BY\'))');
+            }
         }
 
         $qb->andWhere($this->table->getPrefix() . '.' . $this->getIdentifierField() . ' in (:ids)')
@@ -149,14 +163,17 @@ class ServerSide
             /** @var EntityColumn $column */
             if (get_class($column) === 'Voelkel\DataTablesBundle\Table\Column\EntityColumn') {
                 $this->joinColumn($qb, $column);
+                $this->hasOneToOneRelation = true;
             }
 
             if ($column instanceof EntitiesColumn) {
                 $this->joinColumn($qb, $column);
+                $this->hasOneToManyRelation = true;
             }
 
             if ($column instanceof EntitiesScalarColumn) {
                 $this->joinColumn($qb, $column);
+                $this->hasOneToManyRelation = true;
             }
         }
 
