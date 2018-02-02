@@ -25,6 +25,10 @@ class ActionsColumn extends UnboundColumn
                 continue;
             }
 
+            if (!isset($settings['method'])) {
+                $settings['method'] = 'get';
+            }
+
             $actions[$name] = $settings;
         }
 
@@ -64,14 +68,15 @@ class ActionsColumn extends UnboundColumn
             $url   = $settings['url'];
             $label = isset($settings['label']) ? $settings['label'] : $action;
             $title = isset($settings['title']) ? $settings['title'] : $label;
+            $click = isset($settings['onclick']) ? 'onclick="' . htmlspecialchars($settings['onclick']) . '"' : '';
 
             if ($isDropdown) {
                 if (!isset($settings['default']) || false === $settings['default']) {
-                    $link = '<a href="' . $url . '" class="dropdown-item" title="' . $title . '">' . $label . '</a> ';
+                    $link = '<a href="' . $url . '" class="dropdown-item" title="' . $title . '" ' . $click . '>' . $label . '</a> ';
                     $result .= '<li>' . $link . '</li>';
                 }
             } else {
-                $link = '<a class="btn btn-primary" href="' . $url . '" title="' . $title . '">' . $label . '</a> ';
+                $link = '<a class="btn btn-primary" href="' . $url . '" title="' . $title . '" ' . $click . '>' . $label . '</a> ';
                 $result .= $link;
             }
         }
@@ -98,6 +103,8 @@ class ActionsColumn extends UnboundColumn
             $url = $router->generate($settings['route'], ['id' => $data->getId()]);
         } elseif (isset($settings['url'])) {
             $url = $settings['url'];
+        } elseif (isset($settings['onclick'])) {
+            $url = '#';
         }
 
         return $url;
