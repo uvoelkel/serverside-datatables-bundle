@@ -6,6 +6,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Validator\Constraints\Choice;
 use Voelkel\DataTablesBundle\Table\AbstractDataTable;
 use Voelkel\DataTablesBundle\Table\Column\Column;
+use Voelkel\DataTablesBundle\Table\Filter\DateFilter;
 use Voelkel\DataTablesBundle\Table\Filter\TextFilter;
 use Voelkel\DataTablesBundle\Table\Filter\ChoiceFilter;
 
@@ -262,8 +263,20 @@ class ServersideDataTablesExtension extends \Twig_Extension
     public function getTests()
     {
         return [
-            new \Twig_SimpleTest('datatables_textfilter', function ($filter) { return $filter instanceof TextFilter; }),
-            new \Twig_SimpleTest('datatables_choicefilter', function ($filter) { return $filter instanceof ChoiceFilter; }),
+            new \Twig_SimpleTest('datatables_textfilter', function ($filter) {
+                return ($filter === TextFilter::class) ||
+                ($filter instanceof TextFilter) ||
+                is_a($filter, TextFilter::class, true);
+            }),
+            new \Twig_SimpleTest('datatables_choicefilter', function ($filter) {
+                return ($filter === ChoiceFilter::class) ||
+                ($filter instanceof ChoiceFilter) ||
+                is_a($filter, ChoiceFilter::class, true);
+            }),
+            new \Twig_SimpleTest('datatables_datefilter', function ($filter) {
+                return ($filter === DateFilter::class) ||
+                is_a($filter, DateFilter::class, true);
+            }),
         ];
     }
 

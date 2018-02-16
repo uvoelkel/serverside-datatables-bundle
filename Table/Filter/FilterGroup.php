@@ -6,6 +6,11 @@ class FilterGroup extends AbstractColumnFilter
 {
     private $filters = [];
 
+    protected function getDefaultOptions()
+    {
+        return [];
+    }
+
     public function addFilter(AbstractColumnFilter $filter)
     {
         $this->filters[] = $filter;

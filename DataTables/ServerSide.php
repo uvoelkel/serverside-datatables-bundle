@@ -283,7 +283,6 @@ class ServerSide
 
         $parameter = ':' . $column->getName() . '_filter';
 
-
         if ($column->getOptions()['filter'] instanceof \Voelkel\DataTablesBundle\Table\Filter\AbstractColumnFilter) {
             if (
                 isset($column->getOptions()['filter']->options['field']) &&
@@ -294,7 +293,24 @@ class ServerSide
 
             $column->getOptions()['filter']->setContainer($this->table->getContainer());
             $column->getOptions()['filter']->buildQuery($qb, $field, $parameter, $value);
-        }elseif (false !== $column->getOptions()['filter']) {
+
+        } elseif (is_string($column->getOptions()['filter']) && class_exists($column->getOptions()['filter'])) {
+            $className = $column->getOptions()['filter'];
+
+            $filter = new $className();
+            if (!($filter instanceof \Voelkel\DataTablesBundle\Table\Filter\AbstractColumnFilter)) {
+                throw new \Exception(sprintf('invalid filter class "%s"', $className));
+            }
+
+            $filter->setOptions($column->getOptions()['filter_options']);
+            if (isset($filter->options['field']) && null !== $filter->options['field']) {
+                $field = $this->table->getPrefix() . '.' . $filter->options['field'];
+            }
+
+            $filter->setContainer($this->table->getContainer());
+            $filter->buildQuery($qb, $field, $parameter, $value);
+
+        } elseif (false !== $column->getOptions()['filter']) {
             throw new \Exception(sprintf('invalid filter type "%s"', $column->getOptions()['filter']));
         }
 

@@ -108,7 +108,7 @@ var {{ tableVar }}_table = $('#{{ tableId }}').DataTable({
     {% endif %}
 
 
-    {% if column.filter is datatables_textfilter %}
+    {% if column.filter is datatables_textfilter or column.filter is datatables_datefilter %}
     var {{ tableId }}_{{ column.name }}Throttle = null;
     var on{{ tableId }}_{{ column.name }}TextChange = function($input) {
         if ({{ tableId }}_{{ column.name }}Throttle != null) {

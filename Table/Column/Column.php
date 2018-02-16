@@ -18,8 +18,11 @@ class Column
 
     public $filterRendered = false;
 
+    /** @deprecated  */
     const FILTER_NONE = false;
+    /** @deprecated  */
     const FILTER_TEXT = 'text';
+    /** @deprecated  */
     const FILTER_SELECT = 'select';
 
     const ORDER_ASCENDING = 'asc';
@@ -32,6 +35,9 @@ class Column
         'searchable' => true,
         'width' => null,
         'filter' => false, // false|'text'|'select' todo: |'bool'|'date'|'datetime'|'date_range'|'datetime_range'|\Voelkel\DataTablesBundle\Table\Filter\FilterInterface
+        'filter_options' => [
+            'popover' => false,
+        ],
         'filter_choices' => [], // 'filter' => 'select' only
         'filter_query' => '%value%', // [%]value|split( |and)[%]
         'filter_attr' => [],
@@ -89,17 +95,26 @@ class Column
             $this->options['searchable'] = true;
         }
 
+        if (is_object($this->options['filter'])) {
+            @trigger_error(
+                'Using filter objects for option "filter" is deprecated. Use "FilterClass::class" instead.',
+                E_USER_DEPRECATED
+            );
+        }
+
         if (self::FILTER_TEXT === $this->options['filter']) {
-            $this->options['filter'] = new TextFilter([
+            $this->options['filter'] = TextFilter::class;
+            $this->options['filter_options'] = array_merge([
                 'filter_operator' => 'like',
                 'filter_query' => $this->options['filter_query'],
-            ]);
+            ], $this->options['filter_options']);
         } elseif (self::FILTER_SELECT === $this->options['filter']) {
-            $this->options['filter'] = new ChoiceFilter([
+            $this->options['filter'] = ChoiceFilter::class;
+            $this->options['filter_options'] = array_merge([
                 'choices' => $this->options['filter_choices'],
                 'multiple' => $this->options['multiple'],
                 'expanded' => $this->options['expanded'],
-            ]);
+            ], $this->options['filter_options']);
         }
     }
 
