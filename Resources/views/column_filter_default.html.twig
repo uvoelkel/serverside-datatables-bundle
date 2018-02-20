@@ -3,13 +3,13 @@
 {% if column.filter is datatables_textfilter %}
     <input type="text" class="datatables-filter-input" id="{{ table.name }}_{{ column.name }}_filter" placeholder="{{ column.placeholder }}">
 {% elseif column.filter is datatables_choicefilter %}
-    <select id="{{ table.name }}_{{ column.name }}_filter" class="datatables-filter-input" {% if column.filter.options.multiple %} multiple="multiple"{% endif %}>
+    <select id="{{ table.name }}_{{ column.name }}_filter" class="datatables-filter-input" {% if column.filterOptions.multiple %} multiple="multiple"{% endif %}>
 
-        {% if not column.filter.options.multiple %}
+        {% if not column.filterOptions.multiple %}
         <option value="">-- {{ column.label }} --</option>
         {% endif %}
 
-        {% for key, label in column.filter.options.choices %}
+        {% for key, label in column.filterOptions.choices %}
         <option value="{{ key }}">{{ label }}</option>
         {% endfor %}
     </select>

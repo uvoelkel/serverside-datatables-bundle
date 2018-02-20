@@ -150,6 +150,11 @@ class Column
         return false === $this->options['filter'] ? null : $this->options['filter'];
     }
 
+    public function getFilterOptions()
+    {
+        return $this->options['filter_options'];
+    }
+
     /**
      * @return \Voelkel\DataTablesBundle\Table\AbstractDataTable
      */

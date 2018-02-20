@@ -15,13 +15,13 @@
     {% if column.filter is datatables_textfilter %}
     <input type="text" class="form-control input-sm datatables-filter-input" id="{{ tableId }}_{{ column.name }}_filter" placeholder="{{ column.placeholder }}"{{ attrs }}>
     {% elseif column.filter is datatables_choicefilter %}
-    <select id="{{ tableId }}_{{ column.name }}_filter" title="{{ column.label }}" class="form-control input-sm datatables-filter-input"{% if column.filter.options.multiple %} multiple="multiple"{% endif %}{{ attrs }}>
+    <select id="{{ tableId }}_{{ column.name }}_filter" title="{{ column.label }}" class="form-control input-sm datatables-filter-input"{% if column.filterOptions.multiple %} multiple="multiple"{% endif %}{{ attrs }}>
 
-        {% if not column.filter.options.multiple %}
+        {% if not column.filterOptions.multiple %}
             <option value="">{{ 'select all' | trans }}</option>
         {% endif %}
 
-        {% for key, label in column.filter.options.choices %}
+        {% for key, label in column.filterOptions.choices %}
             <option value="{{ key }}">{{ label }}</option>
         {% endfor %}
     </select>
