@@ -30,6 +30,7 @@ class ServersideDataTablesExtension extends \Twig_Extension
     {
         $this->container = $container;
         $this->theme = $container->getParameter('serverside_datatables.config')['options']['theme'];
+        $container->get('twig')->addRuntimeLoader(new RuntimeLoader($container));
     }
 
     /**
@@ -57,8 +58,16 @@ class ServersideDataTablesExtension extends \Twig_Extension
 
             new \Twig_SimpleFunction('datatables_column_filter', [$this, 'renderColumnFilter'], [
                 'needs_environment' => true,
+                'needs_context' => true,
                 'is_safe' => ['html'],
             ]),
+        ];
+    }
+
+    public function getTokenParsers()
+    {
+        return [
+            new TableThemeTokenParser(),
         ];
     }
 
@@ -217,7 +226,7 @@ class ServersideDataTablesExtension extends \Twig_Extension
         return $table->getName();
     }
 
-    public function renderColumnFilter(\Twig_Environment $twig, AbstractDataTable $table, $column, array $options = [])
+    public function renderColumnFilter(\Twig_Environment $twig, $context, AbstractDataTable $table, $column, array $options = [])
     {
         $table->setContainer($this->container);
 
@@ -242,20 +251,62 @@ class ServersideDataTablesExtension extends \Twig_Extension
             throw new \Exception();
         }
 
+        if (null === $column->getFilter()) {
+            return '';
+        }
+
         if (true === $column->filterRendered) {
             return '';
         }
 
         $column->filterRendered = true;
 
-        return $twig->render('@VoelkelDataTables/column_filter_' . $theme . '.html.twig', [
+        if ('bootstrap4' !== $theme) {
+            return $twig->render('@VoelkelDataTables/column_filter_' . $theme . '.html.twig', [
+                'table' => $table,
+                'column' => $column,
+                'options' => $options,
+                'tableId' => $tableId,
+            ]);
+        }
+
+        $renderer = $twig->getRuntime(TableRenderer::class);
+
+        $templates = [];
+        $templates[] = $twig->loadTemplate('@VoelkelDataTables/filter_' . $theme . '.html.twig');
+        foreach ($renderer->getThemes($table) as $theme) {
+            $templates[] = $twig->loadTemplate($theme);
+        }
+
+        /** @var \Twig_Template $template */
+        $template = null;
+        $block = 'filter';
+        foreach (array_reverse($column->getFilterBlockPrefixes()) as $prefix) {
+            foreach ($templates as $tpl) {
+                if ($tpl->hasBlock($prefix . '_widget', [])) {
+                    $block = $prefix;
+                    $template = $tpl;
+                    break;
+                }
+            }
+
+            if (null !== $template) {
+                break;
+            }
+        }
+
+        if (null === $template) {
+            throw new \Exception();
+        }
+
+        return $template->renderBlock($block. '_widget', $twig->mergeGlobals([
             'table' => $table,
             'column' => $column,
             'options' => $options,
             'tableId' => $tableId,
-        ]);
+            'id' => $tableId . '_' . $column->getName() . '_filter',
+        ]));
     }
-
 
     /**
      * {@inheritdoc}

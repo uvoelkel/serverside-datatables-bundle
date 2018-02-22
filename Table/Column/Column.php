@@ -18,6 +18,11 @@ class Column
 
     public $filterRendered = false;
 
+    /** @var \Voelkel\DataTablesBundle\Table\Filter\AbstractColumnFilter[] */
+    private $filterInstances = [];
+
+    private $filterBlockPrefixes = null;
+
     /** @deprecated  */
     const FILTER_NONE = false;
     /** @deprecated  */
@@ -143,16 +148,65 @@ class Column
     }
 
     /**
-     * @return null|\Voelkel\DataTablesBundle\Table\Filter\AbstractColumnFilter
+     * @return null|string|\Voelkel\DataTablesBundle\Table\Filter\AbstractColumnFilter
      */
     public function getFilter()
     {
         return false === $this->options['filter'] ? null : $this->options['filter'];
     }
 
+
     public function getFilterOptions()
     {
         return $this->options['filter_options'];
+    }
+
+    public function getFilterInstances()
+    {
+        if (0 !== sizeof($this->filterInstances)) {
+            return $this->filterInstances;
+        } elseif (false === $this->options['filter'] || null === $this->options['filter']) {
+            return null;
+        } elseif (is_string($this->options['filter'])) {
+
+            $filter = $this->options['filter'];
+            do {
+                $filter = new $filter();
+                if (!($filter instanceof \Voelkel\DataTablesBundle\Table\Filter\AbstractColumnFilter)) {
+                    throw new \Exception(sprintf('invalid filter class "%s"', $this->options['filter']));
+                }
+
+                $filter->setOptions($this->options['filter_options']);
+                array_unshift($this->filterInstances, $filter);
+                $filter = $filter->getParent();
+            } while (null !== $filter);
+
+            return $this->filterInstances;
+        } elseif (is_object($this->options['filter']) && $this->options['filter'] instanceof \Voelkel\DataTablesBundle\Table\Filter\AbstractColumnFilter) {
+            $this->filterInstances[] = $this->options['filter'];
+            return $this->filterInstances;
+        }
+
+        throw new \Exception();
+    }
+
+    public function getFilterBlockPrefixes()
+    {
+        if (is_array($this->filterBlockPrefixes)) {
+            return $this->filterBlockPrefixes;
+        }
+
+        if (null === ($filters = $this->getFilterInstances())) {
+            throw new \Exception();
+        }
+
+        $this->filterBlockPrefixes = [];
+
+        foreach ($filters as $filter) {
+            $this->filterBlockPrefixes[] = $filter->getBlockPrefix();
+        }
+
+        return $this->filterBlockPrefixes;
     }
 
     /**

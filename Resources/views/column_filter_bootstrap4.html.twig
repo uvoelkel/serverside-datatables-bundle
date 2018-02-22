@@ -4,7 +4,7 @@
 {% set group = column.options.filter != false and column.options.filter_empty != false %}
 
 {% if group %}
-<div class="input-group input-group-sm">
+    <div class="input-group input-group-sm">
 {% endif %}
 
     {% set attrs = '' %}
@@ -26,16 +26,16 @@
         </a>
         #}
     {% elseif column.filter is datatables_choicefilter %}
-    <select id="{{ id }}" title="{{ column.label }}" class="form-control input-sm datatables-filter-input"{% if column.filterOptions.multiple %} multiple="multiple"{% endif %}{{ attrs }}>
+        <select id="{{ id }}" title="{{ column.label }}" class="form-control input-sm datatables-filter-input"{% if column.filterOptions.multiple %} multiple="multiple"{% endif %}{{ attrs }}>
 
-        {% if not column.filterOptions.multiple %}
-            <option value="">{{ 'select all' | trans }}</option>
-        {% endif %}
+            {% if not column.filterOptions.multiple %}
+                <option value="">{{ 'select all' | trans }}</option>
+            {% endif %}
 
-        {% for key, label in column.filterOptions.choices %}
-            <option value="{{ key }}">{{ label }}</option>
-        {% endfor %}
-    </select>
+            {% for key, label in column.filterOptions.choices %}
+                <option value="{{ key }}">{{ label }}</option>
+            {% endfor %}
+        </select>
     {% elseif column.filter is datatables_datefilter %}
 
         {% set content %}
@@ -50,18 +50,18 @@
 
     {% if column.options.filter_empty %}
         {% if group %}
-        <span class="input-group-addon">
+            <span class="input-group-addon">
             <input type="checkbox" id="{{ id }}_empty" class="datatables-filter-input">
         </span>
         {% else %}
-        <div class="checkbox">
-            <label>
-                <input type="checkbox" id="{{ id }}_empty" class="datatables-filter-input">
-            </label>
-        </div>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" id="{{ id }}_empty" class="datatables-filter-input">
+                </label>
+            </div>
         {% endif %}
     {% endif %}
 
 {% if group %}
-</div>
+    </div>
 {% endif %}

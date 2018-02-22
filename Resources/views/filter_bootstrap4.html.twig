@@ -1,0 +1,68 @@
+{% trans_default_domain "datatables" %}
+
+{% block text_filter_widget %}
+    {% set input %}
+        <input type="text" class="form-control input-sm datatables-filter-input" placeholder="{{ column.placeholder }}" {{ block('widget_attributes') }}>
+    {% endset %}
+
+    {{ input }}
+{% endblock text_filter_widget %}
+
+{% block date_filter_widget %}
+    {% set input %}
+        <input type="text" class="form-control input-sm datatables-filter-input" placeholder="{{ column.placeholder }}" {{ block('widget_attributes') }}>
+    {% endset %}
+
+    <a class="btn btn-outline-secondary" tabindex="-1" data-container="body" data-toggle="popover" data-placement="bottom" data-html="true" data-content="{{ input | e }}">
+        &#x2026;
+    </a>
+{% endblock date_filter_widget %}
+
+{% block choice_filter_widget %}
+    <select title="{{ column.label }}" class="form-control input-sm datatables-filter-input"{% if column.filterOptions.multiple %} multiple="multiple"{% endif %} {{ block('widget_attributes') }}>
+        {% if not column.filterOptions.multiple %}
+            <option value="">{{ 'select all' | trans }}</option>
+        {% endif %}
+
+        {% for key, label in column.filterOptions.choices %}
+            <option value="{{ key }}">{{ label }}</option>
+        {% endfor %}
+    </select>
+{% endblock choice_filter_widget %}
+
+
+{% block filter_widget %}
+    filter widget
+{% endblock filter_widget %}
+
+{%- block widget_attributes -%}
+    id="{{ id }}" {#name="{{ full_name }}"
+    {%- if disabled %} disabled="disabled"{% endif -%}
+    {%- if required %} required="required"{% endif -%}#}
+    {{ block('attributes') }}
+{%- endblock widget_attributes -%}
+
+{% block attributes -%}
+    {%- for attrname, attrvalue in column.options.filter_attr -%}
+        {{- " " -}}
+        {%- if attrname in ['placeholder', 'title'] -%}
+            {{- attrname }}="{{ translation_domain is same as(false) ? attrvalue : attrvalue|trans({}, translation_domain) }}"
+        {%- elseif attrvalue is same as(true) -%}
+            {{- attrname }}="{{ attrname }}"
+        {%- elseif attrvalue is not same as(false) -%}
+            {{- attrname }}="{{ attrvalue }}"
+        {%- endif -%}
+    {%- endfor -%}
+{%- endblock attributes -%}
+
+
+{#
+{% block widget_attributes %}
+
+    {% set attrs = '' %}
+    {% for key, value in column.options.filter_attr %}
+        {% set attrs = attrs ~ ' ' ~ key ~ '=' ~ value %}
+    {% endfor %}
+
+{% endblock filter_attributes %}
+#}

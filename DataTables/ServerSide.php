@@ -295,14 +295,8 @@ class ServerSide
             $column->getOptions()['filter']->buildQuery($qb, $field, $parameter, $value);
 
         } elseif (is_string($column->getOptions()['filter']) && class_exists($column->getOptions()['filter'])) {
-            $className = $column->getOptions()['filter'];
-
-            $filter = new $className();
-            if (!($filter instanceof \Voelkel\DataTablesBundle\Table\Filter\AbstractColumnFilter)) {
-                throw new \Exception(sprintf('invalid filter class "%s"', $className));
-            }
-
-            $filter->setOptions($column->getOptions()['filter_options']);
+            $filters = $column->getFilterInstances();
+            $filter = end($filters);
             if (isset($filter->options['field']) && null !== $filter->options['field']) {
                 $field = $this->table->getPrefix() . '.' . $filter->options['field'];
             }
