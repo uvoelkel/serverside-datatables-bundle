@@ -317,18 +317,37 @@ class ServersideDataTablesExtension extends \Twig_Extension
             new \Twig_SimpleTest('datatables_textfilter', function ($filter) {
                 return ($filter === TextFilter::class) ||
                 ($filter instanceof TextFilter) ||
-                is_a($filter, TextFilter::class, true);
+                $this->is_a($filter, TextFilter::class);
             }),
             new \Twig_SimpleTest('datatables_choicefilter', function ($filter) {
                 return ($filter === ChoiceFilter::class) ||
                 ($filter instanceof ChoiceFilter) ||
-                is_a($filter, ChoiceFilter::class, true);
+                $this->is_a($filter, ChoiceFilter::class);
             }),
             new \Twig_SimpleTest('datatables_datefilter', function ($filter) {
                 return ($filter === DateFilter::class) ||
-                is_a($filter, DateFilter::class, true);
+                $this->is_a($filter, DateFilter::class);
             }),
         ];
+    }
+
+    private function is_a($object, $className)
+    {
+        if (null === $object) {
+            return false;
+        }
+
+        if (is_a($object, $className, true)) {
+            return true;
+        }
+
+        if (is_string($object)) {
+            /** @var \Voelkel\DataTablesBundle\Table\Filter\AbstractColumnFilter $instance */
+            $instance = new $object();
+            return $this->is_a($instance->getParent(), $className);
+        }
+
+        return false;
     }
 
     /**

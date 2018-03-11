@@ -233,7 +233,7 @@ class ServerSide
                 $column instanceof EntitiesCountColumn ||
                 (
                     true === $column->getOptions()['unbound'] &&
-                    !($column->getOptions()['filter'] instanceof \Voelkel\DataTablesBundle\Table\Filter\AbstractColumnFilter)
+                    null === $column->getOptions()['filter']
                 )
             ) {
                 continue;
