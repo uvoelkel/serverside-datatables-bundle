@@ -341,7 +341,7 @@ class ServersideDataTablesExtension extends \Twig_Extension
             return true;
         }
 
-        if (is_string($object)) {
+        if (is_string($object) && class_exists($object)) {
             /** @var \Voelkel\DataTablesBundle\Table\Filter\AbstractColumnFilter $instance */
             $instance = new $object();
             return $this->is_a($instance->getParent(), $className);
