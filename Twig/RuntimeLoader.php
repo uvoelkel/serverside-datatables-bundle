@@ -2,13 +2,13 @@
 
 namespace Voelkel\DataTablesBundle\Twig;
 
-use Psr\Container\ContainerInterface;
+//use Psr\Container\ContainerInterface;
 
 class RuntimeLoader implements \Twig_RuntimeLoaderInterface
 {
     private $container;
 
-    public function __construct(ContainerInterface $container)
+    public function __construct(/*ContainerInterface*/ $container)
     {
         $this->container = $container;
     }
