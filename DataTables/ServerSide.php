@@ -117,7 +117,10 @@ class ServerSide
             }
         }
 
-        $paginate->setFirstResult($this->request->getStart())->setMaxResults($this->request->getLength());
+        $paginate->setFirstResult($this->request->getStart());
+        if ($this->request->getLength() >= 0) {
+            $paginate->setMaxResults($this->request->getLength());
+        }
         $ids = $paginate->getQuery()->getResult();
 
         if (true === $this->hasOneToManyRelation) {

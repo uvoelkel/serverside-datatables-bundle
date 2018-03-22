@@ -44,6 +44,18 @@ var {{ tableVar }}_table = $('#{{ tableId }}').DataTable({
     'deferLoading': {{ deferLoading.total }},
     {% endif %}
 
+    {% if table.options.paging is defined and false == table.options.paging%}
+    'paging': false,
+    {% endif %}
+
+    {% if table.options.pageLength is defined %}
+    'pageLength': {{ table.options.pageLength }},
+    {% endif %}
+
+    {% if table.options.lengthMenu is defined %}
+    'lengthMenu': {{ table.options.lengthMenu | raw }},
+    {% endif %}
+
     'stateSave': {% if table.options.stateSave %}true{% else %}false{% endif %},
     'stateDuration': {{ table.options.stateDuration }},
     'stateLoaded': function (settings, data) {
