@@ -105,6 +105,10 @@ class Column
                 'Using filter objects for option "filter" is deprecated. Use "FilterClass::class" instead.',
                 E_USER_DEPRECATED
             );
+
+            if ($this->options['filter'] instanceof \Voelkel\DataTablesBundle\Table\Filter\AbstractColumnFilter) {
+                $this->options['filter_options'] = array_merge($this->options['filter']->options, $this->options['filter_options']);
+            }
         }
 
         if (self::FILTER_TEXT === $this->options['filter']) {
