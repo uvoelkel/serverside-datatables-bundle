@@ -21,6 +21,9 @@ var {{ tableVar }}_table = $('#{{ tableId }}').DataTable({
             {% if column.options.width is not null -%}
             'width': '{{ column.options.width }}',
             {%- endif %}
+            {% if column.options.responsive_priority is not null -%}
+            'responsivePriority': {{ column.options.responsive_priority }},
+            {%- endif %}
             'visible': {% if column.options.visible %}true{% else %}false{% endif %},
             'orderable': {% if column.options.sortable %}true{% else %}false{% endif %},
             'searchable': {% if column.options.searchable %}true{% else %}false{% endif %}
@@ -30,6 +33,24 @@ var {{ tableVar }}_table = $('#{{ tableId }}').DataTable({
         {% endfor %}
 
     ],
+
+    {% if table.options.responsive != false %}
+    {% set responsive_details %}
+    {% if table.options.responsive.details == false %}
+        false
+    {% else %}
+        {
+            display: {{ table.options.responsive.details.display | raw }},
+            type: '{{ table.options.responsive.details.type }}'
+        }
+    {% endif %}
+    {% endset %}
+    'responsive': {
+        'details': {{ responsive_details }}
+    },
+    {% endif %}
+
+
 
     {% if deferLoading is not null %}
     'data': [
@@ -87,10 +108,11 @@ var {{ tableVar }}_table = $('#{{ tableId }}').DataTable({
         });
     }
 
-    {%- if options is defined %}
+    {%- if options is defined and options | length > 0 %}
     ,
     {% for key, value in options %}
-    '{{ key }}': {{ value | raw }},
+    '{{ key }}': {{ value | raw }}
+    {% if not loop.last %},{% endif %}
     {% endfor %}
     {% endif %}
 });
@@ -99,6 +121,16 @@ var {{ tableVar }}_table = $('#{{ tableId }}').DataTable({
     $('#{{ tableId }} > thead .datatables-filter-input').val('');
     $('#{{ tableId }} > thead .datatables-filter-input').trigger('change');
 };
+
+{{ tableVar }}_table.on('responsive-resize', function(event, datatable, columns) {
+    $.each(columns, function(index, visible) {
+        if (visible) {
+            $('.col-head-filter[data-col-index=' + index + ']').show();
+        } else {
+            $('.col-head-filter[data-col-index=' + index + ']').hide();
+        }
+    });
+});
 
 {% for column in table.columns %}
 

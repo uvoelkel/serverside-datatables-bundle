@@ -55,6 +55,7 @@ class Column
         'label' => null, // null|string|false
         'placeholder' => null, // null|string|false
         'abbr' => null,
+        'responsive_priority' => null,
     ];
 
     private $fields = [];

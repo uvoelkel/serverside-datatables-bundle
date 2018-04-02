@@ -10,6 +10,14 @@ class TableOptions implements \ArrayAccess
     const PAGING_TYPE_FULL              = 'full';           // 'First', 'Previous', 'Next' and 'Last' buttons
     const PAGING_TYPE_FULL_NUMBERS      = 'full_numbers';   // 'First', 'Previous', 'Next' and 'Last' buttons, plus page numbers
 
+    const RESPONSIVE_DETAILS_FALSE                  = false;
+    const RESPONSIVE_DETAILS_CHILD_ROW              = '$.fn.dataTable.Responsive.display.childRow';
+    const RESPONSIVE_DETAILS_CHILD_ROW_IMMEDIATE    = '$.fn.dataTable.Responsive.display.childRowImmediate';
+
+    const RESPONSIVE_DETAILS_TYPE_NONE              = '';
+    const RESPONSIVE_DETAILS_TYPE_INLINE            = 'inline';
+    const RESPONSIVE_DETAILS_TYPE_COLUMN            = 'column';
+
     static function getDefaultOptions($locale)
     {
         $options = new TableOptions();
@@ -19,6 +27,7 @@ class TableOptions implements \ArrayAccess
             'autoWidth' => false,
             'pagingType' => TableOptions::PAGING_TYPE_NUMBERS,
             'deferLoading' => null,
+            'responsive' => false,
             //'lengthMenu' => '[ [ 10, 25, 50, 100 ], [ 10, 25, 50, 100 ] ]',
             //'dom' => "<'row'<'col-sm-12'pl>>" . "<'row'<'col-sm-12'<'table-responsive'tr>>>" . "<'row'<'col-xs-12'<'hr'>><'col-sm-5'i><'col-sm-7'p>>",
         ];
@@ -97,5 +106,32 @@ class TableOptions implements \ArrayAccess
     public function offsetUnset($offset)
     {
         unset($this->data[$offset]);
+    }
+
+    /**
+     * @param bool $responsive
+     * @param false|string $details
+     * @param string $type
+     */
+    public function setResponsive($responsive, $details, $type)
+    {
+        if (false === $responsive) {
+            $this->data['responsive'] = false;
+            return;
+        }
+
+        $this->data['responsive'] = [
+            'details' => null,
+        ];
+
+        if (false === $details) {
+            $this->data['responsive']['details'] = false;
+            return;
+        }
+
+        $this->data['responsive']['details'] = [
+            'display' => $details,
+            'type' => $type,
+        ];
     }
 }

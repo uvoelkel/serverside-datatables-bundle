@@ -12,7 +12,7 @@
         {% if table.hasColumnFilter %}
         <tr>
             {% for column in table.columns %}
-            <th>
+            <th class="col-head-filter" data-col-index="{{ loop.index0 }}">
                 {{ datatables_column_filter(table, column, {'id': tableId}) }}
             </th>
             {% endfor %}
@@ -20,7 +20,9 @@
         {% endif %}
         <tr>
             {% for column in table.columns %}
-            <th>{{ column.label }}</th>
+            <th class="col-head-label" data-col-index="{{ loop.index0 }}">
+                {{ column.label }}
+            </th>
             {% endfor %}
         </tr>
     </thead>
