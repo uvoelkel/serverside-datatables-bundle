@@ -34,7 +34,7 @@ var {{ tableVar }}_table = $('#{{ tableId }}').DataTable({
 
     ],
 
-    {% if table.options.responsive != false %}
+    {% if table.options.responsive is defined and table.options.responsive != false %}
     {% set responsive_details %}
     {% if table.options.responsive.details == false %}
         false
