@@ -21,7 +21,7 @@
         <tr>
             {% for column in table.columns %}
             <th class="col-head-label" data-col-index="{{ loop.index0 }}">
-                {{ column.label }}
+                {{ column.label|raw }}
             </th>
             {% endfor %}
         </tr>
@@ -31,4 +31,3 @@
     {% endif %}
     </tbody>
 </table>
-
