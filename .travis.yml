@@ -25,11 +25,8 @@ env:
     #- php: 7.0
     #  env: SYMFONY_VERSION=3.0.*
 
-before_script:
-  # Additional PHP config
-  - phpenv config-add ./travis.php.ini
-
 before_install:
+  - phpenv config-add ./travis.php.ini
   - composer self-update
 
 install:
