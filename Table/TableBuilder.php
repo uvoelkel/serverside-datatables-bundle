@@ -51,7 +51,7 @@ class TableBuilder implements TableBuilderInterface
             case CallbackColumn::class:
                 $callback = $options['callback'];
                 unset($options['callback']);
-                $this->columns[] = new CallbackColumn($name, $field, callback, $options);
+                $this->columns[] = new CallbackColumn($name, $field, $callback, $options); // you forgot $ sign
                 break;
             case UnboundColumn::class:
                 $callback = $options['callback'];
