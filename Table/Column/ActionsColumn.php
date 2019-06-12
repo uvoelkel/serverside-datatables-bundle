@@ -65,18 +65,19 @@ class ActionsColumn extends UnboundColumn
         }
 
         foreach ($actions as $action => $settings) {
-            $url   = $settings['url'];
-            $label = isset($settings['label']) ? $settings['label'] : $action;
-            $title = isset($settings['title']) ? $settings['title'] : $label;
-            $click = isset($settings['onclick']) ? 'onclick="' . htmlspecialchars($settings['onclick']) . '"' : '';
+            $url    = $settings['url'];
+            $label  = isset($settings['label']) ? $settings['label'] : $action;
+            $title  = isset($settings['title']) ? $settings['title'] : $label;
+            $click  = isset($settings['onclick']) ? 'onclick="' . htmlspecialchars($settings['onclick']) . '"' : '';
+            $target = isset($settings['target']) ? 'target="' . $settings['target'] . '"' : '';
 
             if ($isDropdown) {
                 if (!isset($settings['default']) || false === $settings['default']) {
-                    $link = '<a href="' . $url . '" class="dropdown-item" title="' . $title . '" ' . $click . '>' . $label . '</a> ';
+                    $link = '<a href="' . $url . '" class="dropdown-item" title="' . $title . '" ' . $click . ' ' . $target . '>' . $label . '</a> ';
                     $result .= '<li>' . $link . '</li>';
                 }
             } else {
-                $link = '<a class="btn btn-primary" href="' . $url . '" title="' . $title . '" ' . $click . '>' . $label . '</a> ';
+                $link = '<a class="btn btn-primary" href="' . $url . '" title="' . $title . '" ' . $click . ' ' . $target . '>' . $label . '</a> ';
                 $result .= $link;
             }
         }
