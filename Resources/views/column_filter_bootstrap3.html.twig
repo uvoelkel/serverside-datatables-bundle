@@ -13,7 +13,7 @@
     {% endfor %}
 
     {% if column.filter is datatables_textfilter %}
-    <input type="text" class="form-control input-sm datatables-filter-input" id="{{ tableId }}_{{ column.name }}_filter" placeholder="{{ column.placeholder }}"{{ attrs }}>
+    <input type="text" class="form-control input-sm datatables-filter-input" id="{{ tableId }}_{{ column.name }}_filter" placeholder="{{ column.placeholder }}"{{ attrs }} autocomplete="off">
     {% elseif column.filter is datatables_choicefilter %}
     <select id="{{ tableId }}_{{ column.name }}_filter" title="{{ column.label }}" class="form-control input-sm datatables-filter-input"{% if column.filterOptions.multiple %} multiple="multiple"{% endif %}{{ attrs }}>
 

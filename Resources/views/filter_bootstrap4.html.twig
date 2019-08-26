@@ -2,7 +2,7 @@
 
 {% block text_filter_widget %}
     {% set input %}
-        <input type="text" class="form-control input-sm datatables-filter-input" placeholder="{{ column.placeholder }}" {{ block('widget_attributes') }}>
+        <input type="text" class="form-control input-sm datatables-filter-input" placeholder="{{ column.placeholder }}" {{ block('widget_attributes') }} autocomplete="off">
     {% endset %}
 
     {{ input }}
@@ -10,7 +10,7 @@
 
 {% block date_filter_widget %}
     {% set input %}
-        <input type="text" class="form-control input-sm datatables-filter-input" placeholder="{{ column.placeholder }}" {{ block('widget_attributes') }}>
+        <input type="text" class="form-control input-sm datatables-filter-input" placeholder="{{ column.placeholder }}" {{ block('widget_attributes') }} autocomplete="off">
     {% endset %}
 
     <a class="btn btn-outline-secondary" tabindex="-1" data-container="body" data-toggle="popover" data-placement="bottom" data-html="true" data-content="{{ input | e }}">

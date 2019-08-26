@@ -16,7 +16,7 @@
 
     {% if column.filter is datatables_textfilter %}
         {% set input %}
-            <input type="text" class="form-control input-sm datatables-filter-input" id="{{ id }}" placeholder="{{ column.placeholder }}"{{ attrs }}>
+            <input type="text" class="form-control input-sm datatables-filter-input" id="{{ id }}" placeholder="{{ column.placeholder }}"{{ attrs }} autocomplete="off">
         {% endset %}
 
         {{ input }}
