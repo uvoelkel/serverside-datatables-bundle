@@ -4,9 +4,9 @@ namespace Voelkel\DataTablesBundle\Twig;
 
 use Twig\Node\Expression\ArrayExpression;
 
-class TableThemeTokenParser extends \Twig_TokenParser
+class TableThemeTokenParser extends \Twig\TokenParser\AbstractTokenParser
 {
-    public function parse(\Twig_Token $token)
+    public function parse(\Twig\Token $token)
     {
         $lineno = $token->getLine();
         $stream = $this->parser->getStream();
@@ -16,9 +16,9 @@ class TableThemeTokenParser extends \Twig_TokenParser
         $resources = new ArrayExpression([], $stream->getCurrent()->getLine());
         do {
             $resources->addElement($this->parser->getExpressionParser()->parseExpression());
-        } while (!$stream->test(\Twig_Token::BLOCK_END_TYPE));
+        } while (!$stream->test(\Twig\Token::BLOCK_END_TYPE));
 
-        $stream->expect(\Twig_Token::BLOCK_END_TYPE);
+        $stream->expect(\Twig\Token::BLOCK_END_TYPE);
 
         return new TableThemeNode($table, $resources, $lineno, $this->getTag());
     }

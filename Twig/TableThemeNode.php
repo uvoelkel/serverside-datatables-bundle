@@ -4,9 +4,9 @@ namespace Voelkel\DataTablesBundle\Twig;
 
 use Twig\Compiler;
 
-class TableThemeNode extends \Twig_Node
+class TableThemeNode extends \Twig\Node\Node
 {
-    public function __construct(\Twig_Node $table, \Twig_Node $resources, int $lineno, string $tag = null)
+    public function __construct(\Twig\Node\Node $table, \Twig\Node\Node $resources, int $lineno, string $tag = null)
     {
         parent::__construct(['table' => $table, 'resources' => $resources], [], $lineno, $tag);
     }

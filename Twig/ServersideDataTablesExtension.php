@@ -13,7 +13,7 @@ use Voelkel\DataTablesBundle\Table\Filter\ChoiceFilter;
 /**
  * @codeCoverageIgnore
  */
-class ServersideDataTablesExtension extends \Twig_Extension
+class ServersideDataTablesExtension extends \Twig\Extension\AbstractExtension
 {
     /** @var ContainerInterface */
     private $container;
@@ -39,24 +39,24 @@ class ServersideDataTablesExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('datatables_html', [$this, 'renderHtml'], [
+            new \Twig\TwigFunction('datatables_html', [$this, 'renderHtml'], [
                 'needs_environment' => true,
                 'is_safe' => ['html'],
             ]),
-            new \Twig_SimpleFunction('datatables_defaults', [$this, 'renderDefaults'], [
+            new \Twig\TwigFunction('datatables_defaults', [$this, 'renderDefaults'], [
                 'needs_environment' => true,
                 'is_safe' => ['html', 'js'],
             ]),
-            new \Twig_SimpleFunction('datatables_js', [$this, 'renderJavascript'], [
+            new \Twig\TwigFunction('datatables_js', [$this, 'renderJavascript'], [
                 'needs_environment' => true,
                 'is_safe' => ['html', 'js'],
             ]),
-            new \Twig_SimpleFunction('datatables_id', [$this, 'getTableId'], [
+            new \Twig\TwigFunction('datatables_id', [$this, 'getTableId'], [
                 'needs_environment' => false,
                 //'is_safe' => ['html'],
             ]),
 
-            new \Twig_SimpleFunction('datatables_column_filter', [$this, 'renderColumnFilter'], [
+            new \Twig\TwigFunction('datatables_column_filter', [$this, 'renderColumnFilter'], [
                 'needs_environment' => true,
                 'needs_context' => true,
                 'is_safe' => ['html'],
@@ -71,7 +71,7 @@ class ServersideDataTablesExtension extends \Twig_Extension
         ];
     }
 
-    public function renderHtml(\Twig_Environment $twig, AbstractDataTable $table, array $options = [])
+    public function renderHtml(\Twig\Environment $twig, AbstractDataTable $table, array $options = [])
     {
         $table->setContainer($this->container);
 
@@ -95,7 +95,7 @@ class ServersideDataTablesExtension extends \Twig_Extension
         ]);
     }
 
-    public function renderDefaults(\Twig_Environment $twig)
+    public function renderDefaults(\Twig\Environment $twig)
     {
         $result = '';
         if (false === self::$defaultsRendered) {
@@ -146,7 +146,7 @@ class ServersideDataTablesExtension extends \Twig_Extension
         return $result;
     }
 
-    public function renderJavascript(\Twig_Environment $twig, AbstractDataTable $table, $path = null, $options = [])
+    public function renderJavascript(\Twig\Environment $twig, AbstractDataTable $table, $path = null, $options = [])
     {
         $table->setContainer($this->container);
 
@@ -226,7 +226,7 @@ class ServersideDataTablesExtension extends \Twig_Extension
         return $table->getName();
     }
 
-    public function renderColumnFilter(\Twig_Environment $twig, $context, AbstractDataTable $table, $column, array $options = [])
+    public function renderColumnFilter(\Twig\Environment $twig, $context, AbstractDataTable $table, $column, array $options = [])
     {
         $table->setContainer($this->container);
 
@@ -314,17 +314,17 @@ class ServersideDataTablesExtension extends \Twig_Extension
     public function getTests()
     {
         return [
-            new \Twig_SimpleTest('datatables_textfilter', function ($filter) {
+            new \Twig\TwigTest('datatables_textfilter', function ($filter) {
                 return ($filter === TextFilter::class) ||
                 ($filter instanceof TextFilter) ||
                 $this->is_a($filter, TextFilter::class);
             }),
-            new \Twig_SimpleTest('datatables_choicefilter', function ($filter) {
+            new \Twig\TwigTest('datatables_choicefilter', function ($filter) {
                 return ($filter === ChoiceFilter::class) ||
                 ($filter instanceof ChoiceFilter) ||
                 $this->is_a($filter, ChoiceFilter::class);
             }),
-            new \Twig_SimpleTest('datatables_datefilter', function ($filter) {
+            new \Twig\TwigTest('datatables_datefilter', function ($filter) {
                 return ($filter === DateFilter::class) ||
                 $this->is_a($filter, DateFilter::class);
             }),
