@@ -278,7 +278,7 @@ class ServersideDataTablesExtension extends \Twig\Extension\AbstractExtension
             $templates[] = $twig->loadTemplate($theme);
         }
 
-        /** @var \Twig_Template $template */
+        /** @var \Twig\Template $template */
         $template = null;
         $block = 'filter';
         foreach (array_reverse($column->getFilterBlockPrefixes()) as $prefix) {
