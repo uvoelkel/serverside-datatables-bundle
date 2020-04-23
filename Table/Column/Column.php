@@ -112,13 +112,13 @@ class Column
             }
         }
 
-        if (self::FILTER_TEXT === $this->options['filter']) {
+        if (self::FILTER_TEXT === $this->options['filter'] || TextFilter::class === $this->options['filter']) {
             $this->options['filter'] = TextFilter::class;
             $this->options['filter_options'] = array_merge([
                 'filter_operator' => 'like',
                 'filter_query' => $this->options['filter_query'],
             ], $this->options['filter_options']);
-        } elseif (self::FILTER_SELECT === $this->options['filter']) {
+        } elseif (self::FILTER_SELECT === $this->options['filter'] || ChoiceFilter::class === $this->options['filter']) {
             $this->options['filter'] = ChoiceFilter::class;
             $this->options['filter_options'] = array_merge([
                 'choices' => $this->options['filter_choices'],
@@ -159,7 +159,6 @@ class Column
     {
         return false === $this->options['filter'] ? null : $this->options['filter'];
     }
-
 
     public function getFilterOptions()
     {
