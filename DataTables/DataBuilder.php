@@ -4,6 +4,7 @@ namespace Voelkel\DataTablesBundle\DataTables;
 
 use Voelkel\DataTablesBundle\Table\AbstractDataTable;
 use Voelkel\DataTablesBundle\Table\Column\Column;
+use Voelkel\DataTablesBundle\Table\Column\EmbeddedEntityColumn;
 use Voelkel\DataTablesBundle\Table\Column\EntitiesScalarColumn;
 use Voelkel\DataTablesBundle\Table\Column\EntityColumn;
 use Voelkel\DataTablesBundle\Table\Column\EntitiesColumn;
@@ -72,7 +73,7 @@ class DataBuilder
     {
         $data = null;
 
-        if ($column instanceof EntityColumn) {
+        if ($column instanceof EntityColumn || $column instanceof EmbeddedEntityColumn) {
             $object = self::callGetterByColumName($object, $column->getField(), $column);
             if (null !== $object) {
                 $data = self::callGetterByColumName($object, $column->getEntityField(), $column);

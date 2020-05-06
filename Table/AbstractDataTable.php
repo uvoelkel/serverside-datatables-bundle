@@ -104,7 +104,7 @@ abstract class AbstractDataTable implements ContainerAwareInterface
         $this->prefix = $this->name[0];
         $this->options = array_merge($this->options, $options->all());
 
-        $builder = new TableBuilder();
+        $builder = new TableBuilder($this);
         $this->build($builder);
         foreach ($builder->getColumns() as $column) {
             $this->doAddColumn($column);
@@ -417,5 +417,25 @@ abstract class AbstractDataTable implements ContainerAwareInterface
         }
 
         return $default;
+    }
+
+    public function getMetadata($class = null)
+    {
+        static $metadata = [];
+
+        if (null === $class) {
+            $class = $this->getEntity();
+        }
+
+        if (isset($metadata[$class])) {
+            return $metadata[$class];
+        }
+
+        if (null !== ($em = $this->get('doctrine.orm.entity_manager'))) {
+            /** @var \Doctrine\ORM\EntityManagerInterface $em */
+            $metadata[$class] = $em->getClassMetadata($class);
+        }
+
+        return $metadata[$class];
     }
 }

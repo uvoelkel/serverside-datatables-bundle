@@ -5,6 +5,7 @@ namespace Voelkel\DataTablesBundle\Table;
 use Voelkel\DataTablesBundle\Table\Column\ActionsColumn;
 use Voelkel\DataTablesBundle\Table\Column\CallbackColumn;
 use Voelkel\DataTablesBundle\Table\Column\Column;
+use Voelkel\DataTablesBundle\Table\Column\EmbeddedEntityColumn;
 use Voelkel\DataTablesBundle\Table\Column\EntityColumn;
 use Voelkel\DataTablesBundle\Table\Column\UnboundColumn;
 
@@ -16,6 +17,14 @@ class TableBuilder implements TableBuilderInterface
     /** @var null|callable */
     private $conditionCallback;
 
+    /** @var AbstractDataTable */
+    private $table;
+
+    public function __construct(AbstractDataTable $table)
+    {
+        $this->table = $table;
+    }
+
     public function add(string $field, $class = null, $options = [])
     {
         $fields = explode('.', $field);
@@ -26,6 +35,10 @@ class TableBuilder implements TableBuilderInterface
 
         if (sizeof($fields) > 1 && Column::class === $class) {
             $class = EntityColumn::class;
+
+            if (null !== ($metadata = $this->table->getMetadata()) && isset($metadata->embeddedClasses[$fields[0]])) {
+                $class = EmbeddedEntityColumn::class;
+            }
         }
 
         if (isset($options['name'])) {
@@ -42,6 +55,11 @@ class TableBuilder implements TableBuilderInterface
                 $entityField = array_pop($fields);
                 $field = join('.', $fields);
                 $this->columns[] = new EntityColumn($name, $field, $entityField, $options);
+                break;
+            case EmbeddedEntityColumn::class:
+                $entityField = array_pop($fields);
+                $field = join('.', $fields);
+                $this->columns[] = new EmbeddedEntityColumn($name, $field, $entityField, $options);
                 break;
             case ActionsColumn::class:
                 $actions = $options['actions'];

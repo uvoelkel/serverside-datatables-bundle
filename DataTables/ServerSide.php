@@ -7,6 +7,7 @@ use Doctrine\ORM\QueryBuilder;
 use Voelkel\DataTablesBundle\Table\AbstractDataTable;
 use Voelkel\DataTablesBundle\DataTables\Request as DataTablesRequest;
 use Voelkel\DataTablesBundle\Table\Column\Column;
+use Voelkel\DataTablesBundle\Table\Column\EmbeddedEntityColumn;
 use Voelkel\DataTablesBundle\Table\Column\EntitiesColumn;
 use Voelkel\DataTablesBundle\Table\Column\EntitiesScalarColumn;
 use Voelkel\DataTablesBundle\Table\Column\EntityColumn;
@@ -194,7 +195,7 @@ class ServerSide
             return $this->identifierField;
         }
 
-        $metadata = $this->em->getClassMetadata($this->table->getEntity());
+        $metadata = $this->table->getMetadata($this->table->getEntity());
         if ($metadata->isIdentifierComposite) {
             throw new \Exception('composite identifiers are currently not supported.');
         }
@@ -353,8 +354,10 @@ class ServerSide
             return $column->getField().'_count';
         } elseif ($column instanceof EntitiesScalarColumn) {
             return $column->getField() . '_' . $column->getOperation();
-        }elseif ($column instanceof EntityColumn) {
+        } elseif ($column instanceof EntityColumn) {
             return $column->getEntityPrefix() . '.' . $column->getEntityField();
+        } elseif ($column instanceof EmbeddedEntityColumn) {
+            return $this->table->getPrefix() . '.' .  $column->getField() . '.' . $column->getEntityField();
         }
 
         return $this->table->getPrefix() . '.' . $column->getField();
