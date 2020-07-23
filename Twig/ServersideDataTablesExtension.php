@@ -273,7 +273,8 @@ class ServersideDataTablesExtension extends \Twig\Extension\AbstractExtension
         $renderer = $twig->getRuntime(TableRenderer::class);
 
         $templates = [];
-        $templates[] = $twig->loadTemplate('@VoelkelDataTables/filter_' . $theme . '.html.twig');
+        $tpl = '@VoelkelDataTables/filter_' . $theme . '.html.twig';
+        $templates[] = $twig->loadTemplate($twig->getTemplateClass($tpl), $tpl);
         foreach ($renderer->getThemes($table) as $theme) {
             $templates[] = $twig->loadTemplate($theme);
         }

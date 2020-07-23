@@ -17,8 +17,13 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('voelkel_data_tables', 'array');
+        $treeBuilder = new TreeBuilder('voelkel_data_tables');
+        if (\method_exists($treeBuilder, 'getRootNode')) {
+            $rootNode = $treeBuilder->getRootNode();
+        } else {
+            // symfony/config <= 4.1
+            $rootNode = $treeBuilder->root('voelkel_data_tables', 'array');
+        }
 
         $rootNode
             ->children()

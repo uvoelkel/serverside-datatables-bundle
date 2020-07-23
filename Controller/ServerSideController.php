@@ -2,18 +2,29 @@
 
 namespace Voelkel\DataTablesBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Psr\Container\ContainerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 
-class ServerSideController extends Controller
+class ServerSideController extends AbstractController
 {
+    public function __construct(ContainerInterface $container)
+    {
+        $this->setContainer($container);
+    }
+
+    public function listAction($table, Request $request)
+    {
+        return $this->list($table, $request);
+    }
+
     /**
      * @param string $table
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \Exception
      */
-    public function listAction($table, Request $request)
+    public function list($table, Request $request)
     {
         if (class_exists($table)) {
             $table = new $table();
