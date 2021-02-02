@@ -24,7 +24,7 @@ class VoelkelDataTablesExtension extends Extension
         $loader->load('services.xml');
 
         if (!isset($config['localization']['locale'])) {
-            $config['localization']['locale'] = $container->getParameter('locale');
+            $config['localization']['locale'] = $container->getParameter('kernel.default_locale');
         }
 
         $container->setParameter('serverside_datatables.config', $config);
