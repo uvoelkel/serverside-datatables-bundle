@@ -261,7 +261,7 @@ class ServersideDataTablesExtension extends \Twig\Extension\AbstractExtension
 
         $column->filterRendered = true;
 
-        if ('bootstrap4' !== $theme) {
+        if ('bootstrap5' !== $theme && 'bootstrap4' !== $theme) {
             return $twig->render('@VoelkelDataTables/column_filter_' . $theme . '.html.twig', [
                 'table' => $table,
                 'column' => $column,
