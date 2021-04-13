@@ -26,11 +26,11 @@ class ServersideDataTablesExtension extends \Twig\Extension\AbstractExtension
     /**
      * @param ContainerInterface $container
      */
-    public function __construct(ContainerInterface $container)
+    public function __construct(ContainerInterface $container, \Twig\Environment $twig)
     {
         $this->container = $container;
         $this->theme = $container->getParameter('serverside_datatables.config')['options']['theme'];
-        $container->get('twig')->addRuntimeLoader(new RuntimeLoader($container));
+        $twig->addRuntimeLoader(new RuntimeLoader($container));
     }
 
     /**

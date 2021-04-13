@@ -14,6 +14,7 @@
         <service id="serverside_datatables.twig_extension" class="Voelkel\DataTablesBundle\Twig\ServersideDataTablesExtension" public="false">
             <tag name="twig.extension" />
             <argument type="service" id="service_container" />
+            <argument type="service" id="twig" />
         </service>
 
         <service id="serverside_datatables.table_options_factory" class="Voelkel\DataTablesBundle\DataTables\TableOptionsFactory" public="true">
