@@ -49,17 +49,17 @@ class ActionsColumn extends UnboundColumn
             $result .= '<div class="btn-group">';
 
             if (null === $default) {
-                $result .= '<button type="button" class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' .
+                $result .= '<button type="button" class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' .
                            $label .' <span class="caret"></span>' .
                            '</button>';
             } else {
                 $result .= '<a class="btn btn-primary btn-xs" href="' . $actions[$default]['url'] . '">' . $actions[$default]['label'] . '</a>' .
-                           '<button type="button" class="btn btn-primary btn-xs dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' .
+                           '<button type="button" class="btn btn-primary btn-xs dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' .
                            '<span class="caret"></span>' .
                            '</button>';
             }
 
-            $result .= '<ul class="dropdown-menu dropdown-menu-right">';
+            $result .= '<ul class="dropdown-menu dropdown-menu-right dropdown-menu-end">';
         } else {
             $result .= '<div class="btn-group btn-group-xs">';
         }
