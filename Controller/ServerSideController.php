@@ -5,6 +5,7 @@ namespace Voelkel\DataTablesBundle\Controller;
 use Psr\Container\ContainerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Voelkel\DataTablesBundle\DataTables\ServerSide;
 
 class ServerSideController extends AbstractController
 {
@@ -24,7 +25,7 @@ class ServerSideController extends AbstractController
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \Exception
      */
-    public function list($table, Request $request)
+    public function list($table, ServerSide $serverSide, Request $request)
     {
         if (class_exists($table)) {
             $table = new $table();
@@ -44,6 +45,6 @@ class ServerSideController extends AbstractController
         /** @var \Voelkel\DataTablesBundle\Table\AbstractDataTable $table */
         $table->setContainer($this->container);
 
-        return $this->get('serverside_datatables')->processRequest($table, $request);
+        return $serverSide->processRequest($table, $request);
     }
 }

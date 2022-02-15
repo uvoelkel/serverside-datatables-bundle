@@ -40,7 +40,7 @@ class Request
      */
     public function getColumns()
     {
-        return $this->request->query->get('columns', array());
+        return $this->request->query->filter('columns', [], \FILTER_DEFAULT, \FILTER_REQUIRE_ARRAY);
     }
 
     /**
@@ -48,7 +48,7 @@ class Request
      */
     public function getOrder()
     {
-        return $this->request->query->get('order', array());
+        return $this->request->query->filter('order', [], \FILTER_DEFAULT, \FILTER_REQUIRE_ARRAY);
     }
 
     /**
@@ -58,10 +58,10 @@ class Request
     public function getSearch($column = null)
     {
         if (null === $column) {
-            return $this->request->query->get('search', [
+            return $this->request->query->filter('search', [
                 'regex' => 'false',
                 'value' => '',
-            ]);
+            ], \FILTER_DEFAULT, \FILTER_REQUIRE_ARRAY);
         } else  {
             $col = null;
             if (is_numeric($column)) {

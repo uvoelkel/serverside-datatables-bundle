@@ -9,6 +9,7 @@
 
         <service id="Voelkel\DataTablesBundle\Controller\ServerSideController" class="Voelkel\DataTablesBundle\Controller\ServerSideController" public="true">
             <argument type="service" id="service_container" />
+            <tag name="controller.service_arguments" />
         </service>
 
         <service id="serverside_datatables.twig_extension" class="Voelkel\DataTablesBundle\Twig\ServersideDataTablesExtension" public="false">
@@ -27,6 +28,11 @@
         </service>
 
         <service id="serverside_datatables" class="Voelkel\DataTablesBundle\DataTables\ServerSide" public="true">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument type="service" id="serverside_datatables.data_to_string_converter" />
+        </service>
+
+        <service id="Voelkel\DataTablesBundle\DataTables\ServerSide" class="Voelkel\DataTablesBundle\DataTables\ServerSide" public="true">
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="serverside_datatables.data_to_string_converter" />
         </service>
