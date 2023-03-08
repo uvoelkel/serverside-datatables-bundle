@@ -183,7 +183,7 @@ class ServerSide
 
         $callback = $this->table->getConditionCallback();
         if (null !== $callback) {
-            call_user_func($callback, $qb);
+            call_user_func($callback, $qb, $this);
         }
 
         return $qb;
@@ -435,5 +435,25 @@ class ServerSide
         }
 
         return $empty;
+    }
+
+    public function getHasOneToOneRelation(): bool
+    {
+        return $this->hasOneToOneRelation;
+    }
+
+    public function setHasOneToOneRelation(bool $hasOneToOneRelation)
+    {
+        $this->hasOneToOneRelation = $hasOneToOneRelation;
+    }
+
+    public function getHasOneToManyRelation(): bool
+    {
+        return $this->hasOneToManyRelation;
+    }
+
+    public function setHasOneToManyRelation(bool $hasOneToManyRelation)
+    {
+        $this->hasOneToManyRelation = $hasOneToManyRelation;
     }
 }
