@@ -11,7 +11,7 @@ class RuntimeLoader implements \Twig\RuntimeLoader\RuntimeLoaderInterface
         $this->container = $container;
     }
 
-    public function load($class)
+    public function load($class): ?object
     {
         if (TableRenderer::class === $class) {
             return new TableRenderer($this->container);
