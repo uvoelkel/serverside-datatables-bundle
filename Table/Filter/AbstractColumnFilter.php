@@ -9,7 +9,7 @@ abstract class AbstractColumnFilter
     /** @var null|\Symfony\Component\DependencyInjection\ContainerInterface */
     protected $container;
 
-    public function setOptions(array $options)
+    public function setOptions(array $options): self
     {
         $this->options = array_merge($this->options, $this->getDefaultOptions(), $options);
 
@@ -20,7 +20,7 @@ abstract class AbstractColumnFilter
      * @param null|\Symfony\Component\DependencyInjection\ContainerInterface $container
      * @return $this
      */
-    public function setContainer($container)
+    public function setContainer($container): self
     {
         $this->container = $container;
 
@@ -32,10 +32,7 @@ abstract class AbstractColumnFilter
         return self::fqcnToBlockPrefix(get_class($this));
     }
 
-    /**
-     * @return null|string
-     */
-    public function getParent()
+    public function getParent(): ?string
     {
         return null;
     }
@@ -46,12 +43,9 @@ abstract class AbstractColumnFilter
      * @param string $parameter
      * @param string $value
      */
-    abstract public function buildQuery(\Doctrine\ORM\QueryBuilder $qb, $field, $parameter, $value);
+    abstract public function buildQuery(\Doctrine\ORM\QueryBuilder $qb, $field, $parameter, $value): void;
 
-    /**
-     * @return array
-     */
-    abstract protected function getDefaultOptions();
+    abstract protected function getDefaultOptions(): array;
 
     // stolen from \Symfony\Component\Form\Util\StringUtil
     public static function fqcnToBlockPrefix($fqcn)

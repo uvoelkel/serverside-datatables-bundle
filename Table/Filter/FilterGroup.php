@@ -6,7 +6,7 @@ class FilterGroup extends AbstractColumnFilter
 {
     private $filters = [];
 
-    protected function getDefaultOptions()
+    protected function getDefaultOptions(): array
     {
         return [];
     }
@@ -16,7 +16,7 @@ class FilterGroup extends AbstractColumnFilter
         $this->filters[] = $filter;
     }
 
-    public function buildQuery(\Doctrine\ORM\QueryBuilder $qb, $field, $parameter, $value)
+    public function buildQuery(\Doctrine\ORM\QueryBuilder $qb, $field, $parameter, $value): void
     {
         foreach ($this->filters as $filter) {
             $filter->buildQuery($qb, $field, $parameter, $value);

@@ -65,7 +65,7 @@ abstract class AbstractDataTable implements ContainerAwareInterface
     /**
      * @inheritdoc
      */
-    public function setContainer(ContainerInterface $container = null)
+    public function setContainer(ContainerInterface $container = null): void
     {
         if (null !== $this->container) {
             return;
@@ -116,10 +116,9 @@ abstract class AbstractDataTable implements ContainerAwareInterface
     }
 
     /**
-     * @return null|ContainerInterface
      * @internal
      */
-    public function getContainer()
+    public function getContainer(): ?ContainerInterface
     {
         return $this->container;
     }

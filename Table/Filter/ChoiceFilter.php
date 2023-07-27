@@ -20,7 +20,7 @@ class ChoiceFilter extends AbstractColumnFilter
         ], $options);
     }
 
-    protected function getDefaultOptions()
+    protected function getDefaultOptions(): array
     {
         return [
             'choices' => [],
@@ -29,7 +29,7 @@ class ChoiceFilter extends AbstractColumnFilter
         ];
     }
 
-    public function buildQuery(\Doctrine\ORM\QueryBuilder $qb, $field, $parameter, $value)
+    public function buildQuery(\Doctrine\ORM\QueryBuilder $qb, $field, $parameter, $value): void
     {
         if (null !== $value) {
             if (true === $this->options['multiple']) {
