@@ -245,11 +245,13 @@ class ServerSide
 
             $field = $this->getPrefixedField($column);
 
-            if (false !== $column->getOptions()['filter'] || true === $column->getOptions()['filter_empty']) {
+            $filterEmpty = isset($column->getOptions()['filter_options']['empty']) && true === $column->getOptions()['filter_options']['empty'];
+
+            if (false !== $column->getOptions()['filter'] || true === $filterEmpty) {
                 $value = $this->request->getSearchValue($column->getName());
 
                 $empty = null;
-                if (true === $column->getOptions()['filter_empty']) {
+                if (true === $filterEmpty) {
                     $empty = $this->extractEmptyFilterFromValue($value);
                 }
 

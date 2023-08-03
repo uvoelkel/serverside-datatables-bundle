@@ -134,7 +134,7 @@ var {{ tableVar }}_table = $('#{{ tableId }}').DataTable({
 
 {% for column in table.columns %}
 
-    {% if column.options.filter_empty %}
+    {% if column.options.filter_options.empty is defined and column.options.filter_options.empty %}
     var {{ tableId }}_{{ column.name }}_filter_empty = $('#{{ tableId }}_{{ column.name }}_filter_empty').is(':checked')
 
     $('body').on('change', '#{{ tableId }}_{{ column.name }}_filter_empty', function() {
@@ -161,7 +161,7 @@ var {{ tableVar }}_table = $('#{{ tableId }}').DataTable({
         }
 
         var value = $input.val();
-        {% if column.options.filter_empty %}
+        {% if column.options.filter_options.empty is defined and column.options.filter_options.empty %}
         value += '|empty=' + {{ tableVar }}_{{ column.name }}_filter_empty.toString();
         {% endif %}
 
@@ -193,7 +193,7 @@ var {{ tableVar }}_table = $('#{{ tableId }}').DataTable({
     {% elseif column.filter is datatables_choicefilter %}
     $('body').on('change', '#{{ tableId }}_{{ column.name }}_filter', function() {
         var value = $(this).val();
-        {% if column.options.filter_empty %}
+        {% if column.options.filter_options.empty is defined and column.options.filter_options.empty %}
         value += '|empty=' + {{ tableId }}_{{ column.name }}_filter_empty.toString();
         {% endif %}
 

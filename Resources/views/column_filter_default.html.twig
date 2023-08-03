@@ -15,6 +15,6 @@
     </select>
 {% endif %}
 
-{% if column.options.filter_empty %}
+{% if column.options.filter_options.empty is defined and column.options.filter_options.empty %}
     <input type="checkbox" id="{{ table.name }}_{{ column.name }}_filter_empty" class="datatables-filter-input">
 {% endif %}

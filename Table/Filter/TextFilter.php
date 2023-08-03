@@ -4,36 +4,20 @@ namespace Voelkel\DataTablesBundle\Table\Filter;
 
 class TextFilter extends AbstractColumnFilter
 {
-    public function __construct(array $options = [])
-    {
-        if (0 !== sizeof($options)) {
-            @trigger_error(
-                'Passing filter options to the constructor is deprecated. Use the "filter_options" column option instead.',
-                E_USER_DEPRECATED
-            );
-        }
-
-        $this->options = array_merge([
-            'field' => null,
-            'filter_operator' => 'like',
-            'filter_query' => '%value%', // [%]value|split( |and)[%]
-        ], $options);
-    }
-
-    protected function getDefaultOptions(): array
+    public function getDefaultOptions(): array
     {
         return [
             'field' => null,
-            'filter_operator' => 'like',
-            'filter_query' => '%value%', // [%]value|split( |and)[%]
+            'operator' => 'like',
+            'query' => '%value%', // [%]value|split( |and)[%]
         ];
     }
 
     public function buildQuery(\Doctrine\ORM\QueryBuilder $qb, $field, $parameter, $value): void
     {
         if (null !== $value) {
-            $filterQuery = $this->options['filter_query'];
-            $filterOperator = $this->options['filter_operator'];
+            $filterQuery = $this->options['query'];
+            $filterOperator = $this->options['operator'];
 
 
             if (false !== strpos($filterQuery, 'value')) {

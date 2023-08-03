@@ -12,20 +12,19 @@ use Voelkel\DataTablesBundle\Table\Column\UnboundColumn;
 class TableBuilder implements TableBuilderInterface
 {
     /** @var Column[] */
-    private $columns = [];
+    private array $columns = [];
 
     /** @var null|callable */
     private $conditionCallback;
 
-    /** @var AbstractDataTable */
-    private $table;
+    private AbstractDataTable $table;
 
     public function __construct(AbstractDataTable $table)
     {
         $this->table = $table;
     }
 
-    public function add(string $field, $class = null, $options = [])
+    public function add(string $field, ?string $class = null, array $options = []): TableBuilderInterface
     {
         $fields = explode('.', $field);
 
@@ -84,15 +83,9 @@ class TableBuilder implements TableBuilderInterface
         return $this;
     }
 
-    /**
-     * @param Column $column
-     *
-     * @return $this|TableBuilderInterface
-     */
-    public function addColumn(Column $column)
+    public function addColumn(Column $column): TableBuilderInterface
     {
         $this->columns[] = $column;
-
         return $this;
     }
 
@@ -101,20 +94,12 @@ class TableBuilder implements TableBuilderInterface
         return $this->columns;
     }
 
-    /**
-     * @param callable $callback
-     *
-     * function(\Doctrine\ORM\QueryBuilder $qb) {}
-     */
-    public function setConditionCallback(callable $callback)
+    public function setConditionCallback(callable $callback): void
     {
         $this->conditionCallback = $callback;
     }
 
-    /**
-     * @return callable|null
-     */
-    public function getConditionCallback()
+    public function getConditionCallback(): ?callable
     {
         return $this->conditionCallback;
     }

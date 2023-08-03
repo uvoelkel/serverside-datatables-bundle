@@ -2,6 +2,7 @@
 
 namespace Voelkel\DataTablesBundle\Table\Column;
 
+use Voelkel\DataTablesBundle\Table\Filter\AbstractColumnFilter;
 use Voelkel\DataTablesBundle\Table\Filter\ChoiceFilter;
 use Voelkel\DataTablesBundle\Table\Filter\TextFilter;
 
@@ -21,15 +22,6 @@ class Column
     /** @var \Voelkel\DataTablesBundle\Table\Filter\AbstractColumnFilter[] */
     private $filterInstances = [];
 
-    private $filterBlockPrefixes = null;
-
-    /** @deprecated  */
-    const FILTER_NONE = false;
-    /** @deprecated  */
-    const FILTER_TEXT = 'text';
-    /** @deprecated  */
-    const FILTER_SELECT = 'select';
-
     const ORDER_ASCENDING = 'asc';
     const ORDER_DESCENDING = 'desc';
 
@@ -39,16 +31,16 @@ class Column
         'sortable' => true,
         'searchable' => true,
         'width' => null,
-        'filter' => false, // false|'text'|'select' todo: |'bool'|'date'|'datetime'|'date_range'|'datetime_range'|\Voelkel\DataTablesBundle\Table\Filter\FilterInterface
-        'filter_options' => [
-            'popover' => false,
-        ],
-        'filter_choices' => [], // 'filter' => 'select' only
+        'filter' => false, // false|null|\Voelkel\DataTablesBundle\Table\Filter\FilterInterface
+        'filter_options' => [],
+
+        /*'filter_choices' => [],
         'filter_query' => '%value%', // [%]value|split( |and)[%]
         'filter_attr' => [],
         'filter_empty' => false, // add a checkbox to filter empty resp null values
         'multiple' => false,
-        'expanded' => false,
+        'expanded' => false,*/
+        
         'format_data_callback' => null, // function ($data, $entity, Column $column) {}
         'unbound' => false,
         'order' => null, // null|'asc'|'desc'
@@ -56,6 +48,15 @@ class Column
         'placeholder' => null, // null|string|false
         'abbr' => null,
         'responsive_priority' => null,
+    ];
+
+    static private $deprecatedOptions = [
+        'filter_choices' => 'filter_options[choices]',
+        'filter_query' => 'filter_options[query]',
+        'filter_attr' => 'filter_options[attr]',
+        'filter_empty' => 'filter_options[empty]',
+        'multiple' => 'filter_options[multiple]',
+        'expanded' => 'filter_options[expanded]',
     ];
 
     private $fields = [];
@@ -97,34 +98,77 @@ class Column
 
         $this->options = array_merge($this->options, $options);
 
-        if (false !== $this->options['filter']) {
-            $this->options['searchable'] = true;
-        }
-
-        if (is_object($this->options['filter'])) {
-            @trigger_error(
-                'Using filter objects for option "filter" is deprecated. Use "FilterClass::class" instead.',
-                E_USER_DEPRECATED
-            );
-
-            if ($this->options['filter'] instanceof \Voelkel\DataTablesBundle\Table\Filter\AbstractColumnFilter) {
-                $this->options['filter_options'] = array_merge($this->options['filter']->options, $this->options['filter_options']);
+        foreach (self::$deprecatedOptions as $deprecatedOption => $newOption) {
+            if (isset($this->options[$deprecatedOption])) {
+                @trigger_error(
+                    'The column option "' . $deprecatedOption . '" is deprecated. Use "' . $newOption . '" instead.',
+                    E_USER_DEPRECATED
+                );
             }
         }
 
-        if (self::FILTER_TEXT === $this->options['filter'] || TextFilter::class === $this->options['filter']) {
-            $this->options['filter'] = TextFilter::class;
-            $this->options['filter_options'] = array_merge([
-                'filter_operator' => 'like',
-                'filter_query' => $this->options['filter_query'],
-            ], $this->options['filter_options']);
-        } elseif (self::FILTER_SELECT === $this->options['filter'] || ChoiceFilter::class === $this->options['filter']) {
-            $this->options['filter'] = ChoiceFilter::class;
-            $this->options['filter_options'] = array_merge([
-                'choices' => $this->options['filter_choices'],
-                'multiple' => $this->options['multiple'],
-                'expanded' => $this->options['expanded'],
-            ], $this->options['filter_options']);
+        if (false === $this->options['filter'] || null === $this->options['filter']) {
+            return;
+        }
+
+        if (is_object($this->options['filter'])) {
+            throw new \Exception('filter instances are not allowed.');
+        }
+
+        $this->options['searchable'] = true;
+
+
+        // create filter instances
+        $filter = $this->options['filter'];
+        do {
+            $filter = new $filter();
+            if (false === ($filter instanceof \Voelkel\DataTablesBundle\Table\Filter\AbstractColumnFilter)) {
+                throw new \Exception(sprintf('invalid filter class "%s"', $this->options['filter']));
+            }
+            array_unshift($this->filterInstances, $filter);
+            $filter = $filter->getParent();
+        } while (null !== $filter);
+
+        // build options
+        $filterInstance = null;
+        $filterOptions = [
+            'attr' => [],
+            'popover' => false,
+            'empty' => false,
+        ];
+        foreach ($this->filterInstances as $filterInstance) {
+            $filterOptions = array_merge($filterOptions, $filterInstance->getDefaultOptions());
+        }
+        $filterOptions = array_merge($filterOptions, $this->options['filter_options']);
+        $filterInstance->setOptions($filterOptions);
+        $this->options['filter_options'] = $filterOptions;
+
+        // backwards compatibility
+        if (isset($this->options['filter_empty'])) {
+            @trigger_error('use options[filter_options][empty]', E_USER_DEPRECATED);
+            $this->options['filter_options']['empty'] = $this->options['filter_empty'];
+        }
+
+        if (TextFilter::class === $this->options['filter']) {
+            if (isset($this->options['filter_query'])) {
+                @trigger_error('use options[filter_options][query]', E_USER_DEPRECATED);
+                $this->options['filter_options']['query'] = $this->options['filter_query'];
+            }
+        } elseif (ChoiceFilter::class === $this->options['filter']) {
+            if (isset($this->options['filter_choices'])) {
+                @trigger_error('use options[filter_options][choices]', E_USER_DEPRECATED);
+                $this->options['filter_options']['choices'] = $this->options['filter_choices'];
+            }
+
+            if (isset($this->options['multiple'])) {
+                @trigger_error('use options[filter_options][multiple]', E_USER_DEPRECATED);
+                $this->options['filter_options']['multiple'] = $this->options['multiple'];
+            }
+
+            if (isset($this->options['expanded'])) {
+                @trigger_error('use options[filter_options][expanded]', E_USER_DEPRECATED);
+                $this->options['filter_options']['expanded'] = $this->options['expanded'];
+            }
         }
     }
 
@@ -171,24 +215,6 @@ class Column
             return $this->filterInstances;
         } elseif (false === $this->options['filter'] || null === $this->options['filter']) {
             return null;
-        } elseif (is_string($this->options['filter'])) {
-
-            $filter = $this->options['filter'];
-            do {
-                $filter = new $filter();
-                if (!($filter instanceof \Voelkel\DataTablesBundle\Table\Filter\AbstractColumnFilter)) {
-                    throw new \Exception(sprintf('invalid filter class "%s"', $this->options['filter']));
-                }
-
-                $filter->setOptions($this->options['filter_options']);
-                array_unshift($this->filterInstances, $filter);
-                $filter = $filter->getParent();
-            } while (null !== $filter);
-
-            return $this->filterInstances;
-        } elseif (is_object($this->options['filter']) && $this->options['filter'] instanceof \Voelkel\DataTablesBundle\Table\Filter\AbstractColumnFilter) {
-            $this->filterInstances[] = $this->options['filter'];
-            return $this->filterInstances;
         }
 
         throw new \Exception();
@@ -196,21 +222,19 @@ class Column
 
     public function getFilterBlockPrefixes()
     {
-        if (is_array($this->filterBlockPrefixes)) {
-            return $this->filterBlockPrefixes;
+        if (false === $this->options['filter'] || null === $this->options['filter']) {
+            return null;
         }
 
         if (null === ($filters = $this->getFilterInstances())) {
             throw new \Exception();
         }
 
-        $this->filterBlockPrefixes = [];
-
+        $result = [];
         foreach ($filters as $filter) {
-            $this->filterBlockPrefixes[] = $filter->getBlockPrefix();
+            $result[] = $filter->getBlockPrefix();
         }
-
-        return $this->filterBlockPrefixes;
+        return$result;
     }
 
     /**

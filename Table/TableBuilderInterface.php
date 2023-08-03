@@ -12,18 +12,12 @@ interface TableBuilderInterface
      * @param array $options
      * @return TableBuilderInterface
      */
-    public function add(string $field, $class = null, $options = []);
+    public function add(string $field, ?string $class = null, array $options = []): TableBuilderInterface;
+
+    public function addColumn(Column $column): TableBuilderInterface;
 
     /**
-     * @param Column $column
-     * @return TableBuilderInterface
-     */
-    public function addColumn(Column $column);
-
-    /**
-     * @param callable $callback
-     *
      * function(\Doctrine\ORM\QueryBuilder $qb) {}
      */
-    public function setConditionCallback(callable $callback);
+    public function setConditionCallback(callable $callback): void;
 }

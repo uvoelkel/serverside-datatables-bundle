@@ -4,12 +4,12 @@ namespace Voelkel\DataTablesBundle\Table\Filter;
 
 class DateFilter extends AbstractColumnFilter
 {
-    protected function getDefaultOptions(): array
+    public function getDefaultOptions(): array
     {
         return [
             'field' => null,
-            'filter_operator' => 'like',
-            'filter_query' => '%value%',
+            'operator' => 'like',
+            'query' => '%value%',
         ];
     }
 
@@ -19,8 +19,8 @@ class DateFilter extends AbstractColumnFilter
             return;
         }
 
-        $filterQuery = $this->options['filter_query'];
-        $filterOperator = $this->options['filter_operator'];
+        $filterQuery = $this->options['query'];
+        $filterOperator = $this->options['operator'];
 
         $like = str_replace('value', $value, $filterQuery);
         $qb->andWhere($field.' ' . $filterOperator . ' '.$parameter);

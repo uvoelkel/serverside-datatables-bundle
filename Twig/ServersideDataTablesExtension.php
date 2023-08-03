@@ -33,10 +33,7 @@ class ServersideDataTablesExtension extends \Twig\Extension\AbstractExtension
         $twig->addRuntimeLoader(new RuntimeLoader($container));
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getFunctions()
+    public function getFunctions(): array
     {
         return [
             new \Twig\TwigFunction('datatables_html', [$this, 'renderHtml'], [
@@ -64,7 +61,7 @@ class ServersideDataTablesExtension extends \Twig\Extension\AbstractExtension
         ];
     }
 
-    public function getTokenParsers()
+    public function getTokenParsers(): array
     {
         return [
             new TableThemeTokenParser(),
@@ -261,8 +258,8 @@ class ServersideDataTablesExtension extends \Twig\Extension\AbstractExtension
 
         $column->filterRendered = true;
 
-        if ('bootstrap5' !== $theme && 'bootstrap4' !== $theme) {
-            return $twig->render('@VoelkelDataTables/column_filter_' . $theme . '.html.twig', [
+        if ('default' === $theme) {
+            return $twig->render('@VoelkelDataTables/column_filter_default.html.twig', [
                 'table' => $table,
                 'column' => $column,
                 'options' => $options,
@@ -282,7 +279,9 @@ class ServersideDataTablesExtension extends \Twig\Extension\AbstractExtension
         /** @var \Twig\Template $template */
         $template = null;
         $block = 'filter';
-        foreach (array_reverse($column->getFilterBlockPrefixes()) as $prefix) {
+        $prefixes = $column->getFilterBlockPrefixes();
+        array_reverse($prefixes);
+        foreach ($prefixes as $prefix) {
             foreach ($templates as $tpl) {
                 if ($tpl->hasBlock($prefix . '_widget', [])) {
                     $block = $prefix;
@@ -309,10 +308,7 @@ class ServersideDataTablesExtension extends \Twig\Extension\AbstractExtension
         ]));
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getTests()
+    public function getTests(): array
     {
         return [
             new \Twig\TwigTest('datatables_textfilter', function ($filter) {

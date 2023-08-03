@@ -6,6 +6,25 @@
     {% endset %}
 
     {{ input }}
+
+    {#
+    {% set filter = column.options.filter != false or column.options.filter_empty != false %}
+    {% set group = column.options.filter != false and column.options.filter_empty != false %}
+    #}
+
+    {% if column.filterOptions.empty is defined and column.filterOptions.empty %}
+    {# {% if group %} #}
+        <span class="input-group-addon">
+            <input type="checkbox" id="{{ id }}_empty" class="datatables-filter-input">
+        </span>
+    {# {% else %}
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" id="{{ id }}_empty" class="datatables-filter-input">
+                </label>
+            </div>
+        {% endif %} #}
+    {% endif %}
 {% endblock text_filter_widget %}
 
 {% block date_filter_widget %}
@@ -43,7 +62,7 @@
 {%- endblock widget_attributes -%}
 
 {% block attributes -%}
-    {%- for attrname, attrvalue in column.options.filter_attr -%}
+    {%- for attrname, attrvalue in column.filterOptions.attr -%}
         {{- " " -}}
         {%- if attrname in ['placeholder', 'title'] -%}
             {{- attrname }}="{{ translation_domain is same as(false) ? attrvalue : attrvalue|trans({}, translation_domain) }}"

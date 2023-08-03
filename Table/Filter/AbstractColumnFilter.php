@@ -11,8 +11,7 @@ abstract class AbstractColumnFilter
 
     public function setOptions(array $options): self
     {
-        $this->options = array_merge($this->options, $this->getDefaultOptions(), $options);
-
+        $this->options = array_merge($this->options, $options);
         return $this;
     }
 
@@ -23,7 +22,6 @@ abstract class AbstractColumnFilter
     public function setContainer($container): self
     {
         $this->container = $container;
-
         return $this;
     }
 
@@ -45,7 +43,7 @@ abstract class AbstractColumnFilter
      */
     abstract public function buildQuery(\Doctrine\ORM\QueryBuilder $qb, $field, $parameter, $value): void;
 
-    abstract protected function getDefaultOptions(): array;
+    abstract public function getDefaultOptions(): array;
 
     // stolen from \Symfony\Component\Form\Util\StringUtil
     public static function fqcnToBlockPrefix($fqcn)
