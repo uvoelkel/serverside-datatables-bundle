@@ -35,11 +35,12 @@ class ServerSideController extends AbstractController
             throw new \Exception(sprintf('table definition class or service "%s" not found.', $table));
         }
 
+        $query = $request->query->all();
         if (
-            $request->query->has('parameters') &&
-            is_array($request->query->get('parameters'))
+            array_key_exists('parameters', $query) &&
+            is_array($query['parameters'])
         ) {
-            $table->setRequestParameters($request->query->get('parameters'));
+            $table->setRequestParameters($query['parameters']);
         }
 
         /** @var \Voelkel\DataTablesBundle\Table\AbstractDataTable $table */
