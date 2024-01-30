@@ -15,13 +15,13 @@
     ],
     "require": {
         "php": ">=7.0.0",
-        "symfony/dependency-injection": "~5.0|~6.0"
+        "symfony/dependency-injection": "~5.0|~6.0|~7.0"
     },
     "require-dev": {
-        "symfony/framework-bundle": "~5.0|~6.0",
-        "doctrine/doctrine-bundle": "~2.0",
+        "symfony/framework-bundle": "~5.0|~6.0|~7.0",
+        "doctrine/doctrine-bundle": "~2.0|~3.0",
 
-        "phpunit/phpunit": "^5.0"
+        "phpunit/phpunit": ">=5.0"
     },
     "config": {
         "bin-dir": "bin"
@@ -31,7 +31,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "5.0-dev"
+            "dev-master": "7.0-dev"
         }
     }
 }
