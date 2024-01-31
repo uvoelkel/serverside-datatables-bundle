@@ -234,7 +234,7 @@ class Column
         foreach ($filters as $filter) {
             $result[] = $filter->getBlockPrefix();
         }
-        return$result;
+        return $result;
     }
 
     /**

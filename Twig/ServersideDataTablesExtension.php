@@ -280,7 +280,7 @@ class ServersideDataTablesExtension extends \Twig\Extension\AbstractExtension
         $template = null;
         $block = 'filter';
         $prefixes = $column->getFilterBlockPrefixes();
-        array_reverse($prefixes);
+        $prefixes = array_reverse($prefixes);
         foreach ($prefixes as $prefix) {
             foreach ($templates as $tpl) {
                 if ($tpl->hasBlock($prefix . '_widget', [])) {
@@ -296,7 +296,7 @@ class ServersideDataTablesExtension extends \Twig\Extension\AbstractExtension
         }
 
         if (null === $template) {
-            throw new \Exception();
+            throw new \Exception(sprintf('missing filter template for column "%s" with prefixes [%s]', $column->getName(), join(', ', $prefixes)));
         }
 
         return $template->renderBlock($block. '_widget', $twig->mergeGlobals([

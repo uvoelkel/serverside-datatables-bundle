@@ -2,14 +2,13 @@
 
 namespace Voelkel\DataTablesBundle\Table;
 
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Voelkel\DataTablesBundle\Table\Column\Column;
 use Voelkel\DataTablesBundle\Table\Column\EntitiesScalarColumn;
 use Voelkel\DataTablesBundle\Table\Column\EntityColumn;
 use Voelkel\DataTablesBundle\Table\Column\EntitiesCountColumn;
 
-abstract class AbstractDataTable implements ContainerAwareInterface
+abstract class AbstractDataTable
 {
     /** @var Column[] */
     protected $columns = [];

@@ -7,7 +7,7 @@
     {% endfor %}
 {% endif %}
 
-<table id="{{ table.name }}"{% if options.class is defined %} class="{{ options.class }}"{% endif %} {{ attributes | raw }}>
+<table id="{{ tableId }}"{% if options.class is defined %} class="{{ options.class }}"{% endif %} {{ attributes | raw }}>
     <thead{% if table.hasColumnFilter %} class="has_filter"{% endif %}>
         {% if table.hasColumnFilter %}
         <tr>

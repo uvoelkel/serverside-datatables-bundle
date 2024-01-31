@@ -15,7 +15,7 @@ class Configuration implements ConfigurationInterface
      *
      * @return TreeBuilder
      */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('voelkel_data_tables');
         if (\method_exists($treeBuilder, 'getRootNode')) {
