@@ -70,7 +70,7 @@ class TableSettings implements \ArrayAccess
     /**
      * @inheritdoc
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return in_array($offset, ['entity', 'name', 'service']);
     }
@@ -78,7 +78,7 @@ class TableSettings implements \ArrayAccess
     /**
      * @inheritdoc
      */
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         switch ($offset) {
             case 'entity':
@@ -99,7 +99,7 @@ class TableSettings implements \ArrayAccess
     /**
      * @inheritdoc
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         switch ($offset) {
             case 'entity':
@@ -117,7 +117,7 @@ class TableSettings implements \ArrayAccess
     /**
      * @inheritdoc
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         switch ($offset) {
             case 'entity':
