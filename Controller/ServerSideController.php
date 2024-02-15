@@ -37,9 +37,9 @@ class ServerSideController extends AbstractController
 
         if (
             $request->query->has('parameters') &&
-            is_array($request->query->get('parameters'))
+            is_array($request->query->all('parameters'))
         ) {
-            $table->setRequestParameters($request->query->get('parameters'));
+            $table->setRequestParameters($request->query->all('parameters'));
         }
 
         /** @var \Voelkel\DataTablesBundle\Table\AbstractDataTable $table */
