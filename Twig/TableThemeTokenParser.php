@@ -6,6 +6,9 @@ use Twig\Node\Expression\ArrayExpression;
 
 class TableThemeTokenParser extends \Twig\TokenParser\AbstractTokenParser
 {
+    /**
+     * @return \Twig\Node\Node|TableThemeNode
+     */
     public function parse(\Twig\Token $token)
     {
         $lineno = $token->getLine();
