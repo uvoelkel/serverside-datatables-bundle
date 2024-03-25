@@ -283,7 +283,7 @@ class ServerSide
      */
     private function applyColumnFilter(Column $column, $value, QueryBuilder $qb, $field, $empty)
     {
-        if (null === $value && false === $column->getOptions()['filter_empty']) {
+        if (null === $value && false === $column->getOptions()['filter_options']['empty']) {
             throw new \Exception('this is just wrong');
         }
 
@@ -314,7 +314,7 @@ class ServerSide
             throw new \Exception(sprintf('invalid filter type "%s"', $column->getOptions()['filter']));
         }
 
-        if (null !== $empty && is_bool($empty) && true === $empty && true === $column->getOptions()['filter_empty']) {
+        if (null !== $empty && is_bool($empty) && true === $empty && true === $column->getOptions()['filter_options']['empty']) {
             $qb->andWhere($field . ' is ' . ($empty ? '': 'not ') . 'null');
         }
     }
