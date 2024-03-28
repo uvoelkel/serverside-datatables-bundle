@@ -1,35 +1,29 @@
 {% trans_default_domain "datatables" %}
 
 {% block text_filter_widget %}
-    {% set input %}
-        <input type="text" class="form-control input-sm datatables-filter-input" placeholder="{{ column.placeholder }}" {{ block('widget_attributes') }} autocomplete="off">
-    {% endset %}
 
-    {{ input }}
+    {% set grouped = column.filterOptions.empty is defined and column.filterOptions.empty %}
 
-    {#
-    {% set filter = column.options.filter != false or column.options.filter_empty != false %}
-    {% set group = column.options.filter != false and column.options.filter_empty != false %}
-    #}
+    {% if grouped %}
+    <div class="input-group input-group-sm">
+    {% endif %}
 
-    {% if column.filterOptions.empty is defined and column.filterOptions.empty %}
-    {# {% if group %} #}
-        <span class="input-group-addon">
-            <input type="checkbox" id="{{ id }}_empty" class="datatables-filter-input">
-        </span>
-    {# {% else %}
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox" id="{{ id }}_empty" class="datatables-filter-input">
-                </label>
-            </div>
-        {% endif %} #}
+    <input type="text" class="form-control form-control-sm datatables-filter-input" placeholder="{{ column.placeholder }}" {{ block('widget_attributes') }} autocomplete="off">
+
+    {% if grouped %}
+    <span class="input-group-text">
+        <input type="checkbox" id="{{ id }}_empty" class="datatables-filter-input">
+    </span>
+    {% endif %}
+
+    {% if grouped %}
+    </div>
     {% endif %}
 {% endblock text_filter_widget %}
 
 {% block date_filter_widget %}
     {% set input %}
-        <input type="text" class="form-control input-sm datatables-filter-input" placeholder="{{ column.placeholder }}" {{ block('widget_attributes') }} autocomplete="off">
+        <input type="text" class="form-control form-control-sm datatables-filter-input" placeholder="{{ column.placeholder }}" {{ block('widget_attributes') }} autocomplete="off">
     {% endset %}
 
     <a class="btn btn-outline-secondary" tabindex="-1" data-container="body" data-toggle="popover" data-placement="bottom" data-html="true" data-content="{{ input | e }}">
@@ -38,7 +32,7 @@
 {% endblock date_filter_widget %}
 
 {% block choice_filter_widget %}
-    <select title="{{ column.label }}" class="form-select input-sm datatables-filter-input"{% if column.filterOptions.multiple %} multiple="multiple"{% endif %} {{ block('widget_attributes') }}>
+    <select title="{{ column.label }}" class="form-select form-select-sm datatables-filter-input"{% if column.filterOptions.multiple %} multiple="multiple"{% endif %} {{ block('widget_attributes') }}>
         {% if not column.filterOptions.multiple %}
             <option value="">{{ 'select all' | trans }}</option>
         {% endif %}
