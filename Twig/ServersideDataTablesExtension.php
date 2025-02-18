@@ -299,13 +299,13 @@ class ServersideDataTablesExtension extends \Twig\Extension\AbstractExtension
             throw new \Exception(sprintf('missing filter template for column "%s" with prefixes [%s]', $column->getName(), join(', ', $prefixes)));
         }
 
-        return $template->renderBlock($block. '_widget', $twig->mergeGlobals([
+        return $template->renderBlock($block. '_widget', array_merge([
             'table' => $table,
             'column' => $column,
             'options' => $options,
             'tableId' => $tableId,
             'id' => $tableId . '_' . $column->getName() . '_filter',
-        ]));
+        ], $twig->getGlobals()));
     }
 
     public function getTests(): array
