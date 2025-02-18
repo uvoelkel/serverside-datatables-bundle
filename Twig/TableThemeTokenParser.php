@@ -26,7 +26,7 @@ class TableThemeTokenParser extends \Twig\TokenParser\AbstractTokenParser
         return new TableThemeNode($table, $resources, $lineno, $this->getTag());
     }
 
-    public function getTag()
+    public function getTag(): string
     {
         return 'table_theme';
     }
