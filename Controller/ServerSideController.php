@@ -5,13 +5,24 @@ namespace Voelkel\DataTablesBundle\Controller;
 use Psr\Container\ContainerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Voelkel\DataTablesBundle\DataTables\ServerSide;
+use Voelkel\DataTablesBundle\Table\UserAwareTableInterface;
 
 class ServerSideController extends AbstractController
 {
-    public function __construct(ContainerInterface $container)
-    {
+    private ?TokenStorageInterface $tokenStorage;
+    private ?AuthorizationCheckerInterface $authorizationChecker;
+
+    public function __construct(
+        ContainerInterface $container,
+        ?TokenStorageInterface $tokenStorage,
+        ?AuthorizationCheckerInterface $authorizationChecker
+    ) {
         $this->setContainer($container);
+        $this->tokenStorage = $tokenStorage;
+        $this->authorizationChecker = $authorizationChecker;
     }
 
     public function listAction($table, Request $request)
@@ -40,6 +51,11 @@ class ServerSideController extends AbstractController
             is_array($request->query->all('parameters'))
         ) {
             $table->setRequestParameters($request->query->all('parameters'));
+        }
+
+        if ($table instanceof UserAwareTableInterface) {
+            $table->setUser($this->tokenStorage?->getToken()?->getUser());
+            $table->setAuthorizationChecker($this->authorizationChecker);
         }
 
         /** @var \Voelkel\DataTablesBundle\Table\AbstractDataTable $table */

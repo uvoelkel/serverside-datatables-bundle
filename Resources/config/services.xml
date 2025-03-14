@@ -9,6 +9,8 @@
 
         <service id="Voelkel\DataTablesBundle\Controller\ServerSideController" class="Voelkel\DataTablesBundle\Controller\ServerSideController" public="true">
             <argument type="service" id="service_container" />
+            <argument type="service" id="security.token_storage" on-invalid="null" />
+            <argument type="service" id="security.authorization_checker" on-invalid="null" />
             <tag name="controller.service_arguments" />
         </service>
 
