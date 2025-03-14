@@ -8,7 +8,7 @@ use Voelkel\DataTablesBundle\Table\Column\EntitiesScalarColumn;
 use Voelkel\DataTablesBundle\Table\Column\EntityColumn;
 use Voelkel\DataTablesBundle\Table\Column\EntitiesCountColumn;
 
-abstract class AbstractDataTable
+abstract class AbstractDataTable implements TableInterface
 {
     /** @var Column[] */
     protected $columns = [];
@@ -118,6 +118,14 @@ abstract class AbstractDataTable
 
         if (null !== $builder->getOrderCallback() && null === $this->getOrderCallback()) {
             $this->setOrderCallback($builder->getOrderCallback());
+        }
+
+        if (null !== $builder->getResultCallback() && null === $this->getResultCallback()) {
+            $this->setResultCallback($builder->getResultCallback());
+        }
+
+        if (null !== $builder->getRowCallback() && null === $this->getRowCallback()) {
+            $this->setRowCallback($builder->getRowCallback());
         }
     }
 
@@ -310,6 +318,7 @@ abstract class AbstractDataTable
     public function setConditionCallback(callable $callback)
     {
         $this->conditionCallback = $callback;
+        return $this;
     }
 
     /**
@@ -328,6 +337,7 @@ abstract class AbstractDataTable
     public function setOrderCallback(callable $callback)
     {
         $this->orderCallback = $callback;
+        return $this;
     }
 
     /**
@@ -344,6 +354,7 @@ abstract class AbstractDataTable
     public function setResultCallback(callable $callback)
     {
         $this->resultCallback = $callback;
+        return $this;
     }
 
     /**
@@ -360,6 +371,7 @@ abstract class AbstractDataTable
     public function setRowCallback(callable $callback)
     {
         $this->rowCallback = $callback;
+        return $this;
     }
 
     /**

@@ -9,6 +9,7 @@ use Voelkel\DataTablesBundle\Table\Column\Column;
 use Voelkel\DataTablesBundle\Table\Filter\DateFilter;
 use Voelkel\DataTablesBundle\Table\Filter\TextFilter;
 use Voelkel\DataTablesBundle\Table\Filter\ChoiceFilter;
+use Voelkel\DataTablesBundle\Table\TableInterface;
 
 /**
  * @codeCoverageIgnore
@@ -68,7 +69,7 @@ class ServersideDataTablesExtension extends \Twig\Extension\AbstractExtension
         ];
     }
 
-    public function renderHtml(\Twig\Environment $twig, AbstractDataTable $table, array $options = [])
+    public function renderHtml(\Twig\Environment $twig, AbstractDataTable|TableInterface $table, array $options = [])
     {
         $table->setContainer($this->container);
 
@@ -143,7 +144,7 @@ class ServersideDataTablesExtension extends \Twig\Extension\AbstractExtension
         return $result;
     }
 
-    public function renderJavascript(\Twig\Environment $twig, AbstractDataTable $table, $path = null, $options = [])
+    public function renderJavascript(\Twig\Environment $twig, AbstractDataTable|TableInterface $table, $path = null, $options = [])
     {
         $table->setContainer($this->container);
 
@@ -216,14 +217,14 @@ class ServersideDataTablesExtension extends \Twig\Extension\AbstractExtension
         return $result;
     }
 
-    public function getTableId(AbstractDataTable $table)
+    public function getTableId(AbstractDataTable|TableInterface $table)
     {
         $table->setContainer($this->container);
 
         return $table->getName();
     }
 
-    public function renderColumnFilter(\Twig\Environment $twig, $context, AbstractDataTable $table, $column, array $options = [])
+    public function renderColumnFilter(\Twig\Environment $twig, $context, AbstractDataTable|TableInterface $table, $column, array $options = [])
     {
         $table->setContainer($this->container);
 

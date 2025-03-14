@@ -5,7 +5,7 @@ namespace Voelkel\DataTablesBundle\Table;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-interface UserAwareTableInterface
+interface UserAwareTableInterface extends TableInterface
 {
     public function setUser(?UserInterface $user): static;
 
