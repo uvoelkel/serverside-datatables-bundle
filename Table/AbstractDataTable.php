@@ -67,7 +67,7 @@ abstract class AbstractDataTable implements TableInterface
     /**
      * @inheritdoc
      */
-    public function setContainer(ContainerInterface $container = null): void
+    public function setContainer(?ContainerInterface $container = null): void
     {
         if (null !== $this->container) {
             return;
