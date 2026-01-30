@@ -224,7 +224,7 @@ class ServersideDataTablesExtension extends \Twig\Extension\AbstractExtension
         return $table->getName();
     }
 
-    public function renderColumnFilter(\Twig\Environment $twig, $context, AbstractDataTable|TableInterface $table, $column, array $options = [])
+    public function renderColumnFilter(\Twig\Environment $twig, $context, AbstractDataTable|TableInterface $table, string|Column $column, array $options = [])
     {
         $table->setContainer($this->container);
 
@@ -300,10 +300,29 @@ class ServersideDataTablesExtension extends \Twig\Extension\AbstractExtension
             throw new \Exception(sprintf('missing filter template for column "%s" with prefixes [%s]', $column->getName(), join(', ', $prefixes)));
         }
 
+        $filterOptions = $column->getOptions()['filter_options'];
+
+        if (isset($filterOptions['choices']) && sizeof($filterOptions['choices']) > 0) {
+            $k = array_key_first($filterOptions['choices']);
+            $v = array_first($filterOptions['choices']);
+            if (is_int($k)) {
+                if ($v instanceof \BackedEnum) {
+                    foreach ($filterOptions['choices'] as $key => $enum) {
+                        unset($filterOptions['choices'][$key]);
+                        /** @var \BackedEnum $enum */
+                        $filterOptions['choices'][$enum->name] = $enum->value;
+                    }
+                } elseif ($v instanceof \UnitEnum) {
+                    throw new \Exception('UnitEnum not supported yet. Use BackedEnum instead.');
+                }
+            }
+        }
+
         return $template->renderBlock($block. '_widget', array_merge([
             'table' => $table,
             'column' => $column,
             'options' => $options,
+            'filter_options' => $filterOptions,
             'tableId' => $tableId,
             'id' => $tableId . '_' . $column->getName() . '_filter',
         ], $twig->getGlobals()));

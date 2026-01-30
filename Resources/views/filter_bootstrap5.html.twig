@@ -2,7 +2,7 @@
 
 {% block text_filter_widget %}
 
-    {% set grouped = column.filterOptions.empty is defined and column.filterOptions.empty %}
+    {% set grouped = filter_options.empty is defined and filter_options.empty %}
 
     {% if grouped %}
     <div class="input-group input-group-sm">
@@ -32,12 +32,12 @@
 {% endblock date_filter_widget %}
 
 {% block choice_filter_widget %}
-    <select title="{{ column.label }}" class="form-select form-select-sm datatables-filter-input"{% if column.filterOptions.multiple %} multiple="multiple"{% endif %} {{ block('widget_attributes') }}>
-        {% if not column.filterOptions.multiple %}
+    <select title="{{ column.label }}" class="form-select form-select-sm datatables-filter-input"{% if filter_options.multiple %} multiple="multiple"{% endif %} {{ block('widget_attributes') }}>
+        {% if not filter_options.multiple %}
             <option value="">{{ 'select all' | trans }}</option>
         {% endif %}
 
-        {% for key, label in column.filterOptions.choices %}
+        {% for key, label in filter_options.choices %}
             <option value="{{ key }}">{{ label }}</option>
         {% endfor %}
     </select>
@@ -56,7 +56,7 @@
 {%- endblock widget_attributes -%}
 
 {% block attributes -%}
-    {%- for attrname, attrvalue in column.filterOptions.attr -%}
+    {%- for attrname, attrvalue in filter_options.attr -%}
         {{- " " -}}
         {%- if attrname in ['placeholder', 'title'] -%}
             {{- attrname }}="{{ translation_domain is same as(false) ? attrvalue : attrvalue|trans({}, translation_domain) }}"
