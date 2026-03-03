@@ -28,8 +28,6 @@ class TableOptions implements \ArrayAccess
             'pagingType' => TableOptions::PAGING_TYPE_NUMBERS,
             'deferLoading' => null,
             'responsive' => false,
-            'raw_data' => false,
-            'raw_label' => false,
             //'lengthMenu' => '[ [ 10, 25, 50, 100 ], [ 10, 25, 50, 100 ] ]',
             //'dom' => "<'row'<'col-sm-12'pl>>" . "<'row'<'col-sm-12'<'table-responsive'tr>>>" . "<'row'<'col-xs-12'<'hr'>><'col-sm-5'i><'col-sm-7'p>>",
         ];

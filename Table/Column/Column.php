@@ -47,8 +47,8 @@ class Column
         'label' => null, // null|string|false
         'placeholder' => null, // null|string|false
         'abbr' => null,
-        'raw_data' => null, // true|false|null => null == inherits from table
-        'raw_label' => null, // true|false|null => null == inherits from table
+        'raw_data' => false,
+        'raw_label' => false,
         'responsive_priority' => null,
     ];
 

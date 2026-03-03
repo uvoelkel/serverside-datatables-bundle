@@ -55,14 +55,6 @@ class TableBuilder implements TableBuilderInterface
             $name = join('_', $fields);
         }
 
-        if (false === isset($options['raw_data'])) {
-            $options['raw_data'] = $this->table->getOption('raw_data', false);
-        }
-
-        if (false === isset($options['raw_label'])) {
-            $options['raw_label'] = $this->table->getOption('raw_label', false);
-        }
-
         switch ($class) {
             case Column::class:
                 $this->columns[] = new Column($name, $field, $options);
