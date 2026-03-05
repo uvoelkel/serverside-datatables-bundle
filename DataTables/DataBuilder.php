@@ -58,6 +58,11 @@ class DataBuilder
                 }
             }
 
+            $options = $column->getOptions();
+            if (isset($options['raw_data']) && true !== $options['raw_data'] && is_string($tmp[$column->getName()])) {
+                $tmp[$column->getName()] = htmlspecialchars($tmp[$column->getName()]);
+            }
+
             $response->data[] = $tmp;
         }
     }
