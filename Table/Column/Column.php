@@ -262,7 +262,8 @@ class Column
     public function getLabel()
     {
         if (null === $this->options['label']) {
-            return $this->name;
+            // same format as Symfony\Bridge\Twig\Extension\FormExtension::getFieldLabel
+            return ucfirst(strtolower(trim(preg_replace(['/([A-Z])/', '/[_\s]+/'], ['_$1', ' '], $this->name))));
         } elseif (is_string($this->options['label'])) {
             return $this->options['label'];
         } elseif (false === $this->options['label']) {
