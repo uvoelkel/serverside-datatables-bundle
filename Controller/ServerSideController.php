@@ -38,7 +38,9 @@ class ServerSideController extends AbstractController
      */
     public function list($table, ServerSide $serverSide, Request $request)
     {
-        if (class_exists($table)) {
+        if ($this->container->has($table . '.public')) {
+            $table = $this->container->get($table . '.public');
+        } elseif (class_exists($table)) {
             $table = new $table();
         } elseif ($this->has($table)) {
             $table = $this->get($table);
