@@ -100,8 +100,19 @@ class ActionsColumn extends UnboundColumn
 
         if (isset($settings['callback'])) {
             $url = call_user_func($settings['callback'], $data, $router);
-        } elseif (isset($settings['route']) && method_exists($data, 'getId')) {
-            $url = $router->generate($settings['route'], ['id' => $data->getId()]);
+        } elseif (isset($settings['route'])) {
+            $parameters = isset($settings['route_parameters']) ? $settings['route_parameters'] : ['id' => 'id'];
+
+            $params = [];
+            foreach ($parameters as $parameter => $property) {
+                $fn = 'get' . ucfirst($property);
+                if (false === method_exists($data, $fn)) {
+                    continue;
+                }
+
+                $params[$parameter] = $data->$fn();
+            }
+            $url = $router->generate($settings['route'], $params);
         } elseif (isset($settings['url'])) {
             $url = $settings['url'];
         } elseif (isset($settings['onclick'])) {
