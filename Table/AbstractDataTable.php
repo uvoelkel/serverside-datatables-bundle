@@ -33,6 +33,9 @@ abstract class AbstractDataTable implements TableInterface
     /** @var null|callable */
     protected $conditionCallback;
 
+    /** @var callable[] */
+    protected $conditionCallbacks = [];
+
     /** @var null|callable */
     protected $orderCallback;
 
@@ -114,6 +117,10 @@ abstract class AbstractDataTable implements TableInterface
 
         if (null !== $builder->getConditionCallback() && null === $this->getConditionCallback()) {
             $this->setConditionCallback($builder->getConditionCallback());
+        }
+
+        foreach ($builder->getConditionCallbacks() as $callback) {
+            $this->addConditionCallback($callback);
         }
 
         if (null !== $builder->getOrderCallback() && null === $this->getOrderCallback()) {
@@ -327,6 +334,17 @@ abstract class AbstractDataTable implements TableInterface
     public function getConditionCallback()
     {
         return $this->conditionCallback;
+    }
+
+    public function addConditionCallback(callable $callback): static
+    {
+        $this->conditionCallbacks[] = $callback;
+        return $this;
+    }
+
+    public function getConditionCallbacks(): array
+    {
+        return $this->conditionCallbacks;
     }
 
     /**

@@ -17,6 +17,9 @@ class TableBuilder implements TableBuilderInterface
     /** @var null|callable */
     private $conditionCallback;
 
+    /** @var callable[] */
+    private $conditionCallbacks = [];
+
     /** @var null|callable */
     private $orderCallback;
 
@@ -105,6 +108,7 @@ class TableBuilder implements TableBuilderInterface
 
     public function setConditionCallback(callable $callback): TableBuilderInterface
     {
+        @trigger_error('setConditionCallback() is deprecated use addConditionCallback() instead', E_USER_DEPRECATED);
         $this->conditionCallback = $callback;
         return $this;
     }
@@ -112,6 +116,17 @@ class TableBuilder implements TableBuilderInterface
     public function getConditionCallback()
     {
         return $this->conditionCallback;
+    }
+
+    public function addConditionCallback(callable $callback): TableBuilderInterface
+    {
+        $this->conditionCallbacks[] = $callback;
+        return $this;
+    }
+
+    public function getConditionCallbacks(): array
+    {
+        return $this->conditionCallbacks;
     }
 
     public function setOrderCallback(callable $callback): TableBuilderInterface

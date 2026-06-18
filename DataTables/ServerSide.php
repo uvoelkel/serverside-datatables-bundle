@@ -186,6 +186,10 @@ class ServerSide
             call_user_func($callback, $qb, $this);
         }
 
+        foreach ($this->table->getConditionCallbacks() as $callback) {
+            call_user_func($callback, $qb, $this);
+        }
+
         return $qb;
     }
 
